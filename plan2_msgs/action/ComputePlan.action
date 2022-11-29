@@ -1,0 +1,10 @@
+#goal definition
+string planning_domain
+string planning_problem
+string planner
+---
+#result definition
+string execution_plan
+---
+#feedback definition
+

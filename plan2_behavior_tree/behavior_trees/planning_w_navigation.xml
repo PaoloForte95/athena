@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Control ID="RecoveryNode" number_of_retries="1">
+            <Sequence>
+                <ComputePlan execution_plan="{ExecutionPlan}" planning_domain="pddlDomainFileLocation" planning_problem="pddlProblemFileLocation"/>
+                <Parallel failure_threshold="1" name="Dispatcher" success_threshold="">
+                    <SubTree ID="Robot1" __shared_blackboard="false"/>
+                </Parallel>
+            </Sequence>
+        </Control>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Executor">
+        <Fallback>
+            <Sequence name="Move Action">
+                <Condition ID="IsActionMove"/>
+                <SubTree ID="Navigation" __shared_blackboard="false"/>
+            </Sequence>
+            <Sequence name="Load Action">
+                <Condition ID="IsActionLoad"/>
+                <Action ID="Load" location="{pose}"/>
+            </Sequence>
+            <Sequence name="Dump Action">
+                <Condition ID="IsActionDump"/>
+                <Action ID="Unload" location="{pose}"/>
+            </Sequence>
+        </Fallback>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Navigation">
+        <Control ID="RecoveryNode" name="RecoveryMaster" number_of_retries="10">
+            <Sequence name="NavigateWithReplanning">
+                <Decorator ID="RateController" hz="1.0">
+                    <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
+                        <Fallback>
+                            <ReactiveSequence>
+                                <Inverter>
+                                    <Condition ID="GlobalUpdatedGoal"/>
+                                </Inverter>
+                                <Condition ID="IsPathValid" path="{path}" server_timeout=""/>
+                            </ReactiveSequence>
+                            <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased" server_timeout="" service_name="" start=""/>
+                        </Fallback>
+                        <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" server_timeout="" service_name="global_costmap/clear_entirely_global_costmap"/>
+                    </Control>
+                </Decorator>
+                <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
+                    <Action ID="FollowPath" controller_id="FollowPath" goal_checker_id="GoalChecker" path="{path}" server_timeout="" service_name=""/>
+                    <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" server_timeout="" service_name="local_costmap/clear_entirely_local_costmap"/>
+                </Control>
+            </Sequence>
+            <ReactiveFallback name="RecoveryFallback">
+                <Condition ID="GoalUpdated"/>
+                <Control ID="RoundRobin" name="RecoveryActions">
+                    <Sequence name="ClearingActions">
+                        <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Subtree" server_timeout="" service_name="local_costmap/clear_entirely_local_costmap"/>
+                        <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Subtree" server_timeout="" service_name="global_costmap/clear_entirely_global_costmap"/>
+                    </Sequence>
+                    <Action ID="Spin" server_name="" server_timeout="" spin_dist="1.57" time_allowance=""/>
+                    <Action ID="Wait" server_name="" server_timeout="" wait_duration="5"/>
+                    <Action ID="BackUp" backup_dist="0.30" backup_speed="0.05" server_name="" server_timeout="" time_allowance=""/>
+                </Control>
+            </ReactiveFallback>
+        </Control>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="Robot1">
+        <Fallback>
+            <Inverter>
+                <Condition ID="IsRobotNeeded"/>
+            </Inverter>
+            <SubTree ID="Executor" __shared_blackboard="false"/>
+        </Fallback>
+    </BehaviorTree>
+</root>

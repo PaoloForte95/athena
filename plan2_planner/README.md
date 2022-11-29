@@ -1,0 +1,1 @@
+This package contains a plan solver that uses popf for solving PDDL plans.
