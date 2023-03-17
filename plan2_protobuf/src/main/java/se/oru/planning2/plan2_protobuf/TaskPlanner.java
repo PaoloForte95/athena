@@ -144,7 +144,6 @@ class TaskPlanner{
 	AbstractPlanner planner = null;
 
 	String ps = args[0].toUpperCase();
-	
 	switch (PLANNERS.valueOf(ps)){
 
 		case LPG:
