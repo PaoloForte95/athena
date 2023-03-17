@@ -4,7 +4,7 @@ string planning_problem
 string planner
 ---
 #result definition
-string execution_plan
+plan2_msgs/Plan execution_plan
 ---
 #feedback definition
 
