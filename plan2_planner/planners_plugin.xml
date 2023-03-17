@@ -1,0 +1,15 @@
+<class_libraries>
+<library path="planners">
+	<class name="plan2_planner::MetricFF" type="plan2_planner::MetricFF" base_class_type="plan2_core::Planner">
+	  <description>
+      An implementation of a Metric-FF planner
+      </description>
+	</class>
+    <class name="plan2_planner::LPG" type="plan2_planner::LPG" base_class_type="plan2_core::Planner">
+		<description>
+			An implementation of a LPG-TD planner
+		</description>
+	</class>
+
+</library>
+</class_libraries>

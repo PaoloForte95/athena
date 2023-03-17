@@ -14,6 +14,11 @@
   <depend>plan2_core</depend>
   <depend>pluginlib</depend>
   <depend>ament_index_cpp</depend>
+  <depend>nav2_util</depend>
+  <depend>plan2_msgs</depend>
+  <depend>rclcpp_components</depend>
+  <depend>plan2_protobuf</depend>
+
   <exec_depend>popf</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

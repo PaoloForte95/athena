@@ -10,39 +10,73 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(plan2_core REQUIRED)
+find_package(plan2_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(nav2_util REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(plan2_protobuf REQUIRED)
 
-
-set(dependencies
-  rclcpp
-  plan2_core
-  pluginlib
-  ament_index_cpp
-)
 
 include_directories(
   include
 )
 
-add_library(${PROJECT_NAME} SHARED
-  src/popf_plan_solver.cpp
+set(dependencies
+  rclcpp
+  pluginlib
+  ament_index_cpp
+  rclcpp_components
+  nav2_util
+  plan2_core
+  plan2_msgs
+  plan2_protobuf
 )
 
-ament_target_dependencies(${PROJECT_NAME} ${dependencies})
+set(executable_name task_planner_server)
+set(library_name plan2_planner)
+
+add_library(${library_name} SHARED
+  src/planner_server.cpp
+)
+ament_target_dependencies(${library_name} ${dependencies})
+rclcpp_components_register_nodes(${library_name} "plan2_planner::TaskPlannerServer")
 
 
-pluginlib_export_plugin_description_file(plan2_core plan2_popf_plan_solver_plugin.xml)
+
+add_library(${library_name}_metricff SHARED
+  src/planners/metric_ff.cpp
+)
+
+ament_target_dependencies(${library_name}_metricff
+  ${dependencies}
+)
+
+add_library(${library_name}_lpg SHARED
+  src/planners/lpg.cpp
+)
+
+ament_target_dependencies(${library_name}_lpg
+  ${dependencies}
+)
 
 
+add_executable(${executable_name}
+  src/main.cpp
+)
 
+ament_target_dependencies(${executable_name} ${dependencies})
+target_link_libraries(${executable_name} ${library_name} ${library_name}_metricff ${library_name}_lpg)
+
+install(TARGETS ${executable_name}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(TARGETS
-  ${PROJECT_NAME}
+install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -50,18 +84,18 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_gtest REQUIRED)
+  add_subdirectory(test)
 endif()
 
+
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
+ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg)
 ament_export_dependencies(${dependencies})
+
+pluginlib_export_plugin_description_file(plan2_planner planners_plugin.xml)
 
 ament_package()
