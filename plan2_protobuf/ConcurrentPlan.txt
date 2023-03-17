@@ -1,0 +1,43 @@
+Action: move_to_take_material  Parameters : rb1 parkingarea1 wp4 mat2 
+Parents 
+
+Action: load_material  Parameters : rb1 mat2 wp4 
+Parents 
+Action: move_to_take_material  Parameters : rb1 parkingarea1 wp4 mat2 
+
+Action: move_with_material  Parameters : rb1 wp4 wp3 mat2 
+Parents 
+Action: load_material  Parameters : rb1 mat2 wp4 
+Action: move_to_take_material  Parameters : rb1 parkingarea1 wp4 mat2 
+
+Action: move_with_material  Parameters : rb1 wp3 wp10 mat2 
+Parents 
+Action: move_with_material  Parameters : rb1 wp4 wp3 mat2 
+Action: load_material  Parameters : rb1 mat2 wp4 
+
+Action: dump_material  Parameters : rb1 mat2 wp10 
+Parents 
+Action: move_with_material  Parameters : rb1 wp3 wp10 mat2 
+Action: load_material  Parameters : rb1 mat2 wp4 
+
+Action: move_to_take_material  Parameters : rb1 wp10 wp3 mat1 
+Parents 
+Action: dump_material  Parameters : rb1 mat2 wp10 
+Action: move_with_material  Parameters : rb1 wp3 wp10 mat2 
+
+Action: load_material  Parameters : rb1 mat1 wp3 
+Parents 
+Action: move_to_take_material  Parameters : rb1 wp10 wp3 mat1 
+Action: dump_material  Parameters : rb1 mat2 wp10 
+
+Action: move_with_material  Parameters : rb1 wp3 wp10 mat1 
+Parents 
+Action: load_material  Parameters : rb1 mat1 wp3 
+Action: move_to_take_material  Parameters : rb1 wp10 wp3 mat1 
+
+Action: stack_material  Parameters : rb1 mat1 mat2 wp10 
+Parents 
+Action: move_with_material  Parameters : rb1 wp3 wp10 mat1 
+Action: load_material  Parameters : rb1 mat1 wp3 
+Action: dump_material  Parameters : rb1 mat2 wp10 
+
