@@ -30,8 +30,8 @@ ComputePlanAction::ComputePlanAction(
 
 void ComputePlanAction::on_tick()
 {
-  getInput("planning_domain", goal_.planning_domain);
-  getInput("planning_problem", goal_.planning_problem);
+  getInput("domain_file", goal_.planning_problem.planning_domain);
+  getInput("problem_file", goal_.planning_problem.planning_problem);
   getInput("planner", goal_.planner);
   
 }
@@ -39,20 +39,21 @@ void ComputePlanAction::on_tick()
 
 BT::NodeStatus ComputePlanAction::on_success()
 {
+  plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", result_.result->execution_plan);
   return BT::NodeStatus::SUCCESS;
 }
 
 BT::NodeStatus ComputePlanAction::on_aborted()
 {
-  std::string empty_plan;
+  plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   return BT::NodeStatus::FAILURE;
 }
 
 BT::NodeStatus ComputePlanAction::on_cancelled()
 {
-  std::string empty_plan;
+  plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   return BT::NodeStatus::SUCCESS;
 }
@@ -60,7 +61,7 @@ BT::NodeStatus ComputePlanAction::on_cancelled()
 
 void ComputePlanAction::halt()
 {
- std::string empty_plan;
+  plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   BtActionNode::halt();
 }
@@ -74,7 +75,7 @@ BT_REGISTER_NODES(factory)
     [](const std::string & name, const BT::NodeConfiguration & config)
     {
       return std::make_unique<plan2_behavior_tree::ComputePlanAction>(
-        name, "compute_plan", config);
+        name, "compute_execution_plan", config);
     };
 
   factory.registerBuilder<plan2_behavior_tree::ComputePlanAction>(

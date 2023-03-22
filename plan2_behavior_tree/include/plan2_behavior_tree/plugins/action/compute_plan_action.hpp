@@ -18,6 +18,7 @@
 #include <string>
 #include <memory>
 
+#include "plan2_msgs/msg/plan.hpp"
 #include "plan2_msgs/action/compute_plan.hpp"
 #include "plan2_behavior_tree/bt_action_node.hpp"
 
@@ -75,10 +76,10 @@ public:
   {
     return providedBasicPorts(
       {
-        BT::InputPort<std::string>("planning_domain", "The planning domain file"),
-        BT::InputPort<std::string>("planning_problem", "The planning problem file"),
-        BT::InputPort<std::string>("planner","test", "The planner to use"),
-        BT::OutputPort<std::string>("execution_plan", "The computed execution plan"),
+        BT::OutputPort<plan2_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
+        BT::InputPort<std::string>("domain_file", "The planning domain file location"),
+        BT::InputPort<std::string>("problem_file", "The planning problem file location"),
+        BT::InputPort<std::string>("planner", "MetricFF", "The task planner to use"),     
       });
   }
 };
