@@ -1,10 +1,11 @@
 #goal definition
-string planning_domain
-string planning_problem
+plan2_msgs/PlanningProblem planning_problem
 string planner
+string behavior_tree
 ---
 #result definition
 plan2_msgs/Plan execution_plan
 ---
 #feedback definition
+builtin_interfaces/Duration planning_time
 

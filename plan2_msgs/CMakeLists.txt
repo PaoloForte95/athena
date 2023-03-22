@@ -18,10 +18,14 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    #Msgs
    "msg/Action.msg"
    "msg/Plan.msg"
+   "msg/BehaviorTreeLog.msg"
+   "msg/BehaviorTreeStatusChange.msg"
+   "msg/PlanningProblem.msg"
 
    #Services
    "srv/GetPlan.srv"
    "srv/RecomputePlan.srv"
+   "srv/ManageLifecycleNodes.srv"
     
    #Actions
    "action/ComputePlan.action"
