@@ -14,13 +14,13 @@
 
 #include <memory>
 
-#include "plan2_planner/planner_server.hpp"
+#include "plan2_planner/task_planner_server.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<plan2_planner::PlannerServer>();
+  auto node = std::make_shared<plan2_planner::TaskPlannerServer>();
   rclcpp::spin(node->get_node_base_interface());
   rclcpp::shutdown();
 

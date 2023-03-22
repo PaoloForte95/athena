@@ -27,8 +27,9 @@
 #include "nav2_util/costmap.hpp"
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/geometry_utils.hpp"
+#include "nav2_costmap_2d/cost_values.hpp"
 
-#include "plan2_planner/planner_server.hpp"
+#include "plan2_planner/task_planner_server.hpp"
 
 using namespace std::chrono_literals;
 using rcl_interfaces::msg::ParameterType;
@@ -37,57 +38,64 @@ using std::placeholders::_1;
 namespace plan2_planner
 {
 
-PlannerServer::PlannerServer(const rclcpp::NodeOptions & options)
-: nav2_util::LifecycleNode("planner_server", "", options),
+TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
+: nav2_util::LifecycleNode("task_planner_server", "", options),
   gp_loader_("plan2_core", "plan2_core::Planner"),
-  default_ids_{"SymbolicPlanner"},
-  default_types_{"plan2_planner/MetricFFPlanner", "plan2_planner/LPGPlanner"}
+  default_ids_{"MetricFF", "LPG"},
+  default_types_{"plan2_planner::LPG", "plan2_planner::MetricFF"}
 {
-  RCLCPP_INFO(get_logger(), "Creating");
+  RCLCPP_INFO(get_logger(), "Creating task planner server");
 
+  declare_parameter("planner_frequency", 20.0);
   // Declare this node's parameters
   declare_parameter("planner_plugins", default_ids_);
-  declare_parameter("expected_planner_frequency", 1.0);
+
+}
+
+TaskPlannerServer::~TaskPlannerServer()
+{
+  planners_.clear();
+
+}
+
+nav2_util::CallbackReturn
+TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
+{
+  auto node = shared_from_this();
+  RCLCPP_INFO(get_logger(), "Configuring task planner interface");
+
 
   get_parameter("planner_plugins", planner_ids_);
   if (planner_ids_ == default_ids_) {
     for (size_t i = 0; i < default_ids_.size(); ++i) {
-      declare_parameter(default_ids_[i] + ".plugin", default_types_[i]);
+      nav2_util::declare_parameter_if_not_declared(
+        node, default_ids_[i] + ".plugin",
+        rclcpp::ParameterValue(default_ids_[i]));
     }
   }
+  planner_types_.resize(planner_ids_.size());
 
-
-}
-
-PlannerServer::~PlannerServer()
-{
-  planners_.clear();
-}
-
-nav2_util::CallbackReturn
-PlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
-{
-  RCLCPP_INFO(get_logger(), "Configuring");
+  get_parameter("planner_frequency", planner_frequency_);
+  RCLCPP_INFO(get_logger(), "Task planner frequency set to %.4fHz", planner_frequency_);
 
 
   planner_types_.resize(planner_ids_.size());
 
-  auto node = shared_from_this();
 
   for (size_t i = 0; i != planner_ids_.size(); i++) {
     try {
       planner_types_[i] = nav2_util::get_plugin_type_param(
         node, planner_ids_[i]);
-      plan2_core::Planner::Ptr planner =
+      plan2_core::Planner::Ptr task_planner =
         gp_loader_.createUniqueInstance(planner_types_[i]);
       RCLCPP_INFO(
-        get_logger(), "Created global planner plugin %s of type %s",
+        get_logger(), "Created task planner plugin %s of type %s",
         planner_ids_[i].c_str(), planner_types_[i].c_str());
-      planner->configure(node, planner_ids_[i]);
-      planners_.insert({planner_ids_[i], planner});
+      task_planner->configure(node, planner_ids_[i]);
+      planners_.insert({planner_ids_[i], task_planner});
     } catch (const pluginlib::PluginlibException & ex) {
       RCLCPP_FATAL(
-        get_logger(), "Failed to create global planner. Exception: %s",
+        get_logger(), "Failed to create the task planner. Exception: %s",
         ex.what());
       return nav2_util::CallbackReturn::FAILURE;
     }
@@ -99,43 +107,32 @@ PlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
 
   RCLCPP_INFO(
     get_logger(),
-    "Planner Server has %s planners available.", planner_ids_concat_.c_str());
+    "Task Planner Server has %s planners available.", planner_ids_concat_.c_str());
 
-  double expected_planner_frequency;
-  get_parameter("expected_planner_frequency", expected_planner_frequency);
-  if (expected_planner_frequency > 0) {
-    max_planner_duration_ = 1 / expected_planner_frequency;
-  } else {
-    RCLCPP_WARN(
-      get_logger(),
-      "The expected planner frequency parameter is %.4f Hz. The value should to be greater"
-      " than 0.0 to turn on duration overrrun warning messages", expected_planner_frequency);
-    max_planner_duration_ = 0.0;
-  }
-
+ 
   // Initialize pubs & subs
   plan_publisher_ = create_publisher<plan2_msgs::msg::Plan>("execution_plan", 1);
 
   // Create the action servers for path planning to a pose and through poses
-  action_server_plan_ = std::make_unique<ActionServerComputePlan>(
+  action_server_plan_ = std::make_unique<ActionServerPlan>(
     shared_from_this(),
-    "compute_path_to_pose",
-    std::bind(&PlannerServer::computeExecutionPlan, this),
+    "compute_execution_plan",
+    std::bind(&TaskPlannerServer::computeExecutionPlan, this),
     nullptr,
     std::chrono::milliseconds(500),
     true);
-
 
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
 nav2_util::CallbackReturn
-PlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
+TaskPlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Activating");
 
   plan_publisher_->on_activate();
   action_server_plan_->activate();
+
 
   PlannerMap::iterator it;
   for (it = planners_.begin(); it != planners_.end(); ++it) {
@@ -144,9 +141,10 @@ PlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
 
   auto node = shared_from_this();
 
+
   // Add callback for dynamic parameters
   dyn_params_handler_ = node->add_on_set_parameters_callback(
-    std::bind(&PlannerServer::dynamicParametersCallback, this, _1));
+    std::bind(&TaskPlannerServer::dynamicParametersCallback, this, _1));
 
   // create bond connection
   createBond();
@@ -155,7 +153,7 @@ PlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
 }
 
 nav2_util::CallbackReturn
-PlannerServer::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
+TaskPlannerServer::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Deactivating");
 
@@ -176,30 +174,32 @@ PlannerServer::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
 }
 
 nav2_util::CallbackReturn
-PlannerServer::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
+TaskPlannerServer::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Cleaning up");
 
   action_server_plan_.reset();
   plan_publisher_.reset();
 
+
   PlannerMap::iterator it;
   for (it = planners_.begin(); it != planners_.end(); ++it) {
     it->second->cleanup();
   }
   planners_.clear();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
 nav2_util::CallbackReturn
-PlannerServer::on_shutdown(const rclcpp_lifecycle::State &)
+TaskPlannerServer::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(get_logger(), "Shutting down");
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
 template<typename T>
-bool PlannerServer::isServerInactive(
+bool TaskPlannerServer::isServerInactive(
   std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server)
 {
   if (action_server == nullptr || !action_server->is_server_active()) {
@@ -210,8 +210,10 @@ bool PlannerServer::isServerInactive(
   return false;
 }
 
+
+
 template<typename T>
-bool PlannerServer::isCancelRequested(
+bool TaskPlannerServer::isCancelRequested(
   std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server)
 {
   if (action_server->is_cancel_requested()) {
@@ -224,7 +226,7 @@ bool PlannerServer::isCancelRequested(
 }
 
 template<typename T>
-void PlannerServer::getPreemptedGoalIfRequested(
+void TaskPlannerServer::getPreemptedGoalIfRequested(
   std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server,
   typename std::shared_ptr<const typename T::Goal> goal)
 {
@@ -234,10 +236,8 @@ void PlannerServer::getPreemptedGoalIfRequested(
 }
 
 
-
-
 void
-PlannerServer::computeExecutionPlan()
+TaskPlannerServer::computeExecutionPlan()
 {
   std::lock_guard<std::mutex> lock(dynamic_params_lock_);
 
@@ -245,68 +245,46 @@ PlannerServer::computeExecutionPlan()
 
   // Initialize the ComputePathToPose goal and result
   auto goal = action_server_plan_->get_current_goal();
-  auto result = std::make_shared<ActionComputePlan::Result>();
+  auto result = std::make_shared<ActionPlan::Result>();
 
   try {
     if (isServerInactive(action_server_plan_) || isCancelRequested(action_server_plan_)) {
       return;
     }
 
-
     getPreemptedGoalIfRequested(action_server_plan_, goal);
 
-    // Get the planning domain
-    std::string domain = goal->planning_domain;
-    if (domain.empty()) {
-      return;
-    }
 
-    //Get the planning problem
-     std::string problem = goal->planning_problem;
-    if (problem.empty()) {
-      return;
-    }
+    RCLCPP_WARN( get_logger(), "Choosen Task Planner: %s ", goal->planner.c_str());
 
-    RCLCPP_INFO(get_logger(), " Computing the execution plan with planner %s", goal->planner.c_str());
-    result->execution_plan = getExecutionPlan(domain, problem, goal->planner);
-
-
-
+    result->execution_plan = getExecutionPlan(goal->planning_problem.planning_domain, goal->planning_problem.planning_problem,  goal->planner);
+    auto message = plan2_msgs::msg::Plan();
+    message = result->execution_plan;
     // Publish the plan for visualization purposes
-    publishPlan(result->execution_plan);
-
-    auto cycle_duration = steady_clock_.now() - start_time;
-
-
-    if (max_planner_duration_ && cycle_duration.seconds() > max_planner_duration_) {
-      RCLCPP_WARN(
-        get_logger(),
-        "Planner loop missed its desired rate of %.4f Hz. Current loop rate is %.4f Hz",
-        1 / max_planner_duration_, 1 / cycle_duration.seconds());
-    }
+    publishPlan(message);
 
     action_server_plan_->succeeded_current(result);
   } catch (std::exception & ex) {
     RCLCPP_WARN(
-      get_logger(), "%s plugin failed to compute execution plan using planner %s, domain %s, and problem %s (%.2f, %.2f): \"%s\"",
-      goal->planner.c_str(), goal->planning_domain.c_str(),
-      goal->planning_problem.c_str(), ex.what());
+      get_logger(), "%s plugin failed to compute execution plan for the problem (%s, %s).",
+        goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
     action_server_plan_->terminate_current();
   }
 }
 
-plan2_msgs::msg::Plan
-PlannerServer::getExecutionPlan(
-  const std::string & domain,
-  const std::string & problem,
-  const std::string & planner)
+plan2_msgs::msg::Plan TaskPlannerServer::getExecutionPlan(
+    const std::string & domain,
+    const std::string & problem,
+    const std::string & planner)
 {
-  RCLCPP_DEBUG(
-    get_logger(), "Attempting to a compute an execution plan");
+  plan2_msgs::msg::Plan plan;
+   RCLCPP_WARN(
+      get_logger(), "Attempting to compute an execution plan for the planning problem (%s, %s), using planner %s\"",
+      domain.c_str(), problem.c_str(),  planner.c_str());
+
 
   if (planners_.find(planner) != planners_.end()) {
-
-    return planners_[planner]->computeExecutionPlan(domain, problem);
+    return planners_[planner]->computeExecutionPlan(domain,problem);
   } else {
     if (planners_.size() == 1 && planner.empty()) {
       RCLCPP_WARN_ONCE(
@@ -317,7 +295,7 @@ PlannerServer::getExecutionPlan(
     } else {
       RCLCPP_ERROR(
         get_logger(), "planner %s is not a valid planner. "
-        "Planner names are: %s", planner.c_str(),
+        "Task Planner names are: %s", planner.c_str(),
         planner_ids_concat_.c_str());
     }
   }
@@ -326,17 +304,17 @@ PlannerServer::getExecutionPlan(
 }
 
 void
-PlannerServer::publishPlan(const plan2_msgs::msg::Plan & path)
+TaskPlannerServer::publishPlan(const plan2_msgs::msg::Plan & msg)
 {
-  auto msg = std::make_unique<plan2_msgs::msg::Plan>(path);
+  auto message = std::make_unique<plan2_msgs::msg::Plan>(msg);
   if (plan_publisher_->is_activated() && plan_publisher_->get_subscription_count() > 0) {
-    plan_publisher_->publish(std::move(msg));
+    plan_publisher_->publish(std::move(message));
   }
 }
 
 
 rcl_interfaces::msg::SetParametersResult
-PlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
+TaskPlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
 {
   std::lock_guard<std::mutex> lock(dynamic_params_lock_);
   rcl_interfaces::msg::SetParametersResult result;
@@ -346,17 +324,6 @@ PlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> paramete
     const auto & name = parameter.get_name();
 
     if (type == ParameterType::PARAMETER_DOUBLE) {
-      if (name == "expected_planner_frequency") {
-        if (parameter.as_double() > 0) {
-          max_planner_duration_ = 1 / parameter.as_double();
-        } else {
-          RCLCPP_WARN(
-            get_logger(),
-            "The expected planner frequency parameter is %.4f Hz. The value should to be greater"
-            " than 0.0 to turn on duration overrrun warning messages", parameter.as_double());
-          max_planner_duration_ = 0.0;
-        }
-      }
     }
   }
 
@@ -364,11 +331,11 @@ PlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> paramete
   return result;
 }
 
-}  // namespace orunav2_planner
+}  // namespace plan2_planner
 
 #include "rclcpp_components/register_node_macro.hpp"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
-RCLCPP_COMPONENTS_REGISTER_NODE(plan2_planner::PlannerServer)
+RCLCPP_COMPONENTS_REGISTER_NODE(plan2_planner::TaskPlannerServer)

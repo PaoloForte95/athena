@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef PLAN2_PLANNER__PLANNER_SERVER_HPP_
-#define PLAN2_PLANNER__PLANNER_SERVER_HPP_
+#ifndef PLAN2_PLANNER__TASK_PLANNER_SERVER_HPP_
+#define PLAN2_PLANNER__TASK_PLANNER_SERVER_HPP_
 
 #include <chrono>
 #include <string>
@@ -22,50 +22,55 @@
 #include <unordered_map>
 #include <mutex>
 
-
+#include "std_msgs/msg/string.hpp"
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "nav2_util/lifecycle_node.hpp"
+#include "plan2_msgs/action/compute_plan.hpp"
+#include "nav2_util/robot_utils.hpp"
+#include "nav2_util/simple_action_server.hpp"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
 #include "plan2_core/planner.hpp"
-#include "nav2_util/robot_utils.hpp"
-#include "nav2_util/simple_action_server.hpp"
-#include "nav2_util/lifecycle_node.hpp"
-#include "plan2_msgs/action/compute_plan.hpp"
 #include "plan2_msgs/msg/plan.hpp"
 
 
 namespace plan2_planner
 {
-
 /**
- * @class plan2_planner::EclPlannerServer
+ * @class plan2_planner::TaskPlannerServer
  * @brief An action server implements the behavior tree's ComputePathToPose
  * interface and hosts various plugins of different algorithms to compute plans.
  */
-class PlannerServer : public nav2_util::LifecycleNode
+class TaskPlannerServer : public nav2_util::LifecycleNode
 {
 public:
   /**
-   * @brief A constructor for orunav2_planner::EclPlannerServer
+   * @brief A constructor for plan2_planner::TaskPlannerServer
    * @param options Additional options to control creation of the node.
    */
-  explicit PlannerServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit TaskPlannerServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   /**
-   * @brief A destructor for orunav2_planner::EclPlannerServer
+   * @brief A destructor for plan2_planner::TaskPlannerServer
    */
-  ~PlannerServer();
+  ~TaskPlannerServer();
 
   using PlannerMap = std::unordered_map<std::string, plan2_core::Planner::Ptr>;
 
   /**
-   * @brief Method to compute the execution Plan
-   * @param start starting pose
-   * @param goal goal request
-   * @return Path
+   * @brief Get the Execution Plan object
+   * 
+   * @param domain 
+   * @param problem 
+   * @param planner_id 
+   * @return std::string 
    */
   plan2_msgs::msg::Plan getExecutionPlan(
     const std::string & domain,
     const std::string & problem,
-    const std::string & planner);
+    const std::string & planner_id);
 
 protected:
   /**
@@ -99,8 +104,8 @@ protected:
    */
   nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
-  using ActionComputePlan = plan2_msgs::action::ComputePlan;
-  using ActionServerComputePlan = nav2_util::SimpleActionServer<ActionComputePlan>;
+  using ActionPlan = plan2_msgs::action::ComputePlan;
+  using ActionServerPlan = nav2_util::SimpleActionServer<ActionPlan>;
 
   /**
    * @brief Check if an action server is valid / active
@@ -118,6 +123,7 @@ protected:
   template<typename T>
   bool isCancelRequested(std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server);
 
+
   /**
    * @brief Check if an action server has a preemption request and replaces the goal
    * with the new preemption goal.
@@ -130,19 +136,20 @@ protected:
     typename std::shared_ptr<const typename T::Goal> goal);
 
 
-  // Our action server implements the ComputePlan action
-  std::unique_ptr<ActionServerComputePlan> action_server_plan_;
 
+  // Our action server implements the ComputePathToPose action
+  std::unique_ptr<ActionServerPlan> action_server_plan_;
 
   /**
-   * @brief The action server callback which calls planner to get the execution plan
-   * ComputePathToPose
+   * @brief 
+   * 
    */
   void computeExecutionPlan();
 
+ 
   /**
-   * @brief Publish a plan for debug purpose
-   * @param path Reference to the execution plan
+   * @brief Publish the planner for debug purposes
+   * @param plann Reference to the execution plan 
    */
   void publishPlan(const plan2_msgs::msg::Plan & plan);
 
@@ -164,7 +171,6 @@ protected:
   std::vector<std::string> default_types_;
   std::vector<std::string> planner_ids_;
   std::vector<std::string> planner_types_;
-  double max_planner_duration_;
   std::string planner_ids_concat_;
 
   // Clock
@@ -174,9 +180,10 @@ protected:
   // Publishers for the path
   rclcpp_lifecycle::LifecyclePublisher<plan2_msgs::msg::Plan>::SharedPtr plan_publisher_;
 
-};
 
+  double planner_frequency_;
+};
 
 }  // namespace plan2_planner
 
-#endif  // PLAN2_PLANNER__PLANNER_SERVER_HPP_
+#endif  // PLAN2_PLANNER__TASK_PLANNER_SERVER_HPP_

@@ -16,10 +16,13 @@ find_package(ament_index_cpp REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(plan2_protobuf REQUIRED)
+find_package(Protobuf REQUIRED)
 
 
 include_directories(
   include
+  ${Protobuf_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 set(dependencies
@@ -31,13 +34,19 @@ set(dependencies
   plan2_core
   plan2_msgs
   plan2_protobuf
+  Protobuf
 )
 
 set(executable_name task_planner_server)
+
+add_executable(${executable_name}
+  src/main.cpp
+)
+
 set(library_name plan2_planner)
 
 add_library(${library_name} SHARED
-  src/planner_server.cpp
+  src/task_planner_server.cpp
 )
 ament_target_dependencies(${library_name} ${dependencies})
 rclcpp_components_register_nodes(${library_name} "plan2_planner::TaskPlannerServer")
@@ -61,9 +70,6 @@ ament_target_dependencies(${library_name}_lpg
 )
 
 
-add_executable(${executable_name}
-  src/main.cpp
-)
 
 ament_target_dependencies(${executable_name} ${dependencies})
 target_link_libraries(${executable_name} ${library_name} ${library_name}_metricff ${library_name}_lpg)
@@ -79,7 +85,12 @@ install(DIRECTORY include/
 install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY
+  params
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)
@@ -96,6 +107,6 @@ ament_export_include_directories(include)
 ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg)
 ament_export_dependencies(${dependencies})
 
-pluginlib_export_plugin_description_file(plan2_planner planners_plugin.xml)
+pluginlib_export_plugin_description_file(plan2_core planners_plugin.xml)
 
 ament_package()
