@@ -32,9 +32,10 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(nav2_util REQUIRED)
+find_package(plan2_util REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(plan2_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 
 include_directories(
@@ -58,20 +59,33 @@ set(dependencies
   tf2_geometry_msgs
   std_msgs
   std_srvs
-  nav2_util
+  plan2_util
+  visualization_msgs
 )
 
-add_library(planning_compute_plan_action_bt_node SHARED plugins/action/compute_plan_action.cpp)
-list(APPEND plugin_libs planning_compute_plan_action_bt_node)
+add_library(${library_name} SHARED
+  src/behavior_tree_engine.cpp
+)
 
+ament_target_dependencies(${library_name}
+  ${dependencies}
+)
 
+add_library(plan2_compute_plan_action_bt_node SHARED plugins/action/compute_plan_action.cpp)
+list(APPEND plugin_libs plan2_compute_plan_action_bt_node)
+
+add_library(plan2_is_action_condition_bt_node SHARED plugins/condition/is_action_condition.cpp)
+list(APPEND plugin_libs plan2_is_action_condition_bt_node)
+
+#add_library(plan2_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
+#list(APPEND plugin_libs plan2_selected_robot_controller_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
 endforeach()
 
-install(TARGETS ${plugin_libs}
+install(TARGETS ${library_name} ${plugin_libs}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -88,6 +102,7 @@ ament_export_include_directories(
 )
 
 ament_export_libraries(
+  ${library_name}
   ${plugin_libs}
 )
 
