@@ -1,0 +1,36 @@
+<!--
+This Behavior Tree computes and executed a plan. If the plan failed, it has
+  recovery actions to recompute a plan.
+-->
+
+<root main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+  <Sequence>
+  <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
+  <RecoveryNode number_of_retries="6" name="PlanningWRecovery">
+    <Fallback>
+        <Fallback>
+        <Sequence name="Move Action">
+            <Inverter>
+            <IsAction name="IsActionMove"/>
+        </Inverter>       
+        </Sequence>
+        <Sequence name="Load Action">
+        <Inverter>
+            <IsAction name="IsActionLoad"/>
+        </Inverter>
+        </Sequence>
+        <Sequence name="Dump Action">
+            <Inverter>
+            <IsAction name="IsActionDump"/>
+        </Inverter>
+        </Sequence>
+    </Fallback>
+    </Fallback>
+    <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
+  </RecoveryNode>
+  </Sequence> 
+</BehaviorTree>
+
+</root>
