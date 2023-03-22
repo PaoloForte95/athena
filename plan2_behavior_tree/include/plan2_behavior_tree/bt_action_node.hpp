@@ -20,7 +20,7 @@
 #include <chrono>
 
 #include "behaviortree_cpp_v3/action_node.h"
-#include "nav2_util/node_utils.hpp"
+#include "plan2_util/node_utils.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "plan2_behavior_tree/bt_conversions.hpp"
 
@@ -428,7 +428,7 @@ protected:
   // To handle feedback from action server
   std::shared_ptr<const typename ActionT::Feedback> feedback_;
 
-  // The node that will be used for any ROS operations
+  // The node that will be used for any ROS2 operations
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
