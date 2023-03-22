@@ -12,7 +12,7 @@ find_package(Protobuf REQUIRED)
 
 set(library_name ${PROJECT_NAME}_core)
 
-ADD_SUBDIRECTORY(src/main/proto)
+add_subdirectory(src/main/proto)
 
 set(dependencies
   Protobuf
@@ -40,6 +40,7 @@ install(DIRECTORY include/
 
 install(TARGETS
   ${library_name}
+  proto
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -55,5 +56,6 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name})
+ament_export_libraries(${library_name} proto)
+ament_export_dependencies(${dependencies})
 ament_package()
