@@ -11,6 +11,7 @@ bt_planner:
     - nav2_recovery_node_bt_node
     - plan2_compute_plan_action_bt_node
     - plan2_is_action_condition_bt_node
+    - plan2_send_move_action_bt_node
 
 
 

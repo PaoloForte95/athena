@@ -71,11 +71,16 @@ ament_target_dependencies(${library_name}
   ${dependencies}
 )
 
+#Actions
 add_library(plan2_compute_plan_action_bt_node SHARED plugins/action/compute_plan_action.cpp)
 list(APPEND plugin_libs plan2_compute_plan_action_bt_node)
 
+add_library(plan2_send_move_action_bt_node SHARED plugins/action/send_move_action.cpp)
+list(APPEND plugin_libs plan2_send_move_action_bt_node)
+
 add_library(plan2_is_action_condition_bt_node SHARED plugins/condition/is_action_condition.cpp)
 list(APPEND plugin_libs plan2_is_action_condition_bt_node)
+
 
 #add_library(plan2_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
 #list(APPEND plugin_libs plan2_selected_robot_controller_bt_node)

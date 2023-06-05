@@ -8,14 +8,15 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
 <BehaviorTree ID="MasterTree">
   <Sequence>
   <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
-  <RecoveryNode number_of_retries="6" name="PlanningWRecovery">
-    <Fallback>
+ 
+  <RecoveryNode number_of_retries="1" name="PlanningWRecovery">
+    <Parallel success_threshold="1">
         <Fallback>
         <Sequence name="Move Action">
-            <Inverter>
-            <IsAction name="IsActionMove"/>
-        </Inverter>       
+            <IsAction name="IsActionMove" action_name="move"/>
+            <SendMove name="SendMoveAction" service_name="/robot1/navigate_to_pose"/>
         </Sequence>
+         <!-- 
         <Sequence name="Load Action">
         <Inverter>
             <IsAction name="IsActionLoad"/>
@@ -26,10 +27,12 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
             <IsAction name="IsActionDump"/>
         </Inverter>
         </Sequence>
+          -->
     </Fallback>
-    </Fallback>
+    </Parallel>
     <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
   </RecoveryNode>
+
   </Sequence> 
 </BehaviorTree>
 

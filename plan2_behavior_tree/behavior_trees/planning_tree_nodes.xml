@@ -7,7 +7,11 @@
 <root>
   <TreeNodesModel>
     <!-- ############################### ACTION NODES ################################# -->
-      <Action ID="Load">
+    <Action ID="SendMove">
+            <input_port name="service_name">The name of the service </input_port>
+    </Action>
+    
+    <Action ID="Load">
             <input_port default="{pose}" name="location">The loading location</input_port>
     </Action>
     
