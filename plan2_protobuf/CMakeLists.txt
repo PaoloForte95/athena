@@ -15,7 +15,7 @@ set(library_name ${PROJECT_NAME}_core)
 add_subdirectory(src/main/proto)
 
 set(dependencies
-  Protobuf
+Protobuf
 )
 
 include_directories(
