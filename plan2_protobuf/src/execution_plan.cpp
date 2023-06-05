@@ -25,6 +25,8 @@ std::vector<planning2::Action> Plan::GetActions(const planning2::ExecutionPlan& 
     for (int j = 0; j < protoAction.parents_size(); j++) {
       auto parentID = protoAction.parents(j);
     }
+    cout << "Action Name: " << protoAction.name().c_str()  << endl;
+
     actions.push_back(protoAction);
   }
 return actions;

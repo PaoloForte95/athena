@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Intel Corporation
+// Copyright (c) 2023 Paolo Forte
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,4 +86,4 @@ public:
 
 }  // namespace plan2_behavior_tree
 
-#endif  // plan2_behavior_tree__PLUGINS__ACTION__COMPUTE_PLAN_ACTION_HPP_
+#endif  // PLAN2_BEHAVIOR_TREE__PLUGINS__ACTION__COMPUTE_PLAN_ACTION_HPP_

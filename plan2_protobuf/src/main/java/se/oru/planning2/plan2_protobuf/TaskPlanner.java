@@ -39,7 +39,6 @@ class TaskPlanner{
 		ArrayList <String> locations = new ArrayList <String>(Arrays.asList("location"));
 		planningProblem.defineRobotType(machines);
 		planningProblem.defineLocationType(locations);
-		
 		planningProblem.readPlan(plan,PLANTYPE.CONCURRENT);
 		ConcurrentPlan executionPlan= (ConcurrentPlan) planningProblem.getPlan();
 		DefaultDirectedGraph<se.oru.planning.planning_oru.ai_planning.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
@@ -58,7 +57,6 @@ class TaskPlanner{
 					action.setRobotID(robotID);			
 				}
 				else if (!Collections.disjoint(input.getType(),locations)){
-					System.out.println("Waypoint: " + input.getVariable());
 					action.addWaypoints(input.getVariable());			
 				}
 				
