@@ -16,7 +16,7 @@ find_package(ament_index_cpp REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(plan2_protobuf REQUIRED)
-find_package(Protobuf REQUIRED)
+find_package(protobuf REQUIRED)
 
 
 include_directories(
@@ -34,7 +34,7 @@ set(dependencies
   plan2_core
   plan2_msgs
   plan2_protobuf
-  Protobuf
+  protobuf
 )
 
 set(executable_name task_planner_server)
