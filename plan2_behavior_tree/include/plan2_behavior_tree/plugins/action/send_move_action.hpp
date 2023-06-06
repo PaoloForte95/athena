@@ -23,12 +23,22 @@
 
 namespace plan2_behavior_tree
 {
-    /**
-     * @brief Create an action client to send the current action of the execution plan.
-     * 
-     */
 
-    class SendMoveAction : public BT::ActionNodeBase
+enum class ActionStatus
+{
+  UNKNOWN = 0,
+  PROCESSING = 1,
+  FAILED = 2,
+  SUCCEEDED = 3
+};
+
+
+/**
+ * @brief Create an action client to send the current action of the execution plan.
+ * 
+ */
+
+class SendMoveAction : public BT::ActionNodeBase
 {
 public:
   /**
@@ -67,16 +77,24 @@ public:
 
 protected:
     using GoalHandleSendMove = rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>;
-    rclcpp::FutureReturnCode sendMove();
+    void sendMove();
 
 
 
 private:
-   std::string service_name_,global_frame_;
-   rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr client_ptr_;
-   GoalHandleSendMove::SharedPtr send_move_handler_;
-   rclcpp::Node::SharedPtr node_;
-  std::chrono::milliseconds server_timeout_;
+  std::string service_name_,global_frame_;
+  rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr client_ptr_;
+  GoalHandleSendMove::SharedPtr send_move_handler_;
+  rclcpp::Node::SharedPtr node_;
+  ActionStatus action_status_;
+
+  
+
+   void goal_response_callback(const GoalHandleSendMove::SharedPtr & goal_handle);
+
+   void feedback_callback(GoalHandleSendMove::SharedPtr, const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback);
+
+   void result_callback(const GoalHandleSendMove::WrappedResult & result);
 
     
 

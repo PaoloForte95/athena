@@ -22,43 +22,47 @@ namespace plan2_behavior_tree
 SendMoveAction::SendMoveAction(
   const std::string & action_name,
   const BT::NodeConfiguration & conf)
-: ActionNodeBase(action_name, conf),
- server_timeout_(100)
+: ActionNodeBase(action_name, conf)
 {
     getInput("service_name", service_name_);
     getInput("global_frame", global_frame_);
     
-    node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
+    node_ = rclcpp::Node::make_shared("send_move_client_node");
     client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name_);
+    
 
 }
 
 inline BT::NodeStatus SendMoveAction::tick()
 {
-setStatus(BT::NodeStatus::RUNNING);
-
-auto result = sendMove();
-if(result == rclcpp::FutureReturnCode::SUCCESS){
-    return BT::NodeStatus::SUCCESS;
+    setStatus(BT::NodeStatus::RUNNING);
+    sendMove();
+    if(action_status_ == ActionStatus::SUCCEEDED){
+        return BT::NodeStatus::SUCCESS;
+    }
+    else if (action_status_ == ActionStatus::FAILED){
+        return BT::NodeStatus::FAILURE;
+    }
+    RCLCPP_INFO(node_->get_logger(), "HERE");
+    return BT::NodeStatus::RUNNING;
 }
-return BT::NodeStatus::FAILURE;
-}
 
 
-rclcpp::FutureReturnCode SendMoveAction::sendMove()
+void SendMoveAction::sendMove()
   {
     using namespace std::placeholders;
 
      auto is_action_server_ready =
     client_ptr_->wait_for_action_server(std::chrono::seconds(5));
-  if (!is_action_server_ready) {
-    RCLCPP_ERROR(
-      node_->get_logger(),
-      "navigate_to_pose action server is not available."
-      " Is the initial pose set?");
-    return rclcpp::FutureReturnCode::INTERRUPTED;
-  }
-
+    if (!is_action_server_ready) {
+        RCLCPP_ERROR(
+        node_->get_logger(),
+        "navigate_to_pose action server is not available."
+        " Is the initial pose set?");
+        return ;
+    }
+    
+  
     auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
     goal_msg.pose.header.frame_id = global_frame_;
     goal_msg.pose.pose.position.x = 23.19;
@@ -69,36 +73,72 @@ rclcpp::FutureReturnCode SendMoveAction::sendMove()
     goal_msg.pose.pose.orientation.z = 0.0;
     goal_msg.pose.pose.orientation.w = 1.0;
 
-    
-    
     RCLCPP_INFO(node_->get_logger(), "Sending goal");
 
     auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
-    send_goal_options.result_callback = [this](auto) {
-      send_move_handler_.reset();
-    };
-     auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
-    if (rclcpp::spin_until_future_complete(node_, future_goal_handle, server_timeout_) !=
-    rclcpp::FutureReturnCode::SUCCESS)
+    //send_goal_options.result_callback = [this](auto) {
+    //send_move_handler_.reset();
+    //};
+    send_goal_options.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
+    //send_goal_options.feedback_callback = std::bind(&SendMoveAction::feedback_callback, this, std::placeholders::_1,std::placeholders::_2);
+    send_goal_options.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
+    auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
+    if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
     {
-        RCLCPP_ERROR(node_->get_logger(), "Send goal call failed");
-        return rclcpp::FutureReturnCode::INTERRUPTED;
+        RCLCPP_INFO(node_->get_logger(), "Failed sending goal");
+        // failed sending the goal
+        return ;
     }
+    send_move_handler_ = future_goal_handle.get();
 
-  // Get the goal handle and save so that we can check on completion in the timer callback
-  send_move_handler_ = future_goal_handle.get();
-  if (!send_move_handler_) {
-    RCLCPP_ERROR(node_->get_logger(), "Goal was rejected by server");
-    return rclcpp::FutureReturnCode::INTERRUPTED;
-  }
-  return rclcpp::FutureReturnCode::SUCCESS;
+    auto future_result = client_ptr_->async_get_result(send_move_handler_);
+    RCLCPP_INFO(node_->get_logger(), "Executing Operation...!");
+    rclcpp::spin_until_future_complete(node_, future_result);
+
+    rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult wrapped_result = future_result.get();
+
 }
 
 
+   void SendMoveAction::goal_response_callback(const GoalHandleSendMove::SharedPtr & goal_handle)
+  {
+    if (!goal_handle) {
+      RCLCPP_ERROR(node_->get_logger(), "Goal was rejected by server");
+    } else {
+      RCLCPP_INFO(node_->get_logger(), "Goal accepted by server, waiting for result");
+    }
+  }
 
 
+  void SendMoveAction::feedback_callback(GoalHandleSendMove::SharedPtr,const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback)
+  {
+
+    RCLCPP_INFO(node_->get_logger(), "distance %f",  feedback->distance_remaining);
+  }
 
 
+   void SendMoveAction::result_callback(const GoalHandleSendMove::WrappedResult & result)
+  {
+    switch (result.code) {
+      case rclcpp_action::ResultCode::SUCCEEDED:
+      RCLCPP_ERROR(node_->get_logger(), "Operation completed!");
+       action_status_ =  ActionStatus::SUCCEEDED;
+        break;
+      case rclcpp_action::ResultCode::ABORTED:
+        RCLCPP_ERROR(node_->get_logger(), "Operation was aborted!");
+        action_status_ =  ActionStatus::FAILED;
+        return;
+      case rclcpp_action::ResultCode::CANCELED:
+        RCLCPP_ERROR(node_->get_logger(), "Operation was canceled!");
+        action_status_ =  ActionStatus::FAILED;
+        return;
+      default:
+        RCLCPP_ERROR(node_->get_logger(), "Unknown result code!");
+        action_status_ =  ActionStatus::UNKNOWN;
+        return;
+    }
+    
+  }
 
 }  // namespace plan2_behavior_tree
 
