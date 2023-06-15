@@ -103,7 +103,19 @@ if (status == -1) {
   planning2::Plan plan;
   planning2::ExecutionPlan execution_proto_plan = plan.ParseFile(proto_filename_);
   std::vector<planning2::Action> actions = plan.GetActions(execution_proto_plan);
-
+  for(planning2::Action action : actions){
+    plan2_msgs::msg::Action act;
+    act.name = action.name();
+    act.action_id = action.id();
+    act.robotid = action.robotid();
+    for (int parentID: action.parents()) {
+      act.parents.push_back(parentID);
+    }
+    for (std::string waypoint : action.waypoints()) {
+      act.waypoints.push_back(waypoint);
+    }
+    execution_plan.actions.push_back(act);
+  }
   return execution_plan;
 }
 
