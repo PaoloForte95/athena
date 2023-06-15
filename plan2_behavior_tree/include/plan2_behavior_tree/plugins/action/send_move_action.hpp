@@ -78,6 +78,7 @@ public:
 
 protected:
   typedef std::vector<plan2_msgs::msg::Action> Actions;
+  typedef rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr Client;
   using GoalHandleSendMove = rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>;
   void sendMove(Actions actions);
   Actions getMoveActions();
@@ -86,7 +87,7 @@ protected:
 
 private:
   std::string service_name_, global_frame_;
-  rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr client_ptr_;
+  std::map<int, Client> clients_ptr_;
   GoalHandleSendMove::SharedPtr send_move_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;

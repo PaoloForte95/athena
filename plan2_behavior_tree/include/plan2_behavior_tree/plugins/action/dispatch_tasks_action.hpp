@@ -73,6 +73,7 @@ private:
 
   rclcpp::Node::SharedPtr node_;
   IDs completed_actions_;
+  Actions plan_actions_;
   plan2_msgs::msg::Plan execution_plan_;
   std::map<int, int> action_levels;
   int current_level_, max_level_;

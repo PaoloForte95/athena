@@ -17,7 +17,7 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
         <Fallback>
         <Sequence name="Move Action">
             <IsAction name="IsActionMove" action_name="move"/>
-            <SendMove name="SendMoveAction" service_name="/robot1/navigate_to_pose"/>
+            <SendMove name="SendMoveAction" service_name="/navigate_to_pose"/>
         </Sequence>
          <!-- 
         <Sequence name="Load Action">

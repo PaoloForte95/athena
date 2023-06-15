@@ -39,8 +39,10 @@ inline BT::NodeStatus DispatchTasksAction::tick()
     getInput("execution_plan", execution_plan_);
     //Get the completed actions
     getInput("completed_actions", completed_actions_);
-    std::vector<plan2_msgs::msg::Action> acts = readPlan(execution_plan_);
-    int exeActs = executableActions(acts);
+    if(plan_actions_.empty()){
+        plan_actions_ = readPlan(execution_plan_);
+    }
+    int exeActs = executableActions(plan_actions_);
     if(current_level_ == max_level_){
         return BT::NodeStatus::FAILURE;
     }
@@ -54,8 +56,14 @@ inline BT::NodeStatus DispatchTasksAction::tick()
 
 std::vector<plan2_msgs::msg::Action> DispatchTasksAction::readPlan(plan2_msgs::msg::Plan execution_plan_){
     Actions actions;
+    IDs robotIDs;
     for(plan2_msgs::msg::Action action : execution_plan_.actions){
         int level = 1;
+        int robotID = action.robotid;
+        auto itr = std::find(robotIDs.begin(), robotIDs.end(), robotID);
+        if (itr == completed_actions_.end()){
+            robotIDs.push_back(robotID);
+        }
         actions.push_back(action);
         for(int parID : action.parents){
             //Take the highest level from precedence constraints
@@ -66,6 +74,7 @@ std::vector<plan2_msgs::msg::Action> DispatchTasksAction::readPlan(plan2_msgs::m
         }
         action_levels.insert(std::pair<int, int>( action.action_id, level));
     }
+    config().blackboard->set<IDs>("robot_ids", robotIDs);
     
     return actions;
 }
