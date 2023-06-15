@@ -77,6 +77,7 @@ public:
     return providedBasicPorts(
       {
         BT::OutputPort<plan2_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
+        BT::OutputPort<int>("plan_length", "The length of the computed execution plan"),
         BT::InputPort<std::string>("domain_file", "The planning domain file location"),
         BT::InputPort<std::string>("problem_file", "The planning problem file location"),
         BT::InputPort<std::string>("planner", "MetricFF", "The task planner to use"),     

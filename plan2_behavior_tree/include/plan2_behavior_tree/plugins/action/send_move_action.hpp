@@ -20,6 +20,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "nav2_msgs/action/navigate_to_pose.hpp"
 #include "plan2_behavior_tree/bt_action_node.hpp"
+#include "plan2_msgs/msg/action.hpp"
 
 namespace plan2_behavior_tree
 {
@@ -76,17 +77,20 @@ public:
   }
 
 protected:
-    using GoalHandleSendMove = rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>;
-    void sendMove();
+  typedef std::vector<plan2_msgs::msg::Action> Actions;
+  using GoalHandleSendMove = rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>;
+  void sendMove(Actions actions);
+  Actions getMoveActions();
 
 
 
 private:
-  std::string service_name_,global_frame_;
+  std::string service_name_, global_frame_;
   rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr client_ptr_;
   GoalHandleSendMove::SharedPtr send_move_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;
+  Actions actions_;
 
   
 

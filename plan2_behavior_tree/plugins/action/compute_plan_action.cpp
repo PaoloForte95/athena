@@ -39,8 +39,9 @@ void ComputePlanAction::on_tick()
 
 BT::NodeStatus ComputePlanAction::on_success()
 {
-  plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", result_.result->execution_plan);
+  auto length = result_.result->execution_plan.actions.size();
+  setOutput("plan_length",static_cast<int>(length));
   return BT::NodeStatus::SUCCESS;
 }
 
@@ -48,6 +49,7 @@ BT::NodeStatus ComputePlanAction::on_aborted()
 {
   plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
+  setOutput("plan_length", 0);
   return BT::NodeStatus::FAILURE;
 }
 
@@ -55,6 +57,7 @@ BT::NodeStatus ComputePlanAction::on_cancelled()
 {
   plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
+  setOutput("plan_length", 0);
   return BT::NodeStatus::SUCCESS;
 }
 
@@ -63,6 +66,7 @@ void ComputePlanAction::halt()
 {
   plan2_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
+  setOutput("plan_length", 0);
   BtActionNode::halt();
 }
 

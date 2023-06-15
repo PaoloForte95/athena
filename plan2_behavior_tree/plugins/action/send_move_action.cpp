@@ -15,6 +15,8 @@
 #include <filesystem>
 #include "plan2_behavior_tree/plugins/action/send_move_action.hpp"
 
+typedef std::vector<plan2_msgs::msg::Action> Actions;
+typedef std::vector<int> IDs;
 
 namespace plan2_behavior_tree
 {
@@ -36,66 +38,85 @@ SendMoveAction::SendMoveAction(
 inline BT::NodeStatus SendMoveAction::tick()
 {
     setStatus(BT::NodeStatus::RUNNING);
-    sendMove();
+    //Get the move actions 
+    Actions actions = getMoveActions();
+    sendMove(actions);
     if(action_status_ == ActionStatus::SUCCEEDED){
+      IDs completed_actions;
+      config().blackboard->get<IDs>("completed_actions", completed_actions);
+      for(plan2_msgs::msg::Action act: actions){
+        completed_actions.push_back(act.action_id);
+      }
+      config().blackboard->set<IDs>("completed_actions", completed_actions);
         return BT::NodeStatus::SUCCESS;
     }
     else if (action_status_ == ActionStatus::FAILED){
         return BT::NodeStatus::FAILURE;
     }
-    RCLCPP_INFO(node_->get_logger(), "HERE");
     return BT::NodeStatus::RUNNING;
 }
 
 
-void SendMoveAction::sendMove()
+Actions  SendMoveAction::getMoveActions(){
+    Actions move_actions_;
+    config().blackboard->get<Actions>("concurrent_actions", actions_);
+    for(plan2_msgs::msg::Action act : actions_){
+      if(act.name.find("move") != std::string::npos){
+         RCLCPP_INFO( node_->get_logger(), "Received Move action!");
+         move_actions_.push_back(act);
+      }
+    }
+    return move_actions_;
+}
+
+void SendMoveAction::sendMove(Actions actions)
   {
     using namespace std::placeholders;
 
-     auto is_action_server_ready =
-    client_ptr_->wait_for_action_server(std::chrono::seconds(5));
-    if (!is_action_server_ready) {
-        RCLCPP_ERROR(
-        node_->get_logger(),
-        "navigate_to_pose action server is not available."
-        " Is the initial pose set?");
-        return ;
-    }
+    for(plan2_msgs::msg::Action move_action: actions){
+      auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
+      if (!is_action_server_ready) { 
+          RCLCPP_ERROR( node_->get_logger(), "navigate_to_pose action server is not available." " Is the initial pose set?"); 
+          return ;
+      }
+      
     
-  
-    auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
-    goal_msg.pose.header.frame_id = global_frame_;
-    goal_msg.pose.pose.position.x = 23.19;
-    goal_msg.pose.pose.position.y = 5.99;
-    goal_msg.pose.pose.position.z = 0.0;
-    goal_msg.pose.pose.orientation.x = 0.0;
-    goal_msg.pose.pose.orientation.y = 0.0;
-    goal_msg.pose.pose.orientation.z = 0.0;
-    goal_msg.pose.pose.orientation.w = 1.0;
+      auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
+      goal_msg.pose.header.frame_id = global_frame_;
+      goal_msg.pose.pose.position.x = 23.19;
+      goal_msg.pose.pose.position.y = 5.99;
+      goal_msg.pose.pose.position.z = 0.0;
+      goal_msg.pose.pose.orientation.x = 0.0;
+      goal_msg.pose.pose.orientation.y = 0.0;
+      goal_msg.pose.pose.orientation.z = 0.0;
+      goal_msg.pose.pose.orientation.w = 1.0;
 
-    RCLCPP_INFO(node_->get_logger(), "Sending goal");
+      RCLCPP_INFO(node_->get_logger(), "Sending goal");
 
-    auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
-    //send_goal_options.result_callback = [this](auto) {
-    //send_move_handler_.reset();
-    //};
-    send_goal_options.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
-    //send_goal_options.feedback_callback = std::bind(&SendMoveAction::feedback_callback, this, std::placeholders::_1,std::placeholders::_2);
-    send_goal_options.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
-    auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
-    if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
-    {
-        RCLCPP_INFO(node_->get_logger(), "Failed sending goal");
-        // failed sending the goal
-        return ;
+      auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+      //send_goal_options.result_callback = [this](auto) {
+      //send_move_handler_.reset();
+      //};
+      send_goal_options.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
+      //send_goal_options.feedback_callback = std::bind(&SendMoveAction::feedback_callback, this, std::placeholders::_1,std::placeholders::_2);
+      send_goal_options.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
+      auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
+      if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
+      {
+          RCLCPP_INFO(node_->get_logger(), "Failed sending goal");
+          // failed sending the goal
+          return ;
+      }
+      send_move_handler_ = future_goal_handle.get();
+
+      auto future_result = client_ptr_->async_get_result(send_move_handler_);
+      RCLCPP_INFO(node_->get_logger(), "Executing Operation...!");
+      rclcpp::spin_until_future_complete(node_, future_result);
+
+      rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult wrapped_result = future_result.get();
     }
-    send_move_handler_ = future_goal_handle.get();
 
-    auto future_result = client_ptr_->async_get_result(send_move_handler_);
-    RCLCPP_INFO(node_->get_logger(), "Executing Operation...!");
-    rclcpp::spin_until_future_complete(node_, future_result);
-
-    rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult wrapped_result = future_result.get();
+ 
 
 }
 
