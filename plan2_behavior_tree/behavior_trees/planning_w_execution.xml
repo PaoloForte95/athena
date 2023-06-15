@@ -7,8 +7,11 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
-  <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
- 
+  <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
+  <RateController hz="3.0">
+  <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
+  </RateController>
   <RecoveryNode number_of_retries="1" name="PlanningWRecovery">
     <Parallel success_threshold="1">
         <Fallback>
@@ -30,9 +33,9 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
           -->
     </Fallback>
     </Parallel>
-    <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}"/>
+    <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
   </RecoveryNode>
-
+ </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>
 

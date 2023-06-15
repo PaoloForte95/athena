@@ -12,6 +12,9 @@ bt_planner:
     - plan2_compute_plan_action_bt_node
     - plan2_is_action_condition_bt_node
     - plan2_send_move_action_bt_node
+    - plan2_dispatch_tasks_action_bt_node
+    - nav2_rate_controller_bt_node
+    - plan2_execute_plan_node_bt_node
 
 
 

@@ -21,9 +21,16 @@
 
     <Action ID="ComputePlan">
             <output_port name="execution_plan">The computed execution plan</output_port>
+            <output_port name="plan_length">The computed execution plan</output_port>
             <input_port name="domain_file">The planning domain representation file location</input_port>
-             <input_port name="problem_file">The planning problem representation file location</input_port>
+            <input_port name="problem_file">The planning problem representation file location</input_port>
             <input_port name="planner">The PDDL planner to use</input_port>
+    </Action>
+
+    <Action ID="DispatchTasks">
+            <output_port name="concurrent_actions">The set of all actions that can be executed at current step</output_port>
+            <input_port name="execution_plan">The computed execution plan</input_port>
+            <input_port name="completed_actions">The set of completed actions</input_port>
     </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->
@@ -37,8 +44,16 @@
       <input_port name="number_of_retries">Number of retries</input_port>
     </Control>
 
+    <Control ID="ExecutePlanNode">
+      <input_port name="plan_length">Length of the execution plan</input_port>
+    </Control>
+
     <!-- ############################### DECORATOR NODES ############################## -->
     <Decorator ID="IsRobotSelected"> </Decorator>
+
+    <Decorator ID="RateController">
+      <input_port name="hz">Rate</input_port>
+    </Decorator>
 
   </TreeNodesModel>
 </root>
