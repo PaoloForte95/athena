@@ -33,7 +33,7 @@ class IsActionEqualCondition : public BT::ConditionNode
 {
 public:
   /**
-   * @brief A constructor for orunav2_behavior_tree::IsBatteryLowCondition
+   * @brief A constructor for plan2_behavior_tree::IsActionEqualCondition
    * @param condition_name Name for the XML tag for this node
    * @param conf BT node configuration
    */
