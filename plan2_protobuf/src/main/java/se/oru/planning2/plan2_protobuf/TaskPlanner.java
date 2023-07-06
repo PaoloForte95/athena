@@ -15,7 +15,7 @@ import se.oru.planning.planning_oru.ai_planning.problems.SymbolicPlanningProblem
 import se.oru.planning.planning_oru.ai_planning.planners.AbstractPlanner;
 import se.oru.planning.planning_oru.ai_planning.planners.LPG;
 import se.oru.planning.planning_oru.ai_planning.planners.MetricFF;
-import se.oru.planning.planning_oru.ai_planning.Symbol;
+import se.oru.planning.planning_oru.ai_planning.parser.SymbolicSymbol;
 import se.oru.planning.planning_oru.ai_planning.plan.ConcurrentPlan;
 import se.oru.planning.planning_oru.ai_planning.plan.AbstractPlan.PLANTYPE;
 
@@ -28,7 +28,6 @@ class TaskPlanner{
 		SymbolicPlanningProblem planningProblem = new SymbolicPlanningProblem();
 
 		planningProblem.parse(pddlDomain, pddlProblem);
-		System.out.println("path" + pddlDomain.getPath());
 		planner.computePlan(pddlDomain.getAbsolutePath(), pddlProblem.getAbsolutePath());
 
 		File plan = new File("plan.pddl");
@@ -41,17 +40,17 @@ class TaskPlanner{
 		planningProblem.defineLocationType(locations);
 		planningProblem.readPlan(plan,PLANTYPE.CONCURRENT);
 		ConcurrentPlan executionPlan= (ConcurrentPlan) planningProblem.getPlan();
-		DefaultDirectedGraph<se.oru.planning.planning_oru.ai_planning.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
+		DefaultDirectedGraph<se.oru.planning.planning_oru.ai_planning.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
 		int ID = 1;
-		for (se.oru.planning.planning_oru.ai_planning.Action act: graphPlan.vertexSet()){
+		for (se.oru.planning.planning_oru.ai_planning.parser.Action act: graphPlan.vertexSet()){
 			String name = act.getName();
 			Set<DefaultEdge> edges = graphPlan.incomingEdgesOf(act);
 			//Create the protobuf action
 			Action.Builder action = Action.newBuilder();
 			action.setName(name);
 			action.setId(ID);
-			ArrayList<Symbol> inputs = act.getInputs();
-			for (Symbol input : inputs){
+			ArrayList<SymbolicSymbol> inputs = act.getInputs();
+			for (SymbolicSymbol input : inputs){
 				if(!Collections.disjoint(input.getType(),machines)){
 					int robotID = Integer.parseInt(input.getVariable().replaceAll("[^0-9]", ""));
 					action.setRobotID(robotID);			
@@ -65,7 +64,7 @@ class TaskPlanner{
 			ID +=1;
 			//Get the parents
 			for (DefaultEdge edge : edges){
-				se.oru.planning.planning_oru.ai_planning.Action parent = graphPlan.getEdgeSource(edge);
+				se.oru.planning.planning_oru.ai_planning.parser.Action parent = graphPlan.getEdgeSource(edge);
 				action.addParents(parent.getID());
 			}
 			planPr.addAction(action);
@@ -141,15 +140,15 @@ class TaskPlanner{
 	TaskPlanner plan = new TaskPlanner();
 	AbstractPlanner planner = null;
 
-	String ps = args[0].toUpperCase();
+	String ps = "LPG";
 	switch (PLANNERS.valueOf(ps)){
 
 		case LPG:
-			planner = new LPG("/src/planning2/plan2_protobuf/Planners/LPG-td-1.4/");
+			planner = new LPG("src/athena/plan2_planner/Planners/LPG-td-1.4/");
 			System.out.println("Using LPG planner!");
 			break;
 		case METRICFF:
-			planner = new MetricFF("/src/planning2/plan2_protobuf/Planners/Metric-FF-v2.1/");
+			planner = new MetricFF("src/athena/plan2_planner/Planners/Metric-FF-v2.1/");
 			System.out.println("Using MetricFF planner!");
 			break;
 		default:
@@ -157,8 +156,8 @@ class TaskPlanner{
 			break;
 	}
 
-	File pddlDomain = new File(args[1]);
-	File pddlProblem = new File(args[2]);
+	File pddlDomain = new File("/home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Domain.pddl");
+	File pddlProblem = new File("/home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Problem.pddl");
 
 	plan.computePlan(pddlDomain,pddlProblem, planner, planPr);
 	 // Write the new execution plan back to disk.
