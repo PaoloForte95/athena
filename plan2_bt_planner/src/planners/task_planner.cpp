@@ -56,7 +56,7 @@ TaskPlanner::configure(
   planning_problem_sub_ = node->create_subscription<plan2_msgs::msg::PlanningProblem>(
     "planning_problem",
     rclcpp::SystemDefaultsQoS(),
-    std::bind(&TaskPlanner::onGoalPoseReceived, this, std::placeholders::_1));
+    std::bind(&TaskPlanner::onPlanningProblemReceived, this, std::placeholders::_1));
   return true;
 }
 
@@ -182,7 +182,7 @@ TaskPlanner::initializePlanningProblem(ActionT::Goal::ConstSharedPtr goal)
 }
 
 void
-TaskPlanner::onGoalPoseReceived(const plan2_msgs::msg::PlanningProblem::SharedPtr problem)
+TaskPlanner::onPlanningProblemReceived(const plan2_msgs::msg::PlanningProblem::SharedPtr problem)
 {
   ActionT::Goal goal;
   goal.planning_problem = *problem;

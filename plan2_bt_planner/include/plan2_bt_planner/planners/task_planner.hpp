@@ -63,7 +63,7 @@ public:
    * @brief A subscription and callback to handle the topic-based planning problem published
    * @param pose Pose received via atopic
    */
-  void onGoalPoseReceived(const plan2_msgs::msg::PlanningProblem::SharedPtr pose);
+  void onPlanningProblemReceived(const plan2_msgs::msg::PlanningProblem::SharedPtr pose);
 
   /**
    * @brief Get action name for this planner
