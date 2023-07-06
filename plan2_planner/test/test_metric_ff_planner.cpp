@@ -36,8 +36,8 @@ TEST(MetricFFTest, test_metric_ff_planner)
   metricff->configure(node, "test");
   metricff->activate();
 
-  std::string domain = "src/planning2/plan2_protobuf/PDDL/Domain.pddl";
-  std::string problem = "src/planning2/plan2_protobuf/PDDL/Problem.pddl";
+  std::string domain = "src/athena/plan2_example/PDDL/Domain.pddl";
+  std::string problem = "src/athena/plan2_example/PDDL/Problem.pddl";
 
   try {
     metricff->computeExecutionPlan(domain, problem);

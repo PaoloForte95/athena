@@ -88,7 +88,7 @@ plan2_msgs::msg::Plan MetricFF::computeExecutionPlan(const std::string & domain,
 plan2_msgs::msg::Plan execution_plan;
 RCLCPP_INFO(logger_, "Domain: %s", domain.c_str() );
 RCLCPP_INFO(logger_, "Problem: %s", problem.c_str() );
-int status = system(("java -jar src/planning2/plan2_protobuf/Planners/task_planner.jar metricff " + domain + " " + problem).c_str());
+int status = system(("java -jar src/athena/plan2_planner/Planners/task_planner.jar metricff " + domain + " " + problem).c_str());
 
 if (status == -1) {
     RCLCPP_ERROR(logger_, "Cannot compute the execution plan!");

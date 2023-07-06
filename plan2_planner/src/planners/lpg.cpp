@@ -85,7 +85,7 @@ plan2_msgs::msg::Plan LPG::computeExecutionPlan(const std::string & domain, cons
 
 plan2_msgs::msg::Plan execution_plan;
 
-int status = system(("java -jar src/planning2/plan2_protobuf/Planners/task_planner.jar lpg " + domain + " " + problem).c_str());
+int status = system(("java -jar src/athena/plan2_planner/Planners/task_planner.jar lpg " + domain + " " + problem).c_str());
 
 if (status == -1) {
     RCLCPP_ERROR(logger_, "Cannot compute the execution plan!");
