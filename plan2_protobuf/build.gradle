@@ -21,7 +21,7 @@ apply plugin: 'maven-publish'
 
 group = 'se.oru.planning2'
 version = '0.0.1'
-sourceCompatibility = '15'
+sourceCompatibility = '16'
 
 application {
   // Define the main class for the application.
@@ -73,7 +73,7 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.8.5'
   
   // Add the following if you need to include jars that are not in Maven Central and that you have places in the directory "lib"
-  implementation files('lib/pddl4j-4.0-all.jar')
+  implementation files('lib/pddl4j-4.0.0.jar')
   implementation files('lib/planning_oru-0.1.6.jar')
   
 
@@ -85,6 +85,7 @@ shadowJar {
    archiveBaseName.set('task_planner')
    archiveClassifier.set('')
    archiveVersion.set('')
+   destinationDirectory = file("../plan2_planner/Planners")
 
 }
 
