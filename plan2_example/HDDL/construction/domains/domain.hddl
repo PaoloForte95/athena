@@ -1,0 +1,255 @@
+(define (domain domain_htn)
+	(:requirements :negative-preconditions :typing :hierarchy :universal-preconditions :method-preconditions)
+	(:types
+		pushable_material - material
+		loadable_material - material
+		material - locatable
+		vehicle - locatable
+		location - object
+		locatable - object
+	)
+	(:predicates
+		(forklift ?arg0 - vehicle)
+        (bulldozer ?arg0 - vehicle)
+        (wheelloader ?arg0 - vehicle)
+        (excavator ?arg0 - vehicle)
+		(can_load ?arg0 - vehicle)
+        (can_push ?arg0 - vehicle)
+		(in ?arg0 - material ?arg1 - vehicle)
+		(at ?arg0 - locatable ?arg1 - location)
+		(free ?arg0 - location)
+		(road ?arg0 - location ?arg1 - location)
+		(on ?arg0 - material ?arg1 - material ?arg2 - location)
+	)
+
+	(:task move_pile
+		:parameters (?m - material ?l - location)
+	)
+
+	(:task go_to
+		:parameters (?v - vehicle ?l - location)
+	)
+
+	(:task load
+		:parameters (?v - vehicle ?l - location ?m - material)
+	)
+
+	(:task dump
+		:parameters (?v - vehicle ?l - location ?m - material)
+	)
+
+	(:method m_move_pile_ordering_0
+		:parameters (?l1 - location ?l2 - location ?m - material ?v - vehicle)
+		:task (move_pile ?m ?l2)
+		:subtasks (and
+		 (task0 (go_to ?v ?l1))
+		 (task1 (load ?v ?l1 ?m))
+		 (task2 (go_to ?v ?l2))
+		 (task3 (dump ?v ?l2 ?m))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+		)
+	)
+
+
+	(:method m_dump_ordering_0
+		:parameters (?l - location ?m - material ?v - vehicle)
+		:task (dump ?v ?l ?m)
+		:subtasks (and
+		 (task0 (drop ?v ?l ?m))
+		)
+	)
+
+	(:method m_dump_ordering_1
+		:parameters (?l - location ?m1 - material ?m2 - material ?v - vehicle)
+		:task (dump ?v ?l ?m1)
+		:subtasks (and
+		 (task0 (stack ?v ?l ?m1 ?m2))
+		)
+	)
+
+	(:method m_load_ordering_0
+		:parameters (?l - location ?m - material ?v - vehicle)
+		:task (load ?v ?l ?m)
+		:subtasks (and
+		 (task0 (pick ?v ?l ?m))
+		)
+	)
+
+	(:method m_load_ordering_1
+		:parameters (?l - location ?m1 - material ?m2 - material ?v - vehicle)
+		:task (load ?v ?l ?m1)
+		:subtasks (and
+		 (task0 (unstack ?v ?l ?m1 ?m2))
+		)
+	)
+
+	(:method m_i_am_there_ordering_0
+		:parameters (?l - location ?v - vehicle)
+		:task (go_to ?v ?l)
+		:subtasks (and
+		 (task0 (noop ?v ?l))
+		)
+	)
+
+	(:method m_drive_to_ordering_0
+		:parameters (?l1 - location ?l2 - location ?v - vehicle)
+		:task (go_to ?v ?l2)
+		:subtasks (and
+		 (task0 (drive ?v ?l1 ?l2))
+		)
+	)
+
+	(:method m_drive_to_ordering_1
+		:parameters (?l1 - location ?l2 - location ?v - vehicle ?m - material)
+		:task (go_to ?v ?l2)
+		:subtasks (and
+		 (task0 (transport ?v ?l1 ?l2 ?m))
+		)
+	)
+
+	(:method m_drive_to_ordering_2
+		:parameters (?l1 - location ?l2 - location ?l3 - location ?v1 - vehicle ?v2 - vehicle)
+		:task (go_to ?v1 ?l2)
+		:subtasks (and
+		(task0 (drive ?v2 ?l2 ?l3))
+		(task1 (drive ?v1 ?l1 ?l2))
+		)
+		:ordering (and
+			(< task0 task1)
+		)
+	)
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ACTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+	(:action drive
+		:parameters (?v - vehicle ?l1 - location ?l2 - location)
+		:precondition 
+			(and
+				(at ?v ?l1)
+				(free ?l2)
+				(road ?l1 ?l2)	
+				(forall (?m - material)
+						(not (in ?m ?v))
+				)
+				
+			)
+		:effect
+			(and
+				(not (at ?v ?l1))
+				(at ?v ?l2)
+				(free ?l1)
+				(not (free ?l2))
+			)
+	)
+
+	(:action transport
+		:parameters (?v - vehicle ?l1 - location ?l2 - location ?m - material)
+		:precondition 
+			(and
+				(at ?v ?l1)
+				(free ?l2)
+				(road ?l1 ?l2)	
+				(in ?m ?v)
+			)
+		:effect
+			(and
+				(not (at ?v ?l1))
+				(at ?v ?l2)
+				(free ?l1)
+				(not (free ?l2))
+			)
+	)
+
+
+	(:action push
+		:parameters (?v - vehicle ?l - location ?m - material)
+		:precondition 
+			(and
+				(at ?v ?l)
+				(can_push ?v)
+				(at ?m ?l)
+			)
+		:effect
+			(and
+				(in ?m ?v)
+				(not (at ?m ?l))
+			)
+	)
+
+	(:action pick
+		:parameters (?v - vehicle ?l - location ?m - material)
+		:precondition 
+			(and
+				(at ?v ?l)
+				(can_load ?v)
+				(at ?m ?l)
+				(forall (?m2 - material)
+						(not (on ?m2 ?m ?l))
+				)
+			)
+		:effect
+			(and
+				(in ?m ?v)
+				(not (at ?m ?l))
+			)
+	)
+
+	(:action drop
+		:parameters (?v - vehicle ?l - location ?m - material)
+		:precondition 
+			(and
+				(at ?v ?l)
+				(in ?m ?v)
+				(forall (?m2 - material)
+					(not (at ?m2 ?l))
+				)
+			)
+		:effect
+			(and
+				(not (in ?m ?v))
+				(at ?m ?l)
+			)
+	)
+
+	(:action stack
+		:parameters (?v - vehicle ?l - location ?m1 - material ?m2 - material)
+		:precondition 
+			(and
+				(at ?v ?l)
+				(in ?m1 ?v)
+				(at ?m2 ?l)
+			)
+		:effect
+			(and
+				(not (in ?m1 ?v))
+				(at ?m1 ?l)
+				(on ?m1 ?m2 ?l)
+			)
+	)
+
+	(:action unstack
+		:parameters (?v - vehicle ?l - location ?m1 - material ?m2 - material)
+		:precondition 
+			(and
+				(at ?v ?l)
+				(at ?m2 ?l)
+				(at ?m1 ?l)
+				(forall (?m3 - material)
+					(not (on ?m3 ?m1 ?l))
+				)
+				(on ?m1 ?m2 ?l)
+			)
+		:effect
+			(and
+				(not (on ?m1 ?m2 ?l))
+				(in ?m1 ?v)
+				(not (at ?m1 ?l))
+			)
+	)
+
+)

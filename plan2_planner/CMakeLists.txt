@@ -69,10 +69,27 @@ ament_target_dependencies(${library_name}_lpg
   ${dependencies}
 )
 
+add_library(${library_name}_tfd SHARED
+  src/planners/tfd.cpp
+)
+
+ament_target_dependencies(${library_name}_tfd
+  ${dependencies}
+)
+
+add_library(${library_name}_lilotane SHARED
+  src/planners/lilotane.cpp
+)
+
+ament_target_dependencies(${library_name}_lilotane
+  ${dependencies}
+)
+
+
 
 
 ament_target_dependencies(${executable_name} ${dependencies})
-target_link_libraries(${executable_name} ${library_name} ${library_name}_metricff ${library_name}_lpg)
+target_link_libraries(${executable_name} ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
 
 install(TARGETS ${executable_name}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -82,7 +99,7 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg
+install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -104,7 +121,7 @@ endif()
 
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg)
+ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
 ament_export_dependencies(${dependencies})
 
 pluginlib_export_plugin_description_file(plan2_core planners_plugin.xml)
