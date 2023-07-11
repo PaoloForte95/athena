@@ -79,7 +79,7 @@ dependencies {
 
 }
 
-// Output to build/libs/shadow.jar
+// Default Output to build/libs/shadow.jar
 shadowJar {
 
    archiveBaseName.set('task_planner')
