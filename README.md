@@ -42,5 +42,5 @@ ros2 launch plan2_launch planning.py
 4) Open a new terminal
 ```
 source install/setup.bash
-ros2 topic pub --once /planning_problem plan2_msgs/msg/PlanningProblem "{planning_domain: /home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Domain.pddl, planning_problem: /home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Problem.pddl}"
+ros2 topic pub --once /planning_problem plan2_msgs/msg/PlanningProblem "{planning_domain: src/athena/plan2_example/PDDL/Domain.pddl, planning_problem: src/athena/plan2_example/PDDL/Problem.pddl}"
 ```
