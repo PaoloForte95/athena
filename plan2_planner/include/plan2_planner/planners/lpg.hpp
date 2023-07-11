@@ -26,14 +26,14 @@ class LPG : public plan2_core::Planner
 
 public:
     /**
-     * @brief Construct a new Metric FF object
+     * @brief Construct a new LPG object
      * 
      */
    LPG();
 
 
    /**
-    * @brief Destroy the Metric FF object
+    * @brief Destroy the LPG object
     * 
     */
   ~LPG();
@@ -99,8 +99,8 @@ public:
 protected:
 
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
-  std::string name_, proto_filename_, output_filename_;
-  rclcpp::Logger logger_{rclcpp::get_logger("LPGTD")};
+  std::string name_, proto_filename_, output_filename_, plan_type_,robot_definition_, location_definition_, problem_type_;
+  rclcpp::Logger logger_{rclcpp::get_logger("LPG")};
 
   // Dynamic parameters handler
   std::mutex mutex_;

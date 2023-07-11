@@ -11,35 +11,60 @@ import org.jgrapht.graph.DefaultEdge;
 
 import se.planning2.plan2_protobuf.Action;
 import se.planning2.plan2_protobuf.ExecutionPlan;
+import se.oru.planning.planning_oru.ai_planning.problems.AbstractPlanningProblem;
+import se.oru.planning.planning_oru.ai_planning.problems.NumericalPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.problems.SymbolicPlanningProblem;
+import se.oru.planning.planning_oru.ai_planning.problems.TemporalPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.planners.AbstractPlanner;
 import se.oru.planning.planning_oru.ai_planning.planners.LPG;
 import se.oru.planning.planning_oru.ai_planning.planners.MetricFF;
+import se.oru.planning.planning_oru.ai_planning.planners.TFD;
+import se.oru.planning.planning_oru.ai_planning.planners.Lilotane;
 import se.oru.planning.planning_oru.ai_planning.parser.SymbolicSymbol;
-import se.oru.planning.planning_oru.ai_planning.plan.ConcurrentPlan;
 import se.oru.planning.planning_oru.ai_planning.plan.AbstractPlan.PLANTYPE;
+import se.oru.planning.planning_oru.ai_planning.plan.AbstractPlan;
 
 class TaskPlanner{
 
-	public static enum PLANNERS {METRICFF, LPG};
+	private static enum PLANNERS {METRICFF, LPG, TFD, LILOTANE};
+	private static enum PROBLEM {SYMBOLIC, NUMERICAL, TEMPORAL};
+	private String robot_definition;
+	private String output_name;
+	private String plan_type;
+	private String location_definition_;
+	private String problem_type;
+	private AbstractPlanningProblem planningProblem;
 
-	public void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ExecutionPlan.Builder planPr ) throws FileNotFoundException{
+	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ExecutionPlan.Builder planPr ) throws FileNotFoundException{
 
-		SymbolicPlanningProblem planningProblem = new SymbolicPlanningProblem();
+		switch (PROBLEM.valueOf(problem_type.toUpperCase())){
+				case SYMBOLIC:
+					planningProblem  = new SymbolicPlanningProblem();
+					break;
+				case NUMERICAL:
+					planningProblem  = new NumericalPlanningProblem();
+					break;
+				case TEMPORAL:
+					planningProblem  = new TemporalPlanningProblem();
+					break;
+				default:
+					System.out.println("Problem selected is not supported!. Supported problems: " + PROBLEM.values());
+					break;
+		}
 
 		planningProblem.parse(pddlDomain, pddlProblem);
-		planner.computePlan(pddlDomain.getAbsolutePath(), pddlProblem.getAbsolutePath());
+		planner.computePlan(pddlDomain.getAbsolutePath(), pddlProblem.getAbsolutePath(), output_name);
 
-		File plan = new File("plan.pddl");
+		File plan = new File(output_name);
 
 		//Defining types 
 		//Define robot, material and location types used in PDDL
-		ArrayList <String> machines = new ArrayList <String>(Arrays.asList("machine"));
-		ArrayList <String> locations = new ArrayList <String>(Arrays.asList("location"));
+		ArrayList <String> machines = new ArrayList <String>(Arrays.asList(robot_definition));
+		ArrayList <String> locations = new ArrayList <String>(Arrays.asList(location_definition_));
 		planningProblem.defineRobotType(machines);
 		planningProblem.defineLocationType(locations);
-		planningProblem.readPlan(plan,PLANTYPE.CONCURRENT);
-		ConcurrentPlan executionPlan= (ConcurrentPlan) planningProblem.getPlan();
+		planningProblem.readPlan(plan,PLANTYPE.valueOf(plan_type));
+		AbstractPlan executionPlan = planningProblem.getPlan();
 		DefaultDirectedGraph<se.oru.planning.planning_oru.ai_planning.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
 		int ID = 1;
 		for (se.oru.planning.planning_oru.ai_planning.parser.Action act: graphPlan.vertexSet()){
@@ -73,76 +98,14 @@ class TaskPlanner{
 		
 	}
 
-  
-	// Compute the execution Plan
-	  /*static void GetPlan(AddressBook addressBook) {
-	    for (Person person: addressBook.getPeopleList()) {
-	      System.out.println("Person ID: " + person.getId());
-	      System.out.println("  Name: " + person.getName());
-	      if (!person.getEmail().isEmpty()) {
-	        System.out.println("  E-mail address: " + person.getEmail());
-	      }
-
-	      for (Person.PhoneNumber phoneNumber : person.getPhonesList()) {
-	        switch (phoneNumber.getType()) {
-	          case MOBILE:
-	            System.out.print("  Mobile phone #: ");
-	            break;
-	          case HOME:
-	            System.out.print("  Home phone #: ");
-	            break;
-	          case WORK:
-	            System.out.print("  Work phone #: ");
-	            break;
-	          default:
-	            System.out.println(" Unknown phone #: ");
-	            break;
-	        }
-	        System.out.println(phoneNumber.getNumber());
-	      }
-	    }
-	  }
-	
-	// Iterates though all actions in the Execution Plan and prints them.
-		  static void Printlan(AddressBook addressBook) {
-		    for (Person person: addressBook.getPeopleList()) {
-		      System.out.println("Person ID: " + person.getId());
-		      System.out.println("  Name: " + person.getName());
-		      if (!person.getEmail().isEmpty()) {
-		        System.out.println("  E-mail address: " + person.getEmail());
-		      }
-
-		      for (Person.PhoneNumber phoneNumber : person.getPhonesList()) {
-		        switch (phoneNumber.getType()) {
-		          case MOBILE:
-		            System.out.print("  Mobile phone #: ");
-		            break;
-		          case HOME:
-		            System.out.print("  Home phone #: ");
-		            break;
-		          case WORK:
-		            System.out.print("  Work phone #: ");
-		            break;
-		          default:
-		            System.out.println(" Unknown phone #: ");
-		            break;
-		        }
-		        System.out.println(phoneNumber.getNumber());
-		      }
-		    }
-		}
-	  */
-
-
   // Main function:
   public static void main(String[] args) throws Exception {
 	ExecutionPlan.Builder planPr = ExecutionPlan.newBuilder();
 	TaskPlanner plan = new TaskPlanner();
 	AbstractPlanner planner = null;
 
-	String ps = "LPG";
+	String ps = args[0].toUpperCase();
 	switch (PLANNERS.valueOf(ps)){
-
 		case LPG:
 			planner = new LPG("src/athena/plan2_planner/Planners/LPG-td-1.4/");
 			System.out.println("Using LPG planner!");
@@ -151,13 +114,25 @@ class TaskPlanner{
 			planner = new MetricFF("src/athena/plan2_planner/Planners/Metric-FF-v2.1/");
 			System.out.println("Using MetricFF planner!");
 			break;
+		case TFD:
+			planner = new TFD("src/athena/plan2_planner/Planners/TFD/");
+			System.out.println("Using TFD planner!");
+			break;
+		case LILOTANE:
+			planner = new Lilotane("src/athena/plan2_planner/Planners/Lilotane/");
+			System.out.println("Using LILOTANE planner!");
+			break;
 		default:
-			System.out.println("Planner selected is not correct!. Avaiable planners: METRICFF, LPG");
+			System.out.println("Planner selected is not correct!. Available planners: " + PLANNERS.values());
 			break;
 	}
-
-	File pddlDomain = new File("/home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Domain.pddl");
-	File pddlProblem = new File("/home/paolodell/dev_ws/ros2_humble_ws/src/athena/plan2_example/PDDL/Problem.pddl");
+	plan.problem_type = args[1];
+	File pddlDomain = new File(args[2]);
+	File pddlProblem = new File(args[3]);
+	plan.plan_type = args[4];
+	plan.output_name = args[5];
+	plan.robot_definition = args[6];
+	plan.location_definition_ = args[7];
 
 	plan.computePlan(pddlDomain,pddlProblem, planner, planPr);
 	 // Write the new execution plan back to disk.
