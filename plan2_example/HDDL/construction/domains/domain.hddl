@@ -165,6 +165,14 @@
 			)
 	)
 
+	(:action noop
+		:parameters (?v - vehicle ?l2 - location)
+		:precondition 
+			(and
+				(at ?v ?l2)
+			)
+		:effect ()
+	)
 
 	(:action push
 		:parameters (?v - vehicle ?l - location ?m - material)
