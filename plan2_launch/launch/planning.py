@@ -96,9 +96,9 @@ def generate_launch_description():
 
 
     declare_use_task_planner_cmd = DeclareLaunchArgument(
-            'use_task_planner', 
-            default_value= 'True',
-            description='Use the task planner if true')
+        'use_task_planner', 
+        default_value= 'True',
+        description='Use the task planner if true')
     
     declare_use_respawn_cmd = DeclareLaunchArgument(
         'use_respawn', default_value='False',
