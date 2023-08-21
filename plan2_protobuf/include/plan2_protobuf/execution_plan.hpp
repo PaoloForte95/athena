@@ -7,6 +7,10 @@
 
 #include "plan2_protobuf/executionplan.pb.h"
 #include "plan2_protobuf/action.hpp"
+#include "plan2_protobuf/method.hpp"
+
+#include "plan2_msgs/msg/action.hpp"
+#include "plan2_msgs/msg/method.hpp"
 
 
 namespace planning2{
@@ -21,7 +25,15 @@ public:
      * 
      * @param execution_plan the data file that contains the execution plan.
      */
-    std::vector<planning2::Action> GetActions(const ExecutionPlan& execution_plan);
+    std::vector<plan2_msgs::msg::Action> GetActions(const ExecutionPlan& execution_plan);
+
+
+    /**
+     * @brief Iterates though all the methods in the ExecutionPlan
+     * 
+     * @param execution_plan the data file that contains the execution plan.
+     */
+    std::vector<plan2_msgs::msg::Method> getMethods(const ExecutionPlan& execution_plan);
 
     /**
      * @brief Parse  the dataFile computed by java

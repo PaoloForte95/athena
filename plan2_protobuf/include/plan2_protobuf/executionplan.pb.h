@@ -47,7 +47,7 @@ struct TableStruct_executionplan_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[3]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[4]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -61,6 +61,9 @@ extern ActionDefaultTypeInternal _Action_default_instance_;
 class ExecutionPlan;
 class ExecutionPlanDefaultTypeInternal;
 extern ExecutionPlanDefaultTypeInternal _ExecutionPlan_default_instance_;
+class Method;
+class MethodDefaultTypeInternal;
+extern MethodDefaultTypeInternal _Method_default_instance_;
 class Problem;
 class ProblemDefaultTypeInternal;
 extern ProblemDefaultTypeInternal _Problem_default_instance_;
@@ -68,6 +71,7 @@ extern ProblemDefaultTypeInternal _Problem_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::planning2::Action* Arena::CreateMaybeMessage<::planning2::Action>(Arena*);
 template<> ::planning2::ExecutionPlan* Arena::CreateMaybeMessage<::planning2::ExecutionPlan>(Arena*);
+template<> ::planning2::Method* Arena::CreateMaybeMessage<::planning2::Method>(Arena*);
 template<> ::planning2::Problem* Arena::CreateMaybeMessage<::planning2::Problem>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace planning2 {
@@ -491,6 +495,168 @@ class Action PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
+class Method PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:planning2.Method) */ {
+ public:
+  inline Method() : Method(nullptr) {};
+  virtual ~Method();
+
+  Method(const Method& from);
+  Method(Method&& from) noexcept
+    : Method() {
+    *this = ::std::move(from);
+  }
+
+  inline Method& operator=(const Method& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Method& operator=(Method&& from) noexcept {
+    if (GetArena() == from.GetArena()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const Method& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const Method* internal_default_instance() {
+    return reinterpret_cast<const Method*>(
+               &_Method_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(Method& a, Method& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Method* other) {
+    if (other == this) return;
+    if (GetArena() == other->GetArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(Method* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Method* New() const final {
+    return CreateMaybeMessage<Method>(nullptr);
+  }
+
+  Method* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<Method>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const Method& from);
+  void MergeFrom(const Method& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Method* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "planning2.Method";
+  }
+  protected:
+  explicit Method(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_executionplan_2eproto);
+    return ::descriptor_table_executionplan_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kActionsIdsFieldNumber = 2,
+    kIdFieldNumber = 1,
+  };
+  // repeated int32 actions_ids = 2;
+  int actions_ids_size() const;
+  private:
+  int _internal_actions_ids_size() const;
+  public:
+  void clear_actions_ids();
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_actions_ids(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      _internal_actions_ids() const;
+  void _internal_add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      _internal_mutable_actions_ids();
+  public:
+  ::PROTOBUF_NAMESPACE_ID::int32 actions_ids(int index) const;
+  void set_actions_ids(int index, ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      actions_ids() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      mutable_actions_ids();
+
+  // int32 id = 1;
+  void clear_id();
+  ::PROTOBUF_NAMESPACE_ID::int32 id() const;
+  void set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_id() const;
+  void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:planning2.Method)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > actions_ids_;
+  mutable std::atomic<int> _actions_ids_cached_byte_size_;
+  ::PROTOBUF_NAMESPACE_ID::int32 id_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_executionplan_2eproto;
+};
+// -------------------------------------------------------------------
+
 class ExecutionPlan PROTOBUF_FINAL :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:planning2.ExecutionPlan) */ {
  public:
@@ -533,7 +699,7 @@ class ExecutionPlan PROTOBUF_FINAL :
                &_ExecutionPlan_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(ExecutionPlan& a, ExecutionPlan& b) {
     a.Swap(&b);
@@ -605,6 +771,7 @@ class ExecutionPlan PROTOBUF_FINAL :
 
   enum : int {
     kActionFieldNumber = 1,
+    kMethodFieldNumber = 2,
   };
   // repeated .planning2.Action action = 1;
   int action_size() const;
@@ -624,6 +791,24 @@ class ExecutionPlan PROTOBUF_FINAL :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Action >&
       action() const;
 
+  // repeated .planning2.Method method = 2;
+  int method_size() const;
+  private:
+  int _internal_method_size() const;
+  public:
+  void clear_method();
+  ::planning2::Method* mutable_method(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Method >*
+      mutable_method();
+  private:
+  const ::planning2::Method& _internal_method(int index) const;
+  ::planning2::Method* _internal_add_method();
+  public:
+  const ::planning2::Method& method(int index) const;
+  ::planning2::Method* add_method();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Method >&
+      method() const;
+
   // @@protoc_insertion_point(class_scope:planning2.ExecutionPlan)
  private:
   class _Internal;
@@ -632,6 +817,7 @@ class ExecutionPlan PROTOBUF_FINAL :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Action > action_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Method > method_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
 };
@@ -1076,6 +1262,77 @@ Action::mutable_parents() {
 
 // -------------------------------------------------------------------
 
+// Method
+
+// int32 id = 1;
+inline void Method::clear_id() {
+  id_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Method::_internal_id() const {
+  return id_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Method::id() const {
+  // @@protoc_insertion_point(field_get:planning2.Method.id)
+  return _internal_id();
+}
+inline void Method::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  id_ = value;
+}
+inline void Method::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_id(value);
+  // @@protoc_insertion_point(field_set:planning2.Method.id)
+}
+
+// repeated int32 actions_ids = 2;
+inline int Method::_internal_actions_ids_size() const {
+  return actions_ids_.size();
+}
+inline int Method::actions_ids_size() const {
+  return _internal_actions_ids_size();
+}
+inline void Method::clear_actions_ids() {
+  actions_ids_.Clear();
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Method::_internal_actions_ids(int index) const {
+  return actions_ids_.Get(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 Method::actions_ids(int index) const {
+  // @@protoc_insertion_point(field_get:planning2.Method.actions_ids)
+  return _internal_actions_ids(index);
+}
+inline void Method::set_actions_ids(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+  actions_ids_.Set(index, value);
+  // @@protoc_insertion_point(field_set:planning2.Method.actions_ids)
+}
+inline void Method::_internal_add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  actions_ids_.Add(value);
+}
+inline void Method::add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_add_actions_ids(value);
+  // @@protoc_insertion_point(field_add:planning2.Method.actions_ids)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+Method::_internal_actions_ids() const {
+  return actions_ids_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+Method::actions_ids() const {
+  // @@protoc_insertion_point(field_list:planning2.Method.actions_ids)
+  return _internal_actions_ids();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+Method::_internal_mutable_actions_ids() {
+  return &actions_ids_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+Method::mutable_actions_ids() {
+  // @@protoc_insertion_point(field_mutable_list:planning2.Method.actions_ids)
+  return _internal_mutable_actions_ids();
+}
+
+// -------------------------------------------------------------------
+
 // ExecutionPlan
 
 // repeated .planning2.Action action = 1;
@@ -1117,9 +1374,50 @@ ExecutionPlan::action() const {
   return action_;
 }
 
+// repeated .planning2.Method method = 2;
+inline int ExecutionPlan::_internal_method_size() const {
+  return method_.size();
+}
+inline int ExecutionPlan::method_size() const {
+  return _internal_method_size();
+}
+inline void ExecutionPlan::clear_method() {
+  method_.Clear();
+}
+inline ::planning2::Method* ExecutionPlan::mutable_method(int index) {
+  // @@protoc_insertion_point(field_mutable:planning2.ExecutionPlan.method)
+  return method_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Method >*
+ExecutionPlan::mutable_method() {
+  // @@protoc_insertion_point(field_mutable_list:planning2.ExecutionPlan.method)
+  return &method_;
+}
+inline const ::planning2::Method& ExecutionPlan::_internal_method(int index) const {
+  return method_.Get(index);
+}
+inline const ::planning2::Method& ExecutionPlan::method(int index) const {
+  // @@protoc_insertion_point(field_get:planning2.ExecutionPlan.method)
+  return _internal_method(index);
+}
+inline ::planning2::Method* ExecutionPlan::_internal_add_method() {
+  return method_.Add();
+}
+inline ::planning2::Method* ExecutionPlan::add_method() {
+  // @@protoc_insertion_point(field_add:planning2.ExecutionPlan.method)
+  return _internal_add_method();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::planning2::Method >&
+ExecutionPlan::method() const {
+  // @@protoc_insertion_point(field_list:planning2.ExecutionPlan.method)
+  return method_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

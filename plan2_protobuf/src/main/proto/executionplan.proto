@@ -27,8 +27,15 @@ message Action {
   repeated int32 parents = 6;
 }
 
+//A Method is defined by a set of actions. 
+message Method{
+  int32 id = 1;
+  repeated int32 actions_ids = 2;
+}
+
 // The execution Plan contains a set of actions
 message ExecutionPlan {
   repeated Action action = 1;
+  repeated Method method = 2;
 }
 // [END messages]

@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(plan2_msgs REQUIRED)
 
 
 set(library_name ${PROJECT_NAME}_core)
@@ -16,6 +17,7 @@ add_subdirectory(src/main/proto)
 
 set(dependencies
 Protobuf
+plan2_msgs
 )
 
 include_directories(
@@ -28,6 +30,7 @@ include_directories(
 add_library(${library_name} SHARED
   src/execution_plan.cpp
   src/action.cpp
+  src/method.cpp
 )
 
 ament_target_dependencies(${library_name} ${dependencies})

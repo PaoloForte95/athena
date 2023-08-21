@@ -11,6 +11,7 @@ import org.jgrapht.graph.DefaultEdge;
 
 import se.planning2.plan2_protobuf.Action;
 import se.planning2.plan2_protobuf.ExecutionPlan;
+import se.planning2.plan2_protobuf.Method;
 import se.oru.planning.planning_oru.ai_planning.problems.AbstractPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.problems.NumericalPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.problems.SymbolicPlanningProblem;
@@ -66,14 +67,13 @@ class TaskPlanner{
 		planningProblem.readPlan(plan,PLANTYPE.valueOf(plan_type));
 		AbstractPlan executionPlan = planningProblem.getPlan();
 		DefaultDirectedGraph<se.oru.planning.planning_oru.ai_planning.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
-		int ID = 1;
 		for (se.oru.planning.planning_oru.ai_planning.parser.Action act: graphPlan.vertexSet()){
 			String name = act.getName();
 			Set<DefaultEdge> edges = graphPlan.incomingEdgesOf(act);
 			//Create the protobuf action
 			Action.Builder action = Action.newBuilder();
 			action.setName(name);
-			action.setId(ID);
+			action.setId(act.getID());
 			ArrayList<SymbolicSymbol> inputs = act.getInputs();
 			for (SymbolicSymbol input : inputs){
 				if(!Collections.disjoint(input.getType(),machines)){
@@ -86,7 +86,6 @@ class TaskPlanner{
 				
 			}
 			
-			ID +=1;
 			//Get the parents
 			for (DefaultEdge edge : edges){
 				se.oru.planning.planning_oru.ai_planning.parser.Action parent = graphPlan.getEdgeSource(edge);
@@ -94,8 +93,15 @@ class TaskPlanner{
 			}
 			planPr.addAction(action);
 		}
-		
-		
+
+		for(se.oru.planning.planning_oru.ai_planning.parser.Method method : executionPlan.getMethods()){
+			Method.Builder m = Method.newBuilder();
+			m.setId(method.getID());
+			for(Integer ID : method.getActions()){
+				m.addActionsIds(ID);
+			}
+			planPr.addMethod(m);
+		}
 	}
 
   // Main function:

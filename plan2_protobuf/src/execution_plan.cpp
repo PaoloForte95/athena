@@ -11,33 +11,44 @@ using namespace std;
 
 namespace planning2{
 
-
-
-std::vector<planning2::Action> Plan::GetActions(const planning2::ExecutionPlan& execution_plan) {
-  std::vector<planning2::Action> actions;
+std::vector<plan2_msgs::msg::Action> Plan::GetActions(const planning2::ExecutionPlan& execution_plan) {
+  std::vector<plan2_msgs::msg::Action> actions;
   for (int i = 0; i < execution_plan.action_size(); i++) {
-    
-    const Action& protoAction = execution_plan.action(i);
-  
-    for (int j = 0; j < protoAction.waypoints().size(); j++) {
-      auto waypoint = protoAction.waypoints(j);
+    plan2_msgs::msg::Action act;
+    act.name = execution_plan.action(i).name();
+    act.action_id = execution_plan.action(i).id();
+    act.robotid = execution_plan.action(i).robotid();
+    for (int parentID: execution_plan.action(i).parents()) {
+      act.parents.push_back(parentID);
     }
-    for (int j = 0; j < protoAction.parents_size(); j++) {
-      auto parentID = protoAction.parents(j);
+    for (std::string waypoint : execution_plan.action(i).waypoints()) {
+      act.waypoints.push_back(waypoint);
     }
-    cout << "Action Name: " << protoAction.name().c_str()  << endl;
-
-    actions.push_back(protoAction);
+    actions.push_back(act);
   }
-return actions;
+  return actions;
+}
+
+std::vector<plan2_msgs::msg::Method> Plan::getMethods(const planning2::ExecutionPlan& execution_plan){
+  std::vector<plan2_msgs::msg::Method> methods;
+  for (int i = 0; i < execution_plan.method_size(); i++) {
+    plan2_msgs::msg::Method method;
+    method.id = execution_plan.method(i).id();
+    cout << "Method: " << execution_plan.method(i).id() << endl;
+    for (int subtask : execution_plan.method(i).actions_ids()) {
+      method.substasks.push_back(subtask);
+      cout << "Task: " << subtask << endl;
+    }
+    methods.push_back(method) ;
+  }
+  return methods;
+
 }
 
 
 ExecutionPlan Plan::ParseFile(std::string file){
 ExecutionPlan execution_plan;
-    
   { 
-
     // Read the existing Execution Plan.
     fstream input(file, ios::in | ios::binary);
     if (!execution_plan.ParseFromIstream(&input)) {
