@@ -38,5 +38,4 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
  </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>
-
 </root>
