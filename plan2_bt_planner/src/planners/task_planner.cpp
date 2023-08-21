@@ -64,21 +64,17 @@ std::string
 TaskPlanner::getDefaultBTFilepath(
   rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node)
 {
-  std::string default_bt_xml_filename;
+  std::string bt_xml_filename;
   auto node = parent_node.lock();
 
-  if (!node->has_parameter("default_plan_bt_xml")) {
-    std::string pkg_share_dir =
-      ament_index_cpp::get_package_share_directory("plan2_behavior_tree");
-    node->declare_parameter<std::string>(
-      "default_plan_bt_xml",
-      pkg_share_dir +
-      "/behavior_trees/planning_w_execution.xml");
-  }
-
-  node->get_parameter("default_plan_bt_xml", default_bt_xml_filename);
-
-  return default_bt_xml_filename;
+  
+  std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("plan2_behavior_tree");
+  node->declare_parameter<std::string>("default_plan_bt_xml", pkg_share_dir + "/behavior_trees/planning_w_execution.xml");
+  
+  node->get_parameter("default_plan_bt_xml", bt_xml_filename);
+  bt_xml_filename = pkg_share_dir + "/behavior_trees/"+ bt_xml_filename;
+  RCLCPP_INFO(logger_, "BT file loaded : %s. ",bt_xml_filename.c_str());
+  return bt_xml_filename;
 }
 
 bool
