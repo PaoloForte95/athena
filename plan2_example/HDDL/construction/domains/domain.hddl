@@ -87,6 +87,14 @@
 		)
 	)
 
+	(:method m_load_ordering_2
+		:parameters (?l - location ?m - material ?v - vehicle)
+		:task (load ?v ?l ?m)
+		:subtasks (and
+		 (task0 (push ?v ?l ?m))
+		)
+	)
+
 	(:method m_i_am_there_ordering_0
 		:parameters (?l - location ?v - vehicle)
 		:task (go_to ?v ?l)
