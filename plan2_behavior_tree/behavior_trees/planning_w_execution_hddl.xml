@@ -13,14 +13,10 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
   <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
   </RateController>
   <RecoveryNode number_of_retries="1" name="PlanningWRecovery">
-    <Parallel success_threshold="1">
-        <Fallback>
-        <SubTree ID="MovePile"/>
-        <SubTree ID="GoTo"/>
-        <!-- <Sequence name="Move Action">
-            <IsAction name="IsActionMove" action_name="move"/>
-            <SendMove name="SendMoveAction" service_name="/navigate_to_pose"/>
-        </Sequence> -->
+    <Parallel success_threshold="3">
+        <Noop name="SendNoopAction" waiting_time="5" service_name="/wait"/>
+        <SubTree ID="MovePile" __shared_blackboard="true"/>
+        <SubTree ID="GoTo" __shared_blackboard="true"/>
          <!-- 
         <Sequence name="Load Action">
         <Inverter>
@@ -33,7 +29,6 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
         </Inverter>
         </Sequence>
           -->
-    </Fallback>
     </Parallel>
     <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
   </RecoveryNode>
@@ -45,22 +40,22 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has
 <BehaviorTree ID="MovePile">
         <Fallback>
         <Sequence name= "Move Pile 1">
-         <SubTree ID="GoTo"/>
-         <SubTree ID="Load"/>
-          <SubTree ID="GoTo"/>
-          <SubTree ID="Dump"/>
+         <SubTree ID="GoTo" __shared_blackboard="true"/>
+         <SubTree ID="Load" __shared_blackboard="true"/>
+          <SubTree ID="GoTo" __shared_blackboard="true"/>
+          <SubTree ID="Dump" __shared_blackboard="true"/>
         </Sequence>
         </Fallback>
 </BehaviorTree>
 
 <BehaviorTree ID="GoTo">
         <Fallback>
-         <Sequence name="Move Action 1">
-         <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
-          <SendMove name="Drive 2" service_name="/navigate_to_pose"/>
-        </Sequence>
-        <SendMove name="Drive 3" service_name="/navigate_to_pose"/>
-        <SendMove name="Noop"/>
+          <Sequence name="Move Action 1">
+            <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
+            <SendMove name="Drive 2" service_name="/navigate_to_pose"/>
+          </Sequence>
+          <SendMove name="Drive 3" service_name="/navigate_to_pose"/>
+
         </Fallback>
 </BehaviorTree>
 
