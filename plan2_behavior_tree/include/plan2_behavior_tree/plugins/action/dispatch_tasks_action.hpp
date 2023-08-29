@@ -86,7 +86,7 @@ private:
    * @param execution_plan_ The execution plan
    * @return Actions The set of actions defined in the exeuction plan
    */
-  Actions readPlan(plan2_msgs::msg::Plan execution_plan_);
+  Actions readPlan();
 
   int executableActions(Actions actions);
 
