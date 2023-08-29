@@ -46,10 +46,9 @@ void Lilotane::configure(
   
   RCLCPP_INFO(logger_, "Configuring %s of type Lilotane", name.c_str());
   
-    nav2_util::declare_parameter_if_not_declared(node, name + ".problem_type", rclcpp::ParameterValue(""));
+  nav2_util::declare_parameter_if_not_declared(node, name + ".problem_type", rclcpp::ParameterValue(""));
   node->get_parameter<std::string>(name + ".problem_type", problem_type_);
   
-
   nav2_util::declare_parameter_if_not_declared(node, name + ".output_name", rclcpp::ParameterValue("plan.hddl"));
   node->get_parameter<std::string>(name + ".output_name", output_filename_);
 

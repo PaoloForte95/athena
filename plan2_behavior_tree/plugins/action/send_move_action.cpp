@@ -28,27 +28,24 @@ SendMoveAction::SendMoveAction(
 {
     getInput("service_name", service_name_);
     getInput("global_frame", global_frame_);
-    
     node_ = rclcpp::Node::make_shared("send_move_client_node");
-   
-    
-
 }
 
 inline BT::NodeStatus SendMoveAction::tick()
 { 
-
+    setStatus(BT::NodeStatus::RUNNING);
     if(clients_ptr_.empty()){
       IDs robotIDs;
+      
       config().blackboard->get<IDs>("robot_ids", robotIDs);
       for(int robotID : robotIDs){
-      std::string service_name = "/robot"+std::to_string(robotID) + service_name_;
-      auto client_ptr = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name);
-      clients_ptr_.insert(std::pair<int, Client>(robotID, client_ptr));
+        std::string service_name = "/robot"+std::to_string(robotID) + service_name_;
+        
+        auto client_ptr = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name);
+        clients_ptr_.insert(std::pair<int, Client>(robotID, client_ptr));
       }
-    
     }
-    setStatus(BT::NodeStatus::RUNNING);
+
     //Get the move actions 
     Actions actions = getMoveActions();
     sendMove(actions);
@@ -72,8 +69,8 @@ Actions  SendMoveAction::getMoveActions(){
     Actions move_actions_;
     config().blackboard->get<Actions>("concurrent_actions", actions_);
     for(plan2_msgs::msg::Action act : actions_){
-      if(act.name.find("move") != std::string::npos){
-         RCLCPP_INFO( node_->get_logger(), "Received Move action!");
+      if(act.name.find("move") != std::string::npos || act.name.find("drive") != std::string::npos){
+         RCLCPP_INFO( node_->get_logger(), "Received moving action!");
          move_actions_.push_back(act);
       }
     }

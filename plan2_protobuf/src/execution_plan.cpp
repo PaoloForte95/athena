@@ -34,10 +34,8 @@ std::vector<plan2_msgs::msg::Method> Plan::getMethods(const planning2::Execution
   for (int i = 0; i < execution_plan.method_size(); i++) {
     plan2_msgs::msg::Method method;
     method.id = execution_plan.method(i).id();
-    cout << "Method: " << execution_plan.method(i).id() << endl;
     for (int subtask : execution_plan.method(i).actions_ids()) {
       method.substasks.push_back(subtask);
-      cout << "Task: " << subtask << endl;
     }
     methods.push_back(method) ;
   }

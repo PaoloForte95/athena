@@ -254,7 +254,6 @@ TaskPlannerServer::computeExecutionPlan()
 
     getPreemptedGoalIfRequested(action_server_plan_, goal);
 
-
     RCLCPP_WARN( get_logger(), "Choosen Task Planner: %s ", goal->planner.c_str());
 
     result->execution_plan = getExecutionPlan(goal->planning_problem.planning_domain, goal->planning_problem.planning_problem,  goal->planner);
@@ -267,7 +266,7 @@ TaskPlannerServer::computeExecutionPlan()
   } catch (std::exception & ex) {
     RCLCPP_WARN(
       get_logger(), "%s plugin failed to compute execution plan for the problem (%s, %s).",
-        goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
+      goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
     action_server_plan_->terminate_current();
   }
 }

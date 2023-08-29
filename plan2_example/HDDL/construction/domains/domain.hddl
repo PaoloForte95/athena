@@ -54,7 +54,6 @@
 		)
 	)
 
-
 	(:method m_dump_ordering_0
 		:parameters (?l - location ?m - material ?v - vehicle)
 		:task (dump ?v ?l ?m)

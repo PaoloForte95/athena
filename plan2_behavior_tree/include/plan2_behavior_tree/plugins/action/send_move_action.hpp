@@ -93,8 +93,6 @@ private:
   ActionStatus action_status_;
   Actions actions_;
 
-  
-
    void goal_response_callback(const GoalHandleSendMove::SharedPtr & goal_handle);
 
    void feedback_callback(GoalHandleSendMove::SharedPtr, const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback);
