@@ -38,10 +38,11 @@ TEST(PlanReaderTest, plan_reader)
   planning2::Plan plan;
   planning2::ExecutionPlan execution_plan = plan.ParseFile(proto_file);
 
-  std::vector<planning2::Action> actions = plan.GetActions(execution_plan);
+  auto actions = plan.GetActions(execution_plan);
 
-  for (planning2::Action action: actions){
-    cout << toString(action) << endl;
+  for (plan2_msgs::msg::Action action: actions){
+    cout << action.name << endl;
+    cout << action.robotid << endl;
   }
 
 
