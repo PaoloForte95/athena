@@ -4,6 +4,7 @@
     <!-- ############################### ACTION NODES ################################# -->
     <Action ID="SendMove">
             <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
     </Action>
     
     <Action ID="Load">
@@ -26,6 +27,11 @@
             <output_port name="concurrent_actions">The set of all actions that can be executed at current step</output_port>
             <input_port name="execution_plan">The computed execution plan</input_port>
             <input_port name="completed_actions">The set of completed actions</input_port>
+    </Action>
+
+    <Action ID="Noop">
+      <input_port name="waiting_time">Wait time</input_port>
+      <input_port name="service_name">Server name</input_port>
     </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->

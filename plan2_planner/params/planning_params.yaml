@@ -9,11 +9,12 @@ bt_planner:
     default_plan_bt_xml: 'planning_w_execution_hddl.xml'
     plugin_lib_names:
     - nav2_recovery_node_bt_node
+    - nav2_rate_controller_bt_node
+    - plan2_noop_action_bt_node
     - plan2_compute_plan_action_bt_node
     - plan2_is_action_condition_bt_node
     - plan2_send_move_action_bt_node
     - plan2_dispatch_tasks_action_bt_node
-    - nav2_rate_controller_bt_node
     - plan2_execute_plan_node_bt_node
 
 task_planner_server:

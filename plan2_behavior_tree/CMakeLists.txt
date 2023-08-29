@@ -19,7 +19,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(nav2_common REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
@@ -80,6 +79,9 @@ list(APPEND plugin_libs plan2_send_move_action_bt_node)
 
 add_library(plan2_dispatch_tasks_action_bt_node SHARED plugins/action/dispatch_tasks_action.cpp)
 list(APPEND plugin_libs plan2_dispatch_tasks_action_bt_node)
+
+add_library(plan2_noop_action_bt_node SHARED plugins/action/noop_action.cpp)
+list(APPEND plugin_libs plan2_noop_action_bt_node)
 
 #Control
 add_library(plan2_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
