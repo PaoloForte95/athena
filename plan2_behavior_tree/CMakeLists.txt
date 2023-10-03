@@ -74,14 +74,8 @@ ament_target_dependencies(${library_name}
 add_library(plan2_compute_plan_action_bt_node SHARED plugins/action/compute_plan_action.cpp)
 list(APPEND plugin_libs plan2_compute_plan_action_bt_node)
 
-add_library(plan2_send_move_action_bt_node SHARED plugins/action/send_move_action.cpp)
-list(APPEND plugin_libs plan2_send_move_action_bt_node)
-
 add_library(plan2_dispatch_tasks_action_bt_node SHARED plugins/action/dispatch_tasks_action.cpp)
 list(APPEND plugin_libs plan2_dispatch_tasks_action_bt_node)
-
-add_library(plan2_noop_action_bt_node SHARED plugins/action/noop_action.cpp)
-list(APPEND plugin_libs plan2_noop_action_bt_node)
 
 #Control
 add_library(plan2_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
@@ -92,8 +86,6 @@ add_library(plan2_is_action_condition_bt_node SHARED plugins/condition/is_action
 list(APPEND plugin_libs plan2_is_action_condition_bt_node)
 
 
-#add_library(plan2_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
-#list(APPEND plugin_libs plan2_selected_robot_controller_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})

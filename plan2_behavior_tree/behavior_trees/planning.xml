@@ -1,0 +1,18 @@
+<!--
+This Behavior Tree computes and executed a plan. If the plan failed, it has
+  recovery actions to recompute a plan.
+-->
+
+<root main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+  <Sequence>
+  <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
+  <RateController hz="3.0">
+  <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
+  </RateController>
+ </ExecutePlanNode>
+  </Sequence> 
+</BehaviorTree>
+</root>

@@ -2,18 +2,6 @@
 <root>
   <TreeNodesModel>
     <!-- ############################### ACTION NODES ################################# -->
-    <Action ID="SendMove">
-            <input_port name="service_name">The name of the service </input_port>
-            <input_port name="global_frame">The global frame </input_port>
-    </Action>
-    
-    <Action ID="Load">
-            <input_port default="{pose}" name="location">The loading location</input_port>
-    </Action>
-    
-    <Action ID="Unload">
-            <input_port default="{pose}" name="location">The dumping location</input_port>
-    </Action>
 
     <Action ID="ComputePlan">
             <output_port name="execution_plan">The computed execution plan</output_port>
@@ -29,16 +17,11 @@
             <input_port name="completed_actions">The set of completed actions</input_port>
     </Action>
 
-    <Action ID="Noop">
-      <input_port name="waiting_time">Wait time</input_port>
-      <input_port name="service_name">Server name</input_port>
-    </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->
      <Condition ID="IsAction">
       <input_port name="action_name">The name of the action</input_port>
     </Condition>
-
 
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="RecoveryNode">
@@ -50,7 +33,6 @@
     </Control>
 
     <!-- ############################### DECORATOR NODES ############################## -->
-    <Decorator ID="IsRobotSelected"> </Decorator>
 
     <Decorator ID="RateController">
       <input_port name="hz">Rate</input_port>

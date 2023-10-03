@@ -57,7 +57,7 @@ BT::NodeStatus ExecutePlanNode::tick()
             } else {
               // reset node and return failure when max retries has been exceeded
               halt();
-              return BT::NodeStatus::SUCCESS;
+              return BT::NodeStatus::FAILURE;
             }
 
           }
