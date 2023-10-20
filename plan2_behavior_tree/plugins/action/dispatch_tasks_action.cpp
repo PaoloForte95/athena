@@ -42,8 +42,9 @@ inline BT::NodeStatus DispatchTasksAction::tick()
     if(plan_actions_.empty()){
         plan_actions_ = readPlan();
     }
+     RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
     int exeActs = executableActions(plan_actions_);
-    if(current_level_ == max_level_){
+    if(actions_count_ == completed_actions_.size()){
         return BT::NodeStatus::FAILURE;
     }
     if(exeActs > 0){
@@ -89,7 +90,6 @@ int DispatchTasksAction::executableActions(std::vector<plan2_msgs::msg::Action> 
         int act_level = action_levels.find(action.action_id)->second;
         if(act_level == current_level_){
             bool canBeExecuted = true;
-            RCLCPP_INFO(node_->get_logger(), "Current plan level %d....", current_level_);
             //Check if the actions that have a precedence constraint with this one have been completed
             for(int parID : action.parents){
                   
@@ -100,14 +100,12 @@ int DispatchTasksAction::executableActions(std::vector<plan2_msgs::msg::Action> 
                     canBeExecuted = false;
                     break;
                 }
-                
             }  
             levelCanBeExecuted.push_back(canBeExecuted);
             if(canBeExecuted){
                 RCLCPP_INFO(node_->get_logger(), "Sending action %d, %s....", action.action_id, action.name.c_str());
                 concurrent_actions.push_back(action);
             }else{
-               
                 break;
             }
         }
