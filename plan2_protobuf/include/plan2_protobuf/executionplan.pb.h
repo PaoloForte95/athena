@@ -608,10 +608,11 @@ class Method PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kActionsIdsFieldNumber = 2,
-    kIdFieldNumber = 1,
+    kActionsIdsFieldNumber = 3,
+    kNameFieldNumber = 1,
+    kIdFieldNumber = 2,
   };
-  // repeated int32 actions_ids = 2;
+  // repeated int32 actions_ids = 3;
   int actions_ids_size() const;
   private:
   int _internal_actions_ids_size() const;
@@ -633,7 +634,32 @@ class Method PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
       mutable_actions_ids();
 
-  // int32 id = 1;
+  // string name = 1;
+  void clear_name();
+  const std::string& name() const;
+  void set_name(const std::string& value);
+  void set_name(std::string&& value);
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  std::string* mutable_name();
+  std::string* release_name();
+  void set_allocated_name(std::string* name);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_name();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_name(
+      std::string* name);
+  private:
+  const std::string& _internal_name() const;
+  void _internal_set_name(const std::string& value);
+  std::string* _internal_mutable_name();
+  public:
+
+  // int32 id = 2;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::int32 id() const;
   void set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
@@ -651,6 +677,7 @@ class Method PROTOBUF_FINAL :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > actions_ids_;
   mutable std::atomic<int> _actions_ids_cached_byte_size_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
@@ -1264,7 +1291,88 @@ Action::mutable_parents() {
 
 // Method
 
-// int32 id = 1;
+// string name = 1;
+inline void Method::clear_name() {
+  name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& Method::name() const {
+  // @@protoc_insertion_point(field_get:planning2.Method.name)
+  return _internal_name();
+}
+inline void Method::set_name(const std::string& value) {
+  _internal_set_name(value);
+  // @@protoc_insertion_point(field_set:planning2.Method.name)
+}
+inline std::string* Method::mutable_name() {
+  // @@protoc_insertion_point(field_mutable:planning2.Method.name)
+  return _internal_mutable_name();
+}
+inline const std::string& Method::_internal_name() const {
+  return name_.Get();
+}
+inline void Method::_internal_set_name(const std::string& value) {
+  
+  name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void Method::set_name(std::string&& value) {
+  
+  name_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:planning2.Method.name)
+}
+inline void Method::set_name(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:planning2.Method.name)
+}
+inline void Method::set_name(const char* value,
+    size_t size) {
+  
+  name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:planning2.Method.name)
+}
+inline std::string* Method::_internal_mutable_name() {
+  
+  return name_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* Method::release_name() {
+  // @@protoc_insertion_point(field_release:planning2.Method.name)
+  return name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void Method::set_allocated_name(std::string* name) {
+  if (name != nullptr) {
+    
+  } else {
+    
+  }
+  name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:planning2.Method.name)
+}
+inline std::string* Method::unsafe_arena_release_name() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:planning2.Method.name)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return name_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void Method::unsafe_arena_set_allocated_name(
+    std::string* name) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (name != nullptr) {
+    
+  } else {
+    
+  }
+  name_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      name, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:planning2.Method.name)
+}
+
+// int32 id = 2;
 inline void Method::clear_id() {
   id_ = 0;
 }
@@ -1284,7 +1392,7 @@ inline void Method::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:planning2.Method.id)
 }
 
-// repeated int32 actions_ids = 2;
+// repeated int32 actions_ids = 3;
 inline int Method::_internal_actions_ids_size() const {
   return actions_ids_.size();
 }

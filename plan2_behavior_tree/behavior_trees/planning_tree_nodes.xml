@@ -17,6 +17,11 @@
             <input_port name="completed_actions">The set of completed actions</input_port>
     </Action>
 
+    <Action ID="DispatchMethods">
+            <output_port name="concurrent_methods">The set of all methods that can be executed at current step</output_port>
+            <input_port name="execution_plan">The computed execution plan</input_port>
+            <input_port name="completed_methods">The set of completed methods</input_port>
+    </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->
      <Condition ID="IsAction">

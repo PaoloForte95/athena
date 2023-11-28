@@ -26,7 +26,7 @@ DispatchTasksAction::DispatchTasksAction(
 : ActionNodeBase(action_name, conf),
 current_level_(1),max_level_(1), actions_count_(0)
 {
-    node_ = rclcpp::Node::make_shared("send_move_client_node");   
+    node_ = rclcpp::Node::make_shared("dispatch_tasks_client_node");   
     IDs completed_actions;
     config().blackboard->set<IDs>("completed_actions", completed_actions);
 }
@@ -54,7 +54,6 @@ inline BT::NodeStatus DispatchTasksAction::tick()
     
 }
 
-
 std::vector<plan2_msgs::msg::Action> DispatchTasksAction::readPlan(){
     Actions actions;
     IDs robotIDs;
@@ -75,7 +74,6 @@ std::vector<plan2_msgs::msg::Action> DispatchTasksAction::readPlan(){
         }
         action_levels.insert(std::pair<int, int>( action.action_id, level));
     }
-
     config().blackboard->set<IDs>("robot_ids", robotIDs);
     
     return actions;
@@ -91,8 +89,7 @@ int DispatchTasksAction::executableActions(std::vector<plan2_msgs::msg::Action> 
         if(act_level == current_level_){
             bool canBeExecuted = true;
             //Check if the actions that have a precedence constraint with this one have been completed
-            for(int parID : action.parents){
-                  
+            for(int parID : action.parents){   
                 auto itr = std::find(completed_actions_.begin(), completed_actions_.end(), parID);
                  //If absent, parent actions haven't been completed yet. Wa only if absent
                 if (itr == completed_actions_.end()){
@@ -131,9 +128,6 @@ plan2_msgs::msg::Action DispatchTasksAction::getAction (int ID){
         return plan2_msgs::msg::Action();
     }
 }
-
-
-
 
 } // namespace plan2_behavior_tree
 

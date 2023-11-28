@@ -29,8 +29,9 @@ message Action {
 
 //A Method is defined by a set of actions. 
 message Method{
-  int32 id = 1;
-  repeated int32 actions_ids = 2;
+  string name = 1;
+  int32 id = 2;
+  repeated int32 actions_ids = 3;
 }
 
 // The execution Plan contains a set of actions

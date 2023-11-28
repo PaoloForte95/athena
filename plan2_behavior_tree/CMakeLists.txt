@@ -77,6 +77,9 @@ list(APPEND plugin_libs plan2_compute_plan_action_bt_node)
 add_library(plan2_dispatch_tasks_action_bt_node SHARED plugins/action/dispatch_tasks_action.cpp)
 list(APPEND plugin_libs plan2_dispatch_tasks_action_bt_node)
 
+add_library(plan2_dispatch_methods_action_bt_node SHARED plugins/action/dispatch_methods_action.cpp)
+list(APPEND plugin_libs plan2_dispatch_methods_action_bt_node)
+
 #Control
 add_library(plan2_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs plan2_execute_plan_node_bt_node)

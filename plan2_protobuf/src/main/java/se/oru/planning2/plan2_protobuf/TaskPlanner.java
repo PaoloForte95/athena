@@ -97,6 +97,7 @@ class TaskPlanner{
 		for(se.oru.planning.planning_oru.ai_planning.parser.Method method : executionPlan.getMethods()){
 			Method.Builder m = Method.newBuilder();
 			m.setId(method.getID());
+			m.setName(method.getName());
 			for(Integer ID : method.getActions()){
 				m.addActionsIds(ID);
 			}
