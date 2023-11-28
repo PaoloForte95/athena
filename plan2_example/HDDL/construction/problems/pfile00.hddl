@@ -1,0 +1,60 @@
+(define
+	(problem pfile01)
+	(:domain  domain_htn)
+	(:objects
+		mat_1 - material
+		home1 - location
+		wp_1 - location
+		wp_2 - location
+		wp_3 - location
+		wp_4 - location
+		wheel_loader_0 - vehicle
+	)
+	(:htn
+		:parameters ()
+		:subtasks (and
+		 (task0 (move_pile mat_1 wp_4))
+		)
+		:ordering (and
+			;;(< task1 task0)
+		)
+	)
+	(:init
+
+		(road home1 wp_1)
+		(road home1 wp_2)
+		(road home1 wp_3)
+		(road home1 wp_4)
+
+
+		(road wp_1 home1)
+		(road wp_1 wp_2)
+		(road wp_1 wp_3)
+		(road wp_1 wp_4)
+
+		(road wp_2 home1)
+		(road wp_2 wp_1)
+		(road wp_2 wp_3)
+		(road wp_2 wp_4)
+
+		(road wp_3 home1)
+		(road wp_3 wp_1)
+		(road wp_3 wp_2)
+		(road wp_3 wp_4)
+
+		(road wp_4 home1)
+		(road wp_4 wp_1)
+		(road wp_4 wp_2)
+		(road wp_4 wp_3)
+
+		(free wp_1)
+		(free wp_2)
+		(free wp_3)
+		(free wp_4)
+
+		(at mat_1 wp_1)
+
+		(at wheel_loader_0 home1)
+		(can_load wheel_loader_0)
+	)
+)

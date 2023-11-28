@@ -1,0 +1,112 @@
+(define
+	(problem pfile01)
+	(:domain  domain_htn)
+	(:objects
+		mat_1 - material
+		mat_2 - material
+		mat_3 - material
+		home1 - location
+		home2 - location
+		wp_1 - location
+		wp_2 - location
+		wp_3 - location
+		wp_4 - location
+		wp_5 - location
+		wp_6 - location
+		wheel_loader_1 - vehicle
+		wheel_loader_2 - vehicle
+	)
+	(:htn
+		:parameters ()
+		:subtasks (and
+		 (task0 (move_pile mat_1 wp_4))
+		 (task1 (move_pile mat_2 wp_5))
+		 (task2 (move_pile mat_3 wp_6))
+		)
+		:ordering (and
+			;;(< task0 task1)
+			;;(< task1 task2)
+		)
+	)
+	(:init
+
+		(road home1 wp_1)
+		(road home1 wp_2)
+		(road home1 wp_3)
+		(road home1 wp_4)
+		(road home1 wp_5)
+		(road home1 wp_6)
+
+		(road home2 wp_1)
+		(road home2 wp_2)
+		(road home2 wp_3)
+		(road home2 wp_4)
+		(road home2 wp_5)
+		(road home2 wp_6)
+
+		(road wp_1 home1)
+		(road wp_1 home2)
+		(road wp_1 wp_2)
+		(road wp_1 wp_3)
+		(road wp_1 wp_4)
+		(road wp_1 wp_5)
+		(road wp_1 wp_6)
+
+		(road wp_2 home1)
+		(road wp_2 home2)
+		(road wp_2 wp_1)
+		(road wp_2 wp_3)
+		(road wp_2 wp_4)
+		(road wp_2 wp_5)
+		(road wp_2 wp_6)
+
+		(road wp_3 home1)
+		(road wp_3 home2)
+		(road wp_3 wp_1)
+		(road wp_3 wp_2)
+		(road wp_3 wp_4)
+		(road wp_3 wp_5)
+		(road wp_3 wp_6)
+
+		(road wp_4 home1)
+		(road wp_4 home2)
+		(road wp_4 wp_1)
+		(road wp_4 wp_2)
+		(road wp_4 wp_3)
+		(road wp_4 wp_5)
+		(road wp_4 wp_6)
+
+		(road wp_5 home1)
+		(road wp_5 home2)
+		(road wp_5 wp_1)
+		(road wp_5 wp_2)
+		(road wp_5 wp_3)
+		(road wp_5 wp_4)
+		(road wp_5 wp_6)
+
+		(road wp_6 home1)
+		(road wp_6 home2)
+		(road wp_6 wp_1)
+		(road wp_6 wp_2)
+		(road wp_6 wp_3)
+		(road wp_6 wp_4)
+		(road wp_6 wp_5)
+
+		(free wp_1)
+		(free wp_2)
+		(free wp_3)
+		(free wp_4)
+		(free wp_5)
+		(free wp_6)
+
+		(at mat_1 wp_1)
+		(at mat_2 wp_2)
+		(at mat_3 wp_3)
+
+
+		(at wheel_loader_1 home1)
+		(can_load wheel_loader_1)
+		(at wheel_loader_2 home2)
+		(can_load wheel_loader_2)
+	)
+)
