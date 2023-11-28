@@ -54,7 +54,6 @@ sourceSets {
 dependencies {
   implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.2'
   implementation 'com.github.FedericoPecora:meta-csp-framework:master-SNAPSHOT'
-  implementation 'com.github.FedericoPecora:coordination_oru:master-SNAPSHOT'
   implementation 'info.picocli:picocli:4.7.1'
 
   //implementation 'com.github.PaoloForte95:planning_oru:master-SNAPSHOT'
@@ -86,7 +85,6 @@ shadowJar {
    archiveClassifier.set('')
    archiveVersion.set('')
    destinationDirectory = file("../plan2_planner/Planners")
-
 }
 
 

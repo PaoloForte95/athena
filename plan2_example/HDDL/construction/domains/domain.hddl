@@ -30,11 +30,11 @@
 		:parameters (?v - vehicle ?l - location)
 	)
 
-	(:task load
+	(:task pick
 		:parameters (?v - vehicle ?l - location ?m - material)
 	)
 
-	(:task dump
+	(:task place
 		:parameters (?v - vehicle ?l - location ?m - material)
 	)
 
@@ -43,9 +43,9 @@
 		:task (move_pile ?m ?l2)
 		:subtasks (and
 		 (task0 (go_to ?v ?l1))
-		 (task1 (load ?v ?l1 ?m))
+		 (task1 (pick ?v ?l1 ?m))
 		 (task2 (go_to ?v ?l2))
-		 (task3 (dump ?v ?l2 ?m))
+		 (task3 (place ?v ?l2 ?m))
 		)
 		:ordering (and
 			(< task0 task1)
@@ -54,41 +54,41 @@
 		)
 	)
 
-	(:method m_dump_ordering_0
+	(:method m_place_ordering_0
 		:parameters (?l - location ?m - material ?v - vehicle)
-		:task (dump ?v ?l ?m)
+		:task (place ?v ?l ?m)
 		:subtasks (and
-		 (task0 (drop ?v ?l ?m))
+		 (task0 (dump ?v ?l ?m))
 		)
 	)
 
-	(:method m_dump_ordering_1
+	(:method m_place_ordering_1
 		:parameters (?l - location ?m1 - material ?m2 - material ?v - vehicle)
-		:task (dump ?v ?l ?m1)
+		:task (place ?v ?l ?m1)
 		:subtasks (and
 		 (task0 (stack ?v ?l ?m1 ?m2))
 		)
 	)
 
-	(:method m_load_ordering_0
+	(:method m_pick_ordering_0
 		:parameters (?l - location ?m - material ?v - vehicle)
-		:task (load ?v ?l ?m)
+		:task (pick ?v ?l ?m)
 		:subtasks (and
-		 (task0 (pick ?v ?l ?m))
+		 (task0 (load ?v ?l ?m))
 		)
 	)
 
-	(:method m_load_ordering_1
+	(:method m_pick_ordering_1
 		:parameters (?l - location ?m1 - material ?m2 - material ?v - vehicle)
-		:task (load ?v ?l ?m1)
+		:task (pick ?v ?l ?m1)
 		:subtasks (and
 		 (task0 (unstack ?v ?l ?m1 ?m2))
 		)
 	)
 
-	(:method m_load_ordering_2
+	(:method m_pick_ordering_2
 		:parameters (?l - location ?m - material ?v - vehicle)
-		:task (load ?v ?l ?m)
+		:task (pick ?v ?l ?m)
 		:subtasks (and
 		 (task0 (push ?v ?l ?m))
 		)
@@ -196,7 +196,7 @@
 			)
 	)
 
-	(:action pick
+	(:action load
 		:parameters (?v - vehicle ?l - location ?m - material)
 		:precondition 
 			(and
@@ -214,7 +214,7 @@
 			)
 	)
 
-	(:action drop
+	(:action dump
 		:parameters (?v - vehicle ?l - location ?m - material)
 		:precondition 
 			(and
