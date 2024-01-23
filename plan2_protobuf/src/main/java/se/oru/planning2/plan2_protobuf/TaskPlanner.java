@@ -24,7 +24,6 @@ import se.oru.planning.planning_oru.ai_planning.planners.Lilotane;
 import se.oru.planning.planning_oru.ai_planning.parser.SymbolicSymbol;
 import se.oru.planning.planning_oru.ai_planning.plan.AbstractPlan.PLANTYPE;
 import se.oru.planning.planning_oru.ai_planning.plan.AbstractPlan;
-
 class TaskPlanner{
 
 	private static enum PLANNERS {METRICFF, LPG, TFD, LILOTANE};
@@ -36,7 +35,7 @@ class TaskPlanner{
 	private String problem_type;
 	private AbstractPlanningProblem planningProblem;
 
-	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ExecutionPlan.Builder planPr ) throws FileNotFoundException{
+	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ExecutionPlan.Builder planPr) throws FileNotFoundException{
 
 		switch (PROBLEM.valueOf(problem_type.toUpperCase())){
 				case SYMBOLIC:
@@ -62,6 +61,7 @@ class TaskPlanner{
 		//Define robot, material and location types used in PDDL
 		ArrayList <String> machines = new ArrayList <String>(Arrays.asList(robot_definition));
 		ArrayList <String> locations = new ArrayList <String>(Arrays.asList(location_definition_));
+		ArrayList <String> materials = new ArrayList <String>(Arrays.asList("material"));
 		planningProblem.defineRobotType(machines);
 		planningProblem.defineLocationType(locations);
 		planningProblem.readPlan(plan,PLANTYPE.valueOf(plan_type));
@@ -82,6 +82,10 @@ class TaskPlanner{
 				}
 				else if (!Collections.disjoint(input.getType(),locations)){
 					action.addWaypoints(input.getVariable());			
+				}
+				else if(!Collections.disjoint(input.getType(),materials)){
+					int materialID = Integer.parseInt(input.getVariable().replaceAll("[^0-9]", ""));
+					action.setMaterial(materialID);			
 				}
 				
 			}
@@ -110,7 +114,11 @@ class TaskPlanner{
 	ExecutionPlan.Builder planPr = ExecutionPlan.newBuilder();
 	TaskPlanner plan = new TaskPlanner();
 	AbstractPlanner planner = null;
-
+	if (args.length <= 0) {
+		System.err.println("Inputs files are missing");
+		System.exit(-1);
+	}
+  
 	String ps = args[0].toUpperCase();
 	switch (PLANNERS.valueOf(ps)){
 		case LPG:

@@ -16,6 +16,7 @@ std::vector<plan2_msgs::msg::Action> Plan::GetActions(const planning2::Execution
   for (int i = 0; i < execution_plan.action_size(); i++) {
     plan2_msgs::msg::Action act;
     act.name = execution_plan.action(i).name();
+    act.material = execution_plan.action(i).material();
     act.action_id = execution_plan.action(i).id();
     act.robotid = execution_plan.action(i).robotid();
     for (int parentID: execution_plan.action(i).parents()) {
