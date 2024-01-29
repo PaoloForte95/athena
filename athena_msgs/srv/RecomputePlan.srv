@@ -1,0 +1,6 @@
+#Compute a tasks execution plan
+#Inputs
+athena_msgs/Action action_failed # The predicates to add to the planning problem 
+---
+#Results
+athena_msgs/Plan plan

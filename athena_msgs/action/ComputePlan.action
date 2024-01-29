@@ -1,0 +1,11 @@
+#goal definition
+athena_msgs/PlanningProblem planning_problem
+string planner
+string behavior_tree
+---
+#result definition
+athena_msgs/Plan execution_plan
+---
+#feedback definition
+builtin_interfaces/Duration planning_time
+

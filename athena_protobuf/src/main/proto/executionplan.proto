@@ -1,0 +1,42 @@
+// [START declaration]
+syntax = "proto3";
+package athena;
+
+// [END declaration]
+
+// [START java_declaration]
+option java_multiple_files = true;
+option java_package = "org.athena.athena_protobuf";
+option java_outer_classname = "ExecutionPlanProtos";
+// [END java_declaration]
+
+message Problem{
+  string domain = 1;
+  string problem = 2;
+}
+
+
+// [START messages]
+//An action is defined by its name, the robot associated to it and its parents
+message Action {
+  string name = 1;
+  int32 id = 2;
+  int32 robotID = 3;
+  repeated string waypoints = 4;
+  int32 material = 5;
+  repeated int32 parents = 6;
+}
+
+//A Method is defined by a set of actions. 
+message Method{
+  string name = 1;
+  int32 id = 2;
+  repeated int32 actions_ids = 3;
+}
+
+// The execution Plan contains a set of actions
+message ExecutionPlan {
+  repeated Action action = 1;
+  repeated Method method = 2;
+}
+// [END messages]

@@ -1,0 +1,33 @@
+<class_libraries>
+<library path="athena_planner_metricff">
+	<class name="athena_planner::MetricFF" type="athena_planner::MetricFF" base_class_type="athena_core::Planner">
+	  <description>
+      An implementation of a Metric-FF planner
+      </description>
+	</class>
+</library>
+<library path="athena_planner_lpg">
+	 <class name="athena_planner::LPG" type="athena_planner::LPG" base_class_type="athena_core::Planner">
+		<description>
+			An implementation of a LPG-TD planner
+		</description>
+	</class>
+</library>
+
+<library path="athena_planner_tfd">
+	 <class name="athena_planner::TFD" type="athena_planner::TFD" base_class_type="athena_core::Planner">
+		<description>
+			An implementation of a TFD planner
+		</description>
+	</class>
+</library>
+
+<library path="athena_planner_lilotane">
+	 <class name="athena_planner::Lilotane" type="athena_planner::Lilotane" base_class_type="athena_core::Planner">
+		<description>
+			An implementation of a Lilotane planner
+		</description>
+	</class>
+</library>
+
+</class_libraries>

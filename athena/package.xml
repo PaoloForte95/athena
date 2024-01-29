@@ -9,15 +9,15 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <exec_depend>plan2_behavior_tree</exec_depend>
-  <exec_depend>plan2_bt_planner</exec_depend>
-  <exec_depend>plan2_core</exec_depend>
-  <exec_depend>plan2_launch</exec_depend>
-  <exec_depend>plan2_lifecycle_manager</exec_depend>
-  <exec_depend>plan2_msgs</exec_depend>
-  <exec_depend>plan2_planner</exec_depend>
-  <exec_depend>plan2_protobuf</exec_depend>
-  <exec_depend>plan2_util</exec_depend>
+  <exec_depend>athena_behavior_tree</exec_depend>
+  <exec_depend>athena_bt_planner</exec_depend>
+  <exec_depend>athena_core</exec_depend>
+  <exec_depend>athena_launch</exec_depend>
+  <exec_depend>athena_lifecycle_manager</exec_depend>
+  <exec_depend>athena_msgs</exec_depend>
+  <exec_depend>athena_planner</exec_depend>
+  <exec_depend>athena_protobuf</exec_depend>
+  <exec_depend>athena_util</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

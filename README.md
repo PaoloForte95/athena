@@ -23,10 +23,10 @@ $ colcon build --packages-up-to athena
 ```
 To build the task planner executable that calls the Java code to parse the planning problem and compute the execution plan:
 ```
-$ cd src/athena/plan2_protobuf/
+$ cd src/athena/athena_protobuf/
 $ ./gradlew build
 ```
-This will create an executable .jar file into plan2_planner/Planners to call the task planner.
+This will create an executable .jar file into athena_planner/Planners to call the task planner.
 
 ## Running an example
 
@@ -37,16 +37,16 @@ source install/setup.bash
 ```
 3) In the same terminal, run:
 ```
-ros2 launch plan2_launch planning.py
+ros2 launch athena_launch planning.py
 ```
 4) Open a new terminal and run:
 For PDDL:
 ```
 source install/setup.bash
-ros2 topic pub --once /planning_problem plan2_msgs/msg/PlanningProblem "{planning_domain: src/athena/plan2_example/PDDL/Domain.pddl, planning_problem: src/athena/plan2_example/PDDL/Problem.pddl}"
+ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/PDDL/Domain.pddl, planning_problem: src/athena/athena_example/PDDL/Problem.pddl}"
 ```
 For HDDL:
 ```
 source install/setup.bash
-ros2 topic pub --once /planning_problem plan2_msgs/msg/PlanningProblem "{planning_domain: src/athena/plan2_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/plan2_example/HDDL/construction/problems/pfile01.hddl}"
+ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/athena_example/HDDL/construction/problems/pfile01.hddl}"
 ```

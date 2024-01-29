@@ -1,0 +1,144 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.17'
+    }
+}
+
+plugins {
+  id 'com.github.johnrengelman.shadow' version '8.1.0'
+}
+
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'application'
+apply plugin: 'maven-publish'
+apply plugin: 'application'
+
+group = 'org.athena'
+version = '0.0.1'
+sourceCompatibility = '16'
+
+application {
+  // Define the main class for the application.
+  mainClass = 'org.athena.athena_protobuf.TaskPlanner'
+}
+
+repositories {
+  mavenLocal()
+  jcenter()
+  maven { url 'https://jitpack.io' }
+  maven { url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master/' }
+}
+
+
+sourceSets {
+    main {
+        proto{
+           // In addition to the default 'src/main/proto'
+           srcDir 'src/main/protobuf'
+        }
+        java {
+            srcDirs = ['src/main/java']
+            srcDirs 'build/generated/source/proto/main/java'  
+            srcDirs 'build/generated/source/proto/main/grpc'          
+        }
+   }
+}
+
+
+dependencies {
+  implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.2'
+  implementation 'com.github.FedericoPecora:meta-csp-framework:master-SNAPSHOT'
+  implementation 'info.picocli:picocli:4.7.1'
+
+  //implementation 'com.github.PaoloForte95:planning_oru:master-SNAPSHOT'
+  implementation 'com.google.ortools:ortools-java:9.6.2534'
+  implementation 'com.google.protobuf:protobuf-java:3.21.10'
+  
+  //For interface with OMPL
+  implementation 'net.java.dev.jna:jna:4.4.0'
+  implementation 'org.jgrapht:jgrapht-core:1.5.1'
+  implementation 'org.jgrapht:jgrapht-ext:1.5.1'
+  implementation 'com.github.jgraph:jgraphx:v4.0.6'
+  implementation 'io.grpc:grpc-netty-shaded:1.35.0'
+  implementation 'io.grpc:grpc-protobuf:1.35.0'
+  implementation 'io.grpc:grpc-stub:1.35.0'
+  implementation 'javax.json:javax.json-api:1.1.4'
+  implementation 'org.glassfish:javax.json:1.1.4'
+
+  //For JSON file handling
+  implementation 'com.google.code.gson:gson:2.8.5'
+  
+  // Add the following if you need to include jars that are not in Maven Central and that you have places in the directory "lib"
+  implementation files('lib/pddl4j-4.0.0.jar')
+  implementation files('lib/planning_oru-0.1.6.jar')
+  
+
+}
+
+// Default Output to build/libs/shadow.jar
+shadowJar {
+   archiveBaseName.set('task_planner')
+   archiveClassifier.set('')
+   archiveVersion.set('')
+   destinationDirectory = file("../athena_planner/Planners")
+}
+
+
+jar {
+  manifest {
+    attributes 'Main-Class': application.mainClass
+  }
+}
+
+//application {
+  // Define the main class for the application.
+  //mainClass = 'org.athena.athena_protobuf.Allocator'
+//}
+
+//shadowJar {
+   //archiveBaseName.set('task_allocator')
+   //archiveClassifier.set('')
+  // archiveVersion.set('')
+//}
+
+
+jar {
+  manifest {
+    attributes 'Main-Class': application.mainClass
+  }
+}
+
+protobuf {
+  protoc {
+     //artifact = "com.google.protobuf:protoc:3.21.12"
+     artifact = "com.google.protobuf:protoc:3.12.4"
+  }
+  plugins {
+    grpc {
+      artifact = 'io.grpc:protoc-gen-grpc-java:1.35.0'
+    }
+  }
+  
+  generateProtoTasks {
+    all().each { task ->
+      task.builtins {
+        java {}
+        cpp {}
+      }
+    }
+    all().each { task ->
+     task.plugins {
+      grpc {}
+    }
+    } 
+  }
+}
+
+
