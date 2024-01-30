@@ -1,0 +1,289 @@
+;;Sokoban pddl
+;;https://popf-cloud-solver.herokuapp.com
+(define (domain sokoban)
+(:requirements :strips :typing :fluents :equality :action-costs :negative-preconditions)
+
+;;define the types of element defined into the problem
+(:types 
+        location locatable  - object
+        robot static_obstacle quantity  - locatable
+        loadable_materials pushable_material - materials
+    )
+    
+;;The properties that are used to describe the state of those things
+(:predicates
+        (forklift ?truck - locatable)
+        (bulldozer ?truck - locatable)
+        (pallet ?materialType - materials)
+        (block ?materialType - materials)
+        (in ?obj1 - materials ?obj2 - locatable)
+        (connected ?from ?to - location)
+        (at ?o - object ?l - location)
+        (clear ?loc - location)
+        (noRobotAtLocation ?loc - location)
+        (idle ?rb - robot)
+        (IsNotStacked ?b - materials ?loc - location)
+        (on ?b1 - materials ?b2 - materials ?loc - location)
+        (onGround ?mat  - materials ?loc - location)
+        (armlow ?rb - robot)
+        (loadingMaterial ?robot - robot)
+        
+        
+        
+    )
+    
+(:functions
+    (operationCost ?rb - robot)
+    (machine_velocity ?rb - robot )
+    (machine_capacity ?rb - robot )
+    (material_amount_at_location ?mat - materials ?loc - location)
+    (distance ?a ?b - location)
+    (total_cost)
+    
+
+)
+
+
+
+
+;;MACHINE ACTIONS
+(:action move
+		:parameters (?rb - robot ?from ?to - location)
+		:precondition (and 	
+		(connected ?from ?to)
+		(not (loadingMaterial ?rb))
+		(at ?rb ?from)
+		(clear ?to)
+		(idle ?rb)
+		(noRobotAtLocation ?to)
+		)
+		:effect (and 
+				(not (at ?rb ?from)) 
+				(at ?rb ?to) 
+				(noRobotAtLocation ?from)
+				(not (noRobotAtLocation ?to))
+				;;(increase (total_cost) (machine_velocity ?rb))
+				(increase (total_cost) (/(distance ?from ?to)(machine_velocity ?rb)))
+	)
+	)
+
+
+(:action move_with_material
+		:parameters (?rb - robot ?from ?to - location ?mat - materials)
+		:precondition (and 	
+		(connected ?from ?to)
+		(at ?rb ?from)
+		(in ?mat ?rb)
+		;;(clear ?to)
+		(armlow ?rb )
+		(noRobotAtLocation ?to)
+		(not (loadingMaterial ?rb))
+		)
+		:effect (and 
+				(not (at ?rb ?from)) 
+				(at ?rb ?to) 
+				;;(not (clear ?to))
+				;;(clear ?from)
+				(noRobotAtLocation ?from)
+				(not (noRobotAtLocation ?to))
+				(increase (total_cost) (/(distance ?from ?to)(machine_velocity ?rb)))
+				;;(increase (total_cost) (machine_velocity ?rb))
+	)
+	)
+
+		
+(:action move_to_take_material
+		:parameters (?rb - robot ?from ?to - location ?mat - materials)
+		:precondition (and 	
+		(connected ?from ?to)
+		(at ?rb ?from)
+		(not (loadingMaterial ?rb))
+		;;(at ?mat ?to)
+		(idle ?rb)
+        (>= (material_amount_at_location ?mat ?to) 1)
+        (noRobotAtLocation ?to)
+		)
+		:effect (and 
+				(not (at ?rb ?from)) 
+				(at ?rb ?to) 
+				;;(not (clear ?to))
+				;;(clear ?from)
+				(noRobotAtLocation ?from)
+				(not (noRobotAtLocation ?to))
+				(increase (total_cost) (/(distance ?from ?to)(machine_velocity ?rb)))
+				;;(increase (total_cost) (machine_velocity ?rb))
+				(loadingMaterial ?rb)
+	)
+	)	
+
+	
+(:action start_push_material
+		:parameters (?rb - robot ?mat - pushable_material ?loc - location)
+		:precondition (and 	
+        (at ?rb ?loc)
+	    (bulldozer ?rb)
+	    (idle ?rb)
+	    (onGround ?mat ?loc)
+	    (IsNotStacked ?mat ?loc)
+	    (>= (material_amount_at_location ?mat ?loc) 1)
+		)
+		:effect (and 
+				(not (idle ?rb))
+				(in ?mat ?rb)
+				(decrease (material_amount_at_location  ?mat ?loc) (machine_capacity ?rb))
+				(increase (total_cost) (operationCost ?rb))
+				(not (loadingMaterial ?rb))
+	)
+	)
+	
+	
+(:action load_material
+        :parameters (?rb - robot ?mat - loadable_materials ?loc - location)
+        :precondition (and
+            (at ?rb ?loc)
+            (forklift ?rb)
+            (idle ?rb)
+            (onGround ?mat ?loc )
+            (IsNotStacked ?mat ?loc)
+            (>= (material_amount_at_location ?mat ?loc) 1)
+        )
+        :effect (and
+            (in ?mat ?rb)
+            (not (idle ?rb))
+            (decrease (material_amount_at_location  ?mat ?loc) (machine_capacity ?rb))
+            (increase (total_cost) (operationCost ?rb))
+            (not (loadingMaterial ?rb))
+        )
+    )	
+	
+	
+(:action dump_material
+        :parameters (?rb - robot ?mat - materials ?loc - location)
+        :precondition (and
+            (at ?rb ?loc)
+	        (in ?mat ?rb)
+            (clear ?loc)
+        )
+        :effect (and
+            ;;(at ?mat ?loc)
+            (not (clear ?loc))
+            (not (in ?mat ?rb))
+            (idle ?rb)
+            (onGround ?mat ?loc )
+            (increase (material_amount_at_location ?mat  ?loc ) (machine_capacity ?rb))
+            (increase (total_cost) (operationCost ?rb))
+           
+        )
+    ) 	
+
+
+
+
+
+(:action stack_same_material
+        :parameters (?rb - robot ?mat - materials ?underox - materials ?loc - location)
+        :precondition (and
+            (at ?rb ?loc)
+	        (in ?mat ?rb)
+            ;;(isopen ?underox)
+            (>= (material_amount_at_location ?mat ?loc) 1)
+            (>= (material_amount_at_location ?underox ?loc) 1)
+        )
+        :effect (and
+            (idle ?rb)
+            (not (in ?mat ?rb))
+            (increase (material_amount_at_location ?mat ?loc) (machine_capacity ?rb))
+            (increase (total_cost) (operationCost ?rb))
+        )
+    )
+
+
+(:action stack_material
+        :parameters (?rb - robot ?mat - materials ?underox - materials ?loc - location)
+        :precondition (and
+            (at ?rb ?loc)
+	        (in ?mat ?rb)
+            ;;(isopen ?underox)
+            (forklift ?rb)
+            (<= (material_amount_at_location ?mat ?loc) 1)
+            (>= (material_amount_at_location ?underox ?loc) 1)
+        )
+        :effect (and
+            (idle ?rb)
+            (not (in ?mat ?rb))
+            (on ?mat ?underox ?loc)
+            (not (IsNotStacked ?underox ?loc))
+            (increase (material_amount_at_location ?mat ?loc) (machine_capacity ?rb))
+            (increase (total_cost) (operationCost ?rb))
+        )
+    )
+
+    
+    (:action unstack_material
+        :parameters (?rb - robot ?mat ?underox - loadable_materials ?loc - location)
+        :precondition (and
+            (at ?rb ?loc)
+	        (idle ?rb)
+	        (forklift ?rb)
+	        (>= (material_amount_at_location ?mat ?loc) 1)
+	        (>= (material_amount_at_location ?underox ?loc) 1)
+            (on ?mat ?underox ?loc)
+            
+        )
+        :effect (and
+        ;;(not (on ?mat ?underox))
+        ;;(isopen ?mat)
+        ;;(isopen ?underox)
+        (not (idle ?rb))
+        (in ?mat ?rb)
+        (decrease (material_amount_at_location  ?mat ?loc) (machine_capacity ?rb))
+        (increase (total_cost) (operationCost ?rb))
+        (not (armlow ?rb ))
+        (not (loadingMaterial ?rb))
+        )
+    )
+    
+(:action adjust_arm
+         :parameters (?rb - robot ?mat - materials ?loc - location)
+		:precondition (and 	
+		(at ?rb ?loc)
+		(in ?mat ?rb)
+		)
+		:effect (and 
+	    (armlow ?rb)
+	)
+	)
+   
+    
+    ;;MACHINE ACTIONS
+(:action all_material_is_unstacked
+		:parameters (?loc - location ?mat ?underox - materials)
+		:precondition (and 	
+	    (<= (material_amount_at_location ?mat ?loc) 1)
+        (on ?mat ?underox ?loc)
+		)
+		:effect (and 
+		(not (on ?mat ?underox ?loc))
+        (IsNotStacked ?underox ?loc)
+	)
+	)
+
+(:action freePosition
+        :parameters (?rb - robot ?loc - location ?mat - materials)
+		:precondition (and 	
+	        (<=  (material_amount_at_location ?mat ?loc) 1)
+	    (in ?mat ?rb)
+		(at ?rb ?loc)
+		)
+		:effect (and 
+		(clear ?loc)
+	    )
+    )
+    
+
+
+
+
+
+)	
+

@@ -1,0 +1,316 @@
+(define (problem s1)
+	(:domain sokoban)
+	(:objects 
+	rb1 rb2 rb3 - robot 
+	mat1 mat2 mat3 mat4  - loadable_materials
+	mat5 - pushable_material
+   parkingArea1 wp1 wp5 wp7 wp8 parkingArea2 wp2 wp10 wp3 wp4 wp6 parkingArea3 wp9 wp11 wp12 - location
+	)
+	(:init
+	 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+    (forklift rb1)
+    (forklift rb2)
+    (bulldozer rb3)
+    (block mat1)
+    (pallet mat2)
+    (pallet mat3)
+    (pallet mat4)
+    (block mat5)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+    
+    
+;; make sure these are constants or objects:
+;; parkingArea1 wp1 wp5 wp7 wp8 parkingArea2 wp2 wp10 wp3 wp4 parkingArea3 wp9 wp6 wp11 wp12
+    (connected parkingArea1 wp1)
+    (connected wp1 parkingArea1)
+    (connected wp1 wp5)
+     (connected wp5 wp7)
+    (connected wp5 wp1)
+    (connected wp7 wp5)
+    (connected wp7 wp8)
+    (connected wp8 wp7)
+    (connected parkingArea2 wp2)
+    (connected wp2 parkingArea2)
+    (connected wp2 wp5)
+    (connected wp5 wp2)
+    (connected wp5 wp10)
+    (connected wp10 wp5)
+    (connected wp10 wp3)
+    (connected wp3 wp10)
+    (connected wp3 wp4)
+    (connected wp4 wp3)
+    (connected parkingArea3 wp5)
+    (connected wp5 parkingArea3)
+    (connected wp5 wp9)
+    (connected wp9 wp5)
+    (connected wp9 wp6)
+    (connected wp6 wp9)
+    (connected wp5 wp9)
+    (connected wp9 wp5)
+    (connected wp9 wp11)
+    (connected wp11 wp9)
+    (connected wp11 wp12)
+    (connected wp12 wp11)
+    (connected wp5 wp11)
+    (connected wp11 wp5)
+    (connected wp9 wp4)
+    (connected wp4 wp9)
+    
+    
+    (connected parkingArea1 wp5)
+    (connected wp5 parkingArea1)
+    (connected parkingArea2 wp5)
+    (connected wp5 parkingArea2)
+    (connected wp10 wp4)
+    (connected wp4 wp10)
+    (connected wp9 wp12)
+    (connected wp12 wp9)
+    (connected wp4 wp5)
+    (connected wp5 wp4)
+    (connected wp4 wp9)
+    (connected wp9 wp4)
+    (connected wp3 wp9)
+    (connected wp9 wp3)
+    (connected wp2 wp9)
+    (connected wp9 wp2)
+    (connected wp2 wp6)
+    (connected wp6 wp2)
+  
+ 
+    
+     (= (distance parkingArea1 wp5) 10)
+     (= (distance wp5 parkingArea1) 10)
+     (= (distance parkingArea2 wp5) 10)
+     (= (distance wp5 parkingArea2) 10)
+     (= (distance wp10 wp4) 10)
+     (= (distance wp4 wp10) 10)
+     (= (distance wp9 wp12) 10)
+     (= (distance wp12 wp9) 10) 
+ 
+    (= (distance parkingArea1 wp1) 10)
+   (= (distance wp1 parkingArea1) 10)
+    (= (distance wp1 wp5) 10)
+    (= (distance wp5 wp1) 10)
+    (= (distance wp5 wp7) 10)
+    (= (distance wp7 wp5) 10)
+    (= (distance wp7 wp8) 10)
+    (= (distance wp8 wp7) 10)
+    (= (distance parkingArea2 wp2) 10)
+    (= (distance wp2 parkingArea2) 10)
+    (= (distance wp2 wp5) 10)
+    (= (distance wp5 wp2) 10)
+    (= (distance wp5 wp10) 10)
+    (= (distance wp10 wp5) 10)
+    (= (distance wp10 wp3) 10)
+    (= (distance wp3 wp10) 10)
+    (= (distance wp3 wp4) 10)
+    (= (distance wp4 wp3) 10)
+    (= (distance parkingArea3 wp5) 10)
+    (= (distance wp5 parkingArea3) 10)
+    (= (distance wp5 wp9) 10)
+    (= (distance wp9 wp5) 10)
+    (= (distance wp9 wp6) 10)
+    (= (distance wp6 wp9) 10)
+    (= (distance wp5 wp9) 10)
+    (= (distance wp9 wp5) 10)
+    (= (distance wp9 wp11) 10)
+    (= (distance wp11 wp9) 10)
+    (= (distance wp11 wp12) 10)
+    (= (distance wp12 wp11) 10)
+    (= (distance wp5 wp11) 10)
+    (= (distance wp11 wp5) 10)
+    
+    
+    
+    
+    
+    (= (total_cost) 0)
+    (idle rb1)
+    (idle rb2)
+    (idle rb3)
+    (at rb1 parkingArea1) 
+    (at rb2 parkingArea2)
+    (at rb3 parkingArea3)
+
+ 
+
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;machine_capacity for a forklift
+    (= (machine_capacity rb1) 10)
+    (= (machine_capacity rb2) 10)
+
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;machine_capacity for a bulldozer (it can move more material)
+    (= (machine_capacity rb3) 10)
+    (= (machine_capacity rb3) 20)
+    (= (machine_capacity rb3) 30)
+    
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (= (machine_velocity rb1) 50)
+   (= (machine_velocity rb2) 50)
+   (= (machine_velocity rb3) 20)
+   
+   (= (operationCost rb1) 30)
+   (= (operationCost rb2) 30)
+   (= (operationCost rb3) 10)
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (armlow rb1 )
+    (armlow rb2 ) 
+     (armlow rb3 )
+    
+    
+   
+  
+    (= (material_amount_at_location mat1 parkingArea1) 0)
+   (= (material_amount_at_location mat1 parkingArea2) 0)
+   (= (material_amount_at_location mat1 parkingArea3) 0)
+    (= (material_amount_at_location mat1 wp1) 0)
+    (= (material_amount_at_location mat1 wp2) 0)
+    (= (material_amount_at_location mat1 wp3) 0)
+    (= (material_amount_at_location mat1 wp4) 0)
+    (= (material_amount_at_location mat1 wp5) 0)
+    (= (material_amount_at_location mat1 wp6) 0)
+    (= (material_amount_at_location mat1 wp7) 0)
+    (= (material_amount_at_location mat1 wp8) 0)
+    (= (material_amount_at_location mat1 wp9) 10)
+    (= (material_amount_at_location mat1 wp10) 0)
+    (= (material_amount_at_location mat1 wp11) 0)
+    (= (material_amount_at_location mat1 wp12) 0)
+    
+    
+    
+    
+    (= (material_amount_at_location mat2 parkingArea1) 0)
+    (= (material_amount_at_location mat2 parkingArea2) 0)
+    (= (material_amount_at_location mat2 parkingArea3) 0)
+    (= (material_amount_at_location mat2 wp1) 0)
+    (= (material_amount_at_location mat2 wp2) 0)
+    (= (material_amount_at_location mat2 wp3) 0)
+    (= (material_amount_at_location mat2 wp4) 0)
+    (= (material_amount_at_location mat2 wp5) 0)
+    (= (material_amount_at_location mat2 wp6) 0)
+    (= (material_amount_at_location mat2 wp7) 0)
+    (= (material_amount_at_location mat2 wp8) 0)
+    (= (material_amount_at_location mat2 wp9) 0)
+    (= (material_amount_at_location mat2 wp10) 10)
+    (= (material_amount_at_location mat2 wp11) 0)
+    (= (material_amount_at_location mat2 wp12) 0)
+    
+    
+    
+  
+    (= (material_amount_at_location mat3 parkingArea1) 0)
+    (= (material_amount_at_location mat3 parkingArea2) 0)
+    (= (material_amount_at_location mat3 parkingArea3) 0)
+    (= (material_amount_at_location mat3 wp1) 0)
+    (= (material_amount_at_location mat3 wp2) 0)
+    (= (material_amount_at_location mat3 wp3) 0)
+    (= (material_amount_at_location mat3 wp4) 0)
+    (= (material_amount_at_location mat3 wp5) 0)
+    (= (material_amount_at_location mat3 wp6) 0)
+    (= (material_amount_at_location mat3 wp7) 0)
+    (= (material_amount_at_location mat3 wp8) 0)
+    (= (material_amount_at_location mat3 wp9) 10)
+    (= (material_amount_at_location mat3 wp10) 0)
+    (= (material_amount_at_location mat3 wp11) 0)
+    (= (material_amount_at_location mat3 wp12) 0)
+ 
+
+    
+    
+
+  
+    (= (material_amount_at_location mat4 parkingArea1) 0)
+    (= (material_amount_at_location mat4 parkingArea2) 0)
+    (= (material_amount_at_location mat4 parkingArea3) 0)
+    (= (material_amount_at_location mat4 wp1) 0)
+    (= (material_amount_at_location mat4 wp2) 0)
+    (= (material_amount_at_location mat4 wp3) 0)
+    (= (material_amount_at_location mat4 wp4) 0)
+    (= (material_amount_at_location mat4 wp5) 0)
+    (= (material_amount_at_location mat4 wp6) 0)
+    (= (material_amount_at_location mat4 wp7) 0)
+    (= (material_amount_at_location mat4 wp8) 0)
+    (= (material_amount_at_location mat4 wp9) 10)
+    (= (material_amount_at_location mat4 wp10) 0)
+    (= (material_amount_at_location mat4 wp11) 0)
+    (= (material_amount_at_location mat4 wp12) 0)
+  
+    
+    
+    
+    
+    (= (material_amount_at_location mat5 parkingArea1) 0)
+    (= (material_amount_at_location mat5 parkingArea2) 0)
+    (= (material_amount_at_location mat5 parkingArea3) 0)
+    (= (material_amount_at_location mat5 wp1) 0)
+    (= (material_amount_at_location mat5 wp2) 0)
+    (= (material_amount_at_location mat5 wp3) 0)
+    (= (material_amount_at_location mat5 wp4) 0)
+    (= (material_amount_at_location mat5 wp5) 10)
+    (= (material_amount_at_location mat5 wp6) 0)
+    (= (material_amount_at_location mat5 wp7) 0)
+    (= (material_amount_at_location mat5 wp8) 0)
+    (= (material_amount_at_location mat5 wp9) 0)
+    (= (material_amount_at_location mat5 wp10) 0)
+    (= (material_amount_at_location mat5 wp11) 0)
+    (= (material_amount_at_location mat5 wp12) 0)
+    
+    
+    (on mat3 mat1 wp9)
+    (on mat4 mat3 wp9)
+    (IsNotStacked mat2 wp10)
+    (IsNotStacked mat5 wp5)
+    (onGround mat1 wp9)
+    (onGround mat2 wp10)
+    (onGround mat5 wp5)
+   
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     ;;clear spaces
+     (clear wp1) 
+     (clear wp2)
+     (clear wp3) 
+     (clear wp4) 
+     ;;(clear wp5)
+     (clear wp6) 
+     (clear wp7) 
+     (clear wp8)
+     ;;(clear wp9) 
+     ;;(clear wp10) 
+     (clear wp11)
+     (clear wp12)
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     (noRobotAtLocation wp1) 
+     (noRobotAtLocation wp2) 
+     (noRobotAtLocation wp3) 
+     (noRobotAtLocation wp4) 
+     (noRobotAtLocation wp5)
+     (noRobotAtLocation wp6) 
+     (noRobotAtLocation wp7) 
+     (noRobotAtLocation wp8)
+     (noRobotAtLocation wp9) 
+     (noRobotAtLocation wp10) 
+     (noRobotAtLocation wp11)
+     (noRobotAtLocation wp12) 
+     (noRobotAtLocation wp6)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     )
+	(:goal (and 
+	(= (material_amount_at_location mat2 wp4) 10)
+	;;(gg wp4 mat2)
+	))
+	(:metric minimize(total_cost))
+)
