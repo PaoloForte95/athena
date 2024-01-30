@@ -1,6 +1,6 @@
 add_compile_options(-std=c++17)
 INCLUDE(FindProtobuf)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(Protobuf REQUIRED)
 PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER executionplan.proto)
 add_library(proto SHARED ${PROTO_HEADER} ${PROTO_SRC})
 ament_target_dependencies(proto Protobuf)

@@ -16,7 +16,7 @@ find_package(ament_index_cpp REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(athena_protobuf REQUIRED)
-find_package(protobuf REQUIRED)
+find_package(Protobuf REQUIRED)
 
 
 include_directories(
@@ -34,7 +34,7 @@ set(dependencies
   athena_core
   athena_msgs
   athena_protobuf
-  protobuf
+  Protobuf
 )
 
 set(executable_name task_planner_server)
