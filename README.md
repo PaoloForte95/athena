@@ -1,18 +1,19 @@
 # Athena
 
+<p align="center">
+  <img height="300" src="doc/logo.png" />
+</p>
+
 Athena is a ROS2 planning framework based on behavior trees. Its main features are:
 
 * Compute execution plan for problem defined with PDDL 3.1 and HDDL 1.0.
 * Compute total ordered, partial ordered, and concurrent plans.
 * Dispatch and execute the actions using behavior tree.
 
-<p align="center">
-  <img height="300" src="doc/logo.png" />
-</p>
-
 # Overview
 
 # Getting Started
+First, install <a href="https://protobuf.dev/overview/">protobuf</a>.
 
 ## Installation
 To install, clone this repository and build the source code with colcon:
@@ -26,7 +27,7 @@ To build the task planner executable that calls the Java code to parse the plann
 $ cd src/athena/athena_protobuf/
 $ ./gradlew build
 ```
-This will create an executable .jar file into athena_planner/Planners to call the task planner.
+This will create an executable .jar file into athena_planner/Planners called task_planner.
 
 ## Running an example
 
@@ -39,14 +40,11 @@ source install/setup.bash
 ```
 ros2 launch athena_launch planning.py
 ```
-4) Open a new terminal and run:
-For PDDL:
+4) Open a new terminal, souce the setup file, and run: 
 ```
-source install/setup.bash
-ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/PDDL/Domain.pddl, planning_problem: src/athena/athena_example/PDDL/Problem.pddl}"
-```
-For HDDL:
-```
-source install/setup.bash
 ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/athena_example/HDDL/construction/problems/pfile01.hddl}"
+
 ```
+
+# Add your own planner
+The framework facilitates the easy integration of new task planners into the list of selectable planners.
