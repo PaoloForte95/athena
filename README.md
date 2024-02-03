@@ -13,7 +13,7 @@ Athena is a ROS2 planning framework based on behavior trees. Its main features a
 # Overview
 
 # Getting Started
-First, install <a href="https://protobuf.dev/overview/">protobuf</a>.
+First, install <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>.
 
 ## Installation
 To install, clone this repository and build the source code with colcon:
@@ -27,24 +27,23 @@ To build the task planner executable that calls the Java code to parse the plann
 $ cd src/athena/athena_protobuf/
 $ ./gradlew build
 ```
-This will create an executable .jar file into athena_planner/Planners called task_planner.
+This will create an executable .jar file into athena_planner/Planners called task_planner. This will be used to compute the plan.
 
 ## Running an example
 
-1) Start a terminal in your GUI
-2) Source the setup file
+1) Start a terminal and source the setup file
 ```
 source install/setup.bash
 ```
-3) In the same terminal, run:
+2) In the same terminal, run:
 ```
 ros2 launch athena_launch planning.py
 ```
-4) Open a new terminal, souce the setup file, and run: 
+3) Open a new terminal, source the setup file, and run: 
 ```
 ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/athena_example/HDDL/construction/problems/pfile01.hddl}"
 
 ```
 
 # Add your own planner
-The framework facilitates the easy integration of new task planners into the list of selectable planners.
+The framework facilitates the easy integration of new task planners into the list of selectable planners. To add a new planner to the framework, download your planner(or create a jar file with the main function to execute it) and place it in the athena_planner/Planners folder. Then, create a plugin for the custom planner.
