@@ -117,7 +117,7 @@ if (status == -1) {
 
 
   athena_protobuf::Plan plan;
-  athena::ExecutionPlan execution_proto_plan = plan.ParseFile(proto_filename_);
+  athena::ProtoExecutionPlan execution_proto_plan = plan.ParseFile(proto_filename_);
   execution_plan.actions = plan.GetActions(execution_proto_plan);
   return execution_plan;
 }

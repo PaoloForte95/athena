@@ -6,16 +6,13 @@
 
 #include "gtest/gtest.h"
 
-
 #include "athena_protobuf/execution_plan.hpp"
 #include "athena_protobuf/action.hpp"
 #include "athena_protobuf/executionplan.pb.h"
-
-
 using namespace std;
 
 
-std::string toString(athena::Action action){
+std::string toString(athena::ProtoAction action){
     std::string info;
     std::stringstream parent_ids;
     std::copy(action.parents().begin(), action.parents().end(), std::ostream_iterator<int>(parent_ids, " "));
@@ -35,7 +32,7 @@ TEST(PlanReaderTest, plan_reader)
 
   std::string proto_file = "ExePlan.data";
   athena_protobuf::Plan plan;
-  athena::ExecutionPlan execution_plan = plan.ParseFile(proto_file);
+  athena::ProtoExecutionPlan execution_plan = plan.ParseFile(proto_file);
 
   auto actions = plan.GetActions(execution_plan);
 
@@ -43,6 +40,9 @@ TEST(PlanReaderTest, plan_reader)
     cout << action.name << endl;
     cout << action.robotid << endl;
   }
+}
 
-
+int main(int argc, char **argv) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -10,15 +10,15 @@ option java_package = "org.athena.athena_protobuf";
 option java_outer_classname = "ExecutionPlanProtos";
 // [END java_declaration]
 
-message Problem{
+
+// [START messages]
+message ProtoProblem{
   string domain = 1;
   string problem = 2;
 }
 
-
-// [START messages]
 //An action is defined by its name, the robot associated to it and its parents
-message Action {
+message ProtoAction {
   string name = 1;
   int32 id = 2;
   int32 robotID = 3;
@@ -28,15 +28,15 @@ message Action {
 }
 
 //A Method is defined by a set of actions. 
-message Method{
+message ProtoMethod{
   string name = 1;
   int32 id = 2;
   repeated int32 actions_ids = 3;
 }
 
 // The execution Plan contains a set of actions
-message ExecutionPlan {
-  repeated Action action = 1;
-  repeated Method method = 2;
+message ProtoExecutionPlan {
+  repeated ProtoAction action = 1;
+  repeated ProtoMethod method = 2;
 }
 // [END messages]

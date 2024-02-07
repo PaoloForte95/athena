@@ -11,7 +11,7 @@ using namespace std;
 
 namespace athena_protobuf{
 
-std::vector<athena_msgs::msg::Action> Plan::GetActions(const athena::ExecutionPlan& execution_plan) {
+std::vector<athena_msgs::msg::Action> Plan::GetActions(const athena::ProtoExecutionPlan& execution_plan) {
   std::vector<athena_msgs::msg::Action> actions;
   for (int i = 0; i < execution_plan.action_size(); i++) {
     athena_msgs::msg::Action act;
@@ -30,7 +30,7 @@ std::vector<athena_msgs::msg::Action> Plan::GetActions(const athena::ExecutionPl
   return actions;
 }
 
-std::vector<athena_msgs::msg::Method> Plan::getMethods(const athena::ExecutionPlan& execution_plan){
+std::vector<athena_msgs::msg::Method> Plan::getMethods(const athena::ProtoExecutionPlan& execution_plan){
   std::vector<athena_msgs::msg::Method> methods;
   for (int i = 0; i < execution_plan.method_size(); i++) {
     athena_msgs::msg::Method method;
@@ -46,8 +46,8 @@ std::vector<athena_msgs::msg::Method> Plan::getMethods(const athena::ExecutionPl
 }
 
 
-athena::ExecutionPlan Plan::ParseFile(std::string file){
-athena::ExecutionPlan execution_plan;
+athena::ProtoExecutionPlan Plan::ParseFile(std::string file){
+athena::ProtoExecutionPlan execution_plan;
   { 
     // Read the existing Execution Plan.
     fstream input(file, ios::in | ios::binary);

@@ -55,46 +55,46 @@ struct TableStruct_executionplan_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_executionplan_2eproto;
 namespace athena {
-class Action;
-class ActionDefaultTypeInternal;
-extern ActionDefaultTypeInternal _Action_default_instance_;
-class ExecutionPlan;
-class ExecutionPlanDefaultTypeInternal;
-extern ExecutionPlanDefaultTypeInternal _ExecutionPlan_default_instance_;
-class Method;
-class MethodDefaultTypeInternal;
-extern MethodDefaultTypeInternal _Method_default_instance_;
-class Problem;
-class ProblemDefaultTypeInternal;
-extern ProblemDefaultTypeInternal _Problem_default_instance_;
+class ProtoAction;
+class ProtoActionDefaultTypeInternal;
+extern ProtoActionDefaultTypeInternal _ProtoAction_default_instance_;
+class ProtoExecutionPlan;
+class ProtoExecutionPlanDefaultTypeInternal;
+extern ProtoExecutionPlanDefaultTypeInternal _ProtoExecutionPlan_default_instance_;
+class ProtoMethod;
+class ProtoMethodDefaultTypeInternal;
+extern ProtoMethodDefaultTypeInternal _ProtoMethod_default_instance_;
+class ProtoProblem;
+class ProtoProblemDefaultTypeInternal;
+extern ProtoProblemDefaultTypeInternal _ProtoProblem_default_instance_;
 }  // namespace athena
 PROTOBUF_NAMESPACE_OPEN
-template<> ::athena::Action* Arena::CreateMaybeMessage<::athena::Action>(Arena*);
-template<> ::athena::ExecutionPlan* Arena::CreateMaybeMessage<::athena::ExecutionPlan>(Arena*);
-template<> ::athena::Method* Arena::CreateMaybeMessage<::athena::Method>(Arena*);
-template<> ::athena::Problem* Arena::CreateMaybeMessage<::athena::Problem>(Arena*);
+template<> ::athena::ProtoAction* Arena::CreateMaybeMessage<::athena::ProtoAction>(Arena*);
+template<> ::athena::ProtoExecutionPlan* Arena::CreateMaybeMessage<::athena::ProtoExecutionPlan>(Arena*);
+template<> ::athena::ProtoMethod* Arena::CreateMaybeMessage<::athena::ProtoMethod>(Arena*);
+template<> ::athena::ProtoProblem* Arena::CreateMaybeMessage<::athena::ProtoProblem>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace athena {
 
 // ===================================================================
 
-class Problem PROTOBUF_FINAL :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.Problem) */ {
+class ProtoProblem PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.ProtoProblem) */ {
  public:
-  inline Problem() : Problem(nullptr) {};
-  virtual ~Problem();
+  inline ProtoProblem() : ProtoProblem(nullptr) {};
+  virtual ~ProtoProblem();
 
-  Problem(const Problem& from);
-  Problem(Problem&& from) noexcept
-    : Problem() {
+  ProtoProblem(const ProtoProblem& from);
+  ProtoProblem(ProtoProblem&& from) noexcept
+    : ProtoProblem() {
     *this = ::std::move(from);
   }
 
-  inline Problem& operator=(const Problem& from) {
+  inline ProtoProblem& operator=(const ProtoProblem& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Problem& operator=(Problem&& from) noexcept {
+  inline ProtoProblem& operator=(ProtoProblem&& from) noexcept {
     if (GetArena() == from.GetArena()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -112,20 +112,20 @@ class Problem PROTOBUF_FINAL :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const Problem& default_instance();
+  static const ProtoProblem& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Problem* internal_default_instance() {
-    return reinterpret_cast<const Problem*>(
-               &_Problem_default_instance_);
+  static inline const ProtoProblem* internal_default_instance() {
+    return reinterpret_cast<const ProtoProblem*>(
+               &_ProtoProblem_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(Problem& a, Problem& b) {
+  friend void swap(ProtoProblem& a, ProtoProblem& b) {
     a.Swap(&b);
   }
-  inline void Swap(Problem* other) {
+  inline void Swap(ProtoProblem* other) {
     if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
@@ -133,7 +133,7 @@ class Problem PROTOBUF_FINAL :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Problem* other) {
+  void UnsafeArenaSwap(ProtoProblem* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -141,17 +141,17 @@ class Problem PROTOBUF_FINAL :
 
   // implements Message ----------------------------------------------
 
-  inline Problem* New() const final {
-    return CreateMaybeMessage<Problem>(nullptr);
+  inline ProtoProblem* New() const final {
+    return CreateMaybeMessage<ProtoProblem>(nullptr);
   }
 
-  Problem* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Problem>(arena);
+  ProtoProblem* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ProtoProblem>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Problem& from);
-  void MergeFrom(const Problem& from);
+  void CopyFrom(const ProtoProblem& from);
+  void MergeFrom(const ProtoProblem& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -165,13 +165,13 @@ class Problem PROTOBUF_FINAL :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Problem* other);
+  void InternalSwap(ProtoProblem* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "athena.Problem";
+    return "athena.ProtoProblem";
   }
   protected:
-  explicit Problem(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit ProtoProblem(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -244,7 +244,7 @@ class Problem PROTOBUF_FINAL :
   std::string* _internal_mutable_problem();
   public:
 
-  // @@protoc_insertion_point(class_scope:athena.Problem)
+  // @@protoc_insertion_point(class_scope:athena.ProtoProblem)
  private:
   class _Internal;
 
@@ -258,23 +258,23 @@ class Problem PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
-class Action PROTOBUF_FINAL :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.Action) */ {
+class ProtoAction PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.ProtoAction) */ {
  public:
-  inline Action() : Action(nullptr) {};
-  virtual ~Action();
+  inline ProtoAction() : ProtoAction(nullptr) {};
+  virtual ~ProtoAction();
 
-  Action(const Action& from);
-  Action(Action&& from) noexcept
-    : Action() {
+  ProtoAction(const ProtoAction& from);
+  ProtoAction(ProtoAction&& from) noexcept
+    : ProtoAction() {
     *this = ::std::move(from);
   }
 
-  inline Action& operator=(const Action& from) {
+  inline ProtoAction& operator=(const ProtoAction& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Action& operator=(Action&& from) noexcept {
+  inline ProtoAction& operator=(ProtoAction&& from) noexcept {
     if (GetArena() == from.GetArena()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -292,20 +292,20 @@ class Action PROTOBUF_FINAL :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const Action& default_instance();
+  static const ProtoAction& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Action* internal_default_instance() {
-    return reinterpret_cast<const Action*>(
-               &_Action_default_instance_);
+  static inline const ProtoAction* internal_default_instance() {
+    return reinterpret_cast<const ProtoAction*>(
+               &_ProtoAction_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     1;
 
-  friend void swap(Action& a, Action& b) {
+  friend void swap(ProtoAction& a, ProtoAction& b) {
     a.Swap(&b);
   }
-  inline void Swap(Action* other) {
+  inline void Swap(ProtoAction* other) {
     if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
@@ -313,7 +313,7 @@ class Action PROTOBUF_FINAL :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Action* other) {
+  void UnsafeArenaSwap(ProtoAction* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -321,17 +321,17 @@ class Action PROTOBUF_FINAL :
 
   // implements Message ----------------------------------------------
 
-  inline Action* New() const final {
-    return CreateMaybeMessage<Action>(nullptr);
+  inline ProtoAction* New() const final {
+    return CreateMaybeMessage<ProtoAction>(nullptr);
   }
 
-  Action* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Action>(arena);
+  ProtoAction* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ProtoAction>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Action& from);
-  void MergeFrom(const Action& from);
+  void CopyFrom(const ProtoAction& from);
+  void MergeFrom(const ProtoAction& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -345,13 +345,13 @@ class Action PROTOBUF_FINAL :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Action* other);
+  void InternalSwap(ProtoAction* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "athena.Action";
+    return "athena.ProtoAction";
   }
   protected:
-  explicit Action(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit ProtoAction(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -476,7 +476,7 @@ class Action PROTOBUF_FINAL :
   void _internal_set_material(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // @@protoc_insertion_point(class_scope:athena.Action)
+  // @@protoc_insertion_point(class_scope:athena.ProtoAction)
  private:
   class _Internal;
 
@@ -495,23 +495,23 @@ class Action PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
-class Method PROTOBUF_FINAL :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.Method) */ {
+class ProtoMethod PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.ProtoMethod) */ {
  public:
-  inline Method() : Method(nullptr) {};
-  virtual ~Method();
+  inline ProtoMethod() : ProtoMethod(nullptr) {};
+  virtual ~ProtoMethod();
 
-  Method(const Method& from);
-  Method(Method&& from) noexcept
-    : Method() {
+  ProtoMethod(const ProtoMethod& from);
+  ProtoMethod(ProtoMethod&& from) noexcept
+    : ProtoMethod() {
     *this = ::std::move(from);
   }
 
-  inline Method& operator=(const Method& from) {
+  inline ProtoMethod& operator=(const ProtoMethod& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Method& operator=(Method&& from) noexcept {
+  inline ProtoMethod& operator=(ProtoMethod&& from) noexcept {
     if (GetArena() == from.GetArena()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -529,20 +529,20 @@ class Method PROTOBUF_FINAL :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const Method& default_instance();
+  static const ProtoMethod& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Method* internal_default_instance() {
-    return reinterpret_cast<const Method*>(
-               &_Method_default_instance_);
+  static inline const ProtoMethod* internal_default_instance() {
+    return reinterpret_cast<const ProtoMethod*>(
+               &_ProtoMethod_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     2;
 
-  friend void swap(Method& a, Method& b) {
+  friend void swap(ProtoMethod& a, ProtoMethod& b) {
     a.Swap(&b);
   }
-  inline void Swap(Method* other) {
+  inline void Swap(ProtoMethod* other) {
     if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
@@ -550,7 +550,7 @@ class Method PROTOBUF_FINAL :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Method* other) {
+  void UnsafeArenaSwap(ProtoMethod* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -558,17 +558,17 @@ class Method PROTOBUF_FINAL :
 
   // implements Message ----------------------------------------------
 
-  inline Method* New() const final {
-    return CreateMaybeMessage<Method>(nullptr);
+  inline ProtoMethod* New() const final {
+    return CreateMaybeMessage<ProtoMethod>(nullptr);
   }
 
-  Method* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Method>(arena);
+  ProtoMethod* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ProtoMethod>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Method& from);
-  void MergeFrom(const Method& from);
+  void CopyFrom(const ProtoMethod& from);
+  void MergeFrom(const ProtoMethod& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -582,13 +582,13 @@ class Method PROTOBUF_FINAL :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Method* other);
+  void InternalSwap(ProtoMethod* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "athena.Method";
+    return "athena.ProtoMethod";
   }
   protected:
-  explicit Method(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit ProtoMethod(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -668,7 +668,7 @@ class Method PROTOBUF_FINAL :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
-  // @@protoc_insertion_point(class_scope:athena.Method)
+  // @@protoc_insertion_point(class_scope:athena.ProtoMethod)
  private:
   class _Internal;
 
@@ -684,23 +684,23 @@ class Method PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
-class ExecutionPlan PROTOBUF_FINAL :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.ExecutionPlan) */ {
+class ProtoExecutionPlan PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:athena.ProtoExecutionPlan) */ {
  public:
-  inline ExecutionPlan() : ExecutionPlan(nullptr) {};
-  virtual ~ExecutionPlan();
+  inline ProtoExecutionPlan() : ProtoExecutionPlan(nullptr) {};
+  virtual ~ProtoExecutionPlan();
 
-  ExecutionPlan(const ExecutionPlan& from);
-  ExecutionPlan(ExecutionPlan&& from) noexcept
-    : ExecutionPlan() {
+  ProtoExecutionPlan(const ProtoExecutionPlan& from);
+  ProtoExecutionPlan(ProtoExecutionPlan&& from) noexcept
+    : ProtoExecutionPlan() {
     *this = ::std::move(from);
   }
 
-  inline ExecutionPlan& operator=(const ExecutionPlan& from) {
+  inline ProtoExecutionPlan& operator=(const ProtoExecutionPlan& from) {
     CopyFrom(from);
     return *this;
   }
-  inline ExecutionPlan& operator=(ExecutionPlan&& from) noexcept {
+  inline ProtoExecutionPlan& operator=(ProtoExecutionPlan&& from) noexcept {
     if (GetArena() == from.GetArena()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -718,20 +718,20 @@ class ExecutionPlan PROTOBUF_FINAL :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const ExecutionPlan& default_instance();
+  static const ProtoExecutionPlan& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const ExecutionPlan* internal_default_instance() {
-    return reinterpret_cast<const ExecutionPlan*>(
-               &_ExecutionPlan_default_instance_);
+  static inline const ProtoExecutionPlan* internal_default_instance() {
+    return reinterpret_cast<const ProtoExecutionPlan*>(
+               &_ProtoExecutionPlan_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     3;
 
-  friend void swap(ExecutionPlan& a, ExecutionPlan& b) {
+  friend void swap(ProtoExecutionPlan& a, ProtoExecutionPlan& b) {
     a.Swap(&b);
   }
-  inline void Swap(ExecutionPlan* other) {
+  inline void Swap(ProtoExecutionPlan* other) {
     if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
@@ -739,7 +739,7 @@ class ExecutionPlan PROTOBUF_FINAL :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(ExecutionPlan* other) {
+  void UnsafeArenaSwap(ProtoExecutionPlan* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -747,17 +747,17 @@ class ExecutionPlan PROTOBUF_FINAL :
 
   // implements Message ----------------------------------------------
 
-  inline ExecutionPlan* New() const final {
-    return CreateMaybeMessage<ExecutionPlan>(nullptr);
+  inline ProtoExecutionPlan* New() const final {
+    return CreateMaybeMessage<ProtoExecutionPlan>(nullptr);
   }
 
-  ExecutionPlan* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<ExecutionPlan>(arena);
+  ProtoExecutionPlan* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<ProtoExecutionPlan>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const ExecutionPlan& from);
-  void MergeFrom(const ExecutionPlan& from);
+  void CopyFrom(const ProtoExecutionPlan& from);
+  void MergeFrom(const ProtoExecutionPlan& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -771,13 +771,13 @@ class ExecutionPlan PROTOBUF_FINAL :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(ExecutionPlan* other);
+  void InternalSwap(ProtoExecutionPlan* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "athena.ExecutionPlan";
+    return "athena.ProtoExecutionPlan";
   }
   protected:
-  explicit ExecutionPlan(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit ProtoExecutionPlan(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -800,51 +800,51 @@ class ExecutionPlan PROTOBUF_FINAL :
     kActionFieldNumber = 1,
     kMethodFieldNumber = 2,
   };
-  // repeated .athena.Action action = 1;
+  // repeated .athena.ProtoAction action = 1;
   int action_size() const;
   private:
   int _internal_action_size() const;
   public:
   void clear_action();
-  ::athena::Action* mutable_action(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Action >*
+  ::athena::ProtoAction* mutable_action(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoAction >*
       mutable_action();
   private:
-  const ::athena::Action& _internal_action(int index) const;
-  ::athena::Action* _internal_add_action();
+  const ::athena::ProtoAction& _internal_action(int index) const;
+  ::athena::ProtoAction* _internal_add_action();
   public:
-  const ::athena::Action& action(int index) const;
-  ::athena::Action* add_action();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Action >&
+  const ::athena::ProtoAction& action(int index) const;
+  ::athena::ProtoAction* add_action();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoAction >&
       action() const;
 
-  // repeated .athena.Method method = 2;
+  // repeated .athena.ProtoMethod method = 2;
   int method_size() const;
   private:
   int _internal_method_size() const;
   public:
   void clear_method();
-  ::athena::Method* mutable_method(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Method >*
+  ::athena::ProtoMethod* mutable_method(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoMethod >*
       mutable_method();
   private:
-  const ::athena::Method& _internal_method(int index) const;
-  ::athena::Method* _internal_add_method();
+  const ::athena::ProtoMethod& _internal_method(int index) const;
+  ::athena::ProtoMethod* _internal_add_method();
   public:
-  const ::athena::Method& method(int index) const;
-  ::athena::Method* add_method();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Method >&
+  const ::athena::ProtoMethod& method(int index) const;
+  ::athena::ProtoMethod* add_method();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoMethod >&
       method() const;
 
-  // @@protoc_insertion_point(class_scope:athena.ExecutionPlan)
+  // @@protoc_insertion_point(class_scope:athena.ProtoExecutionPlan)
  private:
   class _Internal;
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Action > action_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Method > method_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoAction > action_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoMethod > method_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
 };
@@ -857,60 +857,60 @@ class ExecutionPlan PROTOBUF_FINAL :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// Problem
+// ProtoProblem
 
 // string domain = 1;
-inline void Problem::clear_domain() {
+inline void ProtoProblem::clear_domain() {
   domain_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline const std::string& Problem::domain() const {
-  // @@protoc_insertion_point(field_get:athena.Problem.domain)
+inline const std::string& ProtoProblem::domain() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoProblem.domain)
   return _internal_domain();
 }
-inline void Problem::set_domain(const std::string& value) {
+inline void ProtoProblem::set_domain(const std::string& value) {
   _internal_set_domain(value);
-  // @@protoc_insertion_point(field_set:athena.Problem.domain)
+  // @@protoc_insertion_point(field_set:athena.ProtoProblem.domain)
 }
-inline std::string* Problem::mutable_domain() {
-  // @@protoc_insertion_point(field_mutable:athena.Problem.domain)
+inline std::string* ProtoProblem::mutable_domain() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoProblem.domain)
   return _internal_mutable_domain();
 }
-inline const std::string& Problem::_internal_domain() const {
+inline const std::string& ProtoProblem::_internal_domain() const {
   return domain_.Get();
 }
-inline void Problem::_internal_set_domain(const std::string& value) {
+inline void ProtoProblem::_internal_set_domain(const std::string& value) {
   
   domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void Problem::set_domain(std::string&& value) {
+inline void ProtoProblem::set_domain(std::string&& value) {
   
   domain_.Set(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:athena.Problem.domain)
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoProblem.domain)
 }
-inline void Problem::set_domain(const char* value) {
+inline void ProtoProblem::set_domain(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
               GetArena());
-  // @@protoc_insertion_point(field_set_char:athena.Problem.domain)
+  // @@protoc_insertion_point(field_set_char:athena.ProtoProblem.domain)
 }
-inline void Problem::set_domain(const char* value,
+inline void ProtoProblem::set_domain(const char* value,
     size_t size) {
   
   domain_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:athena.Problem.domain)
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoProblem.domain)
 }
-inline std::string* Problem::_internal_mutable_domain() {
+inline std::string* ProtoProblem::_internal_mutable_domain() {
   
   return domain_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline std::string* Problem::release_domain() {
-  // @@protoc_insertion_point(field_release:athena.Problem.domain)
+inline std::string* ProtoProblem::release_domain() {
+  // @@protoc_insertion_point(field_release:athena.ProtoProblem.domain)
   return domain_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void Problem::set_allocated_domain(std::string* domain) {
+inline void ProtoProblem::set_allocated_domain(std::string* domain) {
   if (domain != nullptr) {
     
   } else {
@@ -918,16 +918,16 @@ inline void Problem::set_allocated_domain(std::string* domain) {
   }
   domain_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), domain,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:athena.Problem.domain)
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoProblem.domain)
 }
-inline std::string* Problem::unsafe_arena_release_domain() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:athena.Problem.domain)
+inline std::string* ProtoProblem::unsafe_arena_release_domain() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoProblem.domain)
   GOOGLE_DCHECK(GetArena() != nullptr);
   
   return domain_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       GetArena());
 }
-inline void Problem::unsafe_arena_set_allocated_domain(
+inline void ProtoProblem::unsafe_arena_set_allocated_domain(
     std::string* domain) {
   GOOGLE_DCHECK(GetArena() != nullptr);
   if (domain != nullptr) {
@@ -937,61 +937,61 @@ inline void Problem::unsafe_arena_set_allocated_domain(
   }
   domain_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       domain, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.Problem.domain)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoProblem.domain)
 }
 
 // string problem = 2;
-inline void Problem::clear_problem() {
+inline void ProtoProblem::clear_problem() {
   problem_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline const std::string& Problem::problem() const {
-  // @@protoc_insertion_point(field_get:athena.Problem.problem)
+inline const std::string& ProtoProblem::problem() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoProblem.problem)
   return _internal_problem();
 }
-inline void Problem::set_problem(const std::string& value) {
+inline void ProtoProblem::set_problem(const std::string& value) {
   _internal_set_problem(value);
-  // @@protoc_insertion_point(field_set:athena.Problem.problem)
+  // @@protoc_insertion_point(field_set:athena.ProtoProblem.problem)
 }
-inline std::string* Problem::mutable_problem() {
-  // @@protoc_insertion_point(field_mutable:athena.Problem.problem)
+inline std::string* ProtoProblem::mutable_problem() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoProblem.problem)
   return _internal_mutable_problem();
 }
-inline const std::string& Problem::_internal_problem() const {
+inline const std::string& ProtoProblem::_internal_problem() const {
   return problem_.Get();
 }
-inline void Problem::_internal_set_problem(const std::string& value) {
+inline void ProtoProblem::_internal_set_problem(const std::string& value) {
   
   problem_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void Problem::set_problem(std::string&& value) {
+inline void ProtoProblem::set_problem(std::string&& value) {
   
   problem_.Set(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:athena.Problem.problem)
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoProblem.problem)
 }
-inline void Problem::set_problem(const char* value) {
+inline void ProtoProblem::set_problem(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   problem_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
               GetArena());
-  // @@protoc_insertion_point(field_set_char:athena.Problem.problem)
+  // @@protoc_insertion_point(field_set_char:athena.ProtoProblem.problem)
 }
-inline void Problem::set_problem(const char* value,
+inline void ProtoProblem::set_problem(const char* value,
     size_t size) {
   
   problem_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:athena.Problem.problem)
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoProblem.problem)
 }
-inline std::string* Problem::_internal_mutable_problem() {
+inline std::string* ProtoProblem::_internal_mutable_problem() {
   
   return problem_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline std::string* Problem::release_problem() {
-  // @@protoc_insertion_point(field_release:athena.Problem.problem)
+inline std::string* ProtoProblem::release_problem() {
+  // @@protoc_insertion_point(field_release:athena.ProtoProblem.problem)
   return problem_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void Problem::set_allocated_problem(std::string* problem) {
+inline void ProtoProblem::set_allocated_problem(std::string* problem) {
   if (problem != nullptr) {
     
   } else {
@@ -999,16 +999,16 @@ inline void Problem::set_allocated_problem(std::string* problem) {
   }
   problem_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), problem,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:athena.Problem.problem)
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoProblem.problem)
 }
-inline std::string* Problem::unsafe_arena_release_problem() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:athena.Problem.problem)
+inline std::string* ProtoProblem::unsafe_arena_release_problem() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoProblem.problem)
   GOOGLE_DCHECK(GetArena() != nullptr);
   
   return problem_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       GetArena());
 }
-inline void Problem::unsafe_arena_set_allocated_problem(
+inline void ProtoProblem::unsafe_arena_set_allocated_problem(
     std::string* problem) {
   GOOGLE_DCHECK(GetArena() != nullptr);
   if (problem != nullptr) {
@@ -1018,65 +1018,65 @@ inline void Problem::unsafe_arena_set_allocated_problem(
   }
   problem_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       problem, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.Problem.problem)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoProblem.problem)
 }
 
 // -------------------------------------------------------------------
 
-// Action
+// ProtoAction
 
 // string name = 1;
-inline void Action::clear_name() {
+inline void ProtoAction::clear_name() {
   name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline const std::string& Action::name() const {
-  // @@protoc_insertion_point(field_get:athena.Action.name)
+inline const std::string& ProtoAction::name() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.name)
   return _internal_name();
 }
-inline void Action::set_name(const std::string& value) {
+inline void ProtoAction::set_name(const std::string& value) {
   _internal_set_name(value);
-  // @@protoc_insertion_point(field_set:athena.Action.name)
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.name)
 }
-inline std::string* Action::mutable_name() {
-  // @@protoc_insertion_point(field_mutable:athena.Action.name)
+inline std::string* ProtoAction::mutable_name() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.name)
   return _internal_mutable_name();
 }
-inline const std::string& Action::_internal_name() const {
+inline const std::string& ProtoAction::_internal_name() const {
   return name_.Get();
 }
-inline void Action::_internal_set_name(const std::string& value) {
+inline void ProtoAction::_internal_set_name(const std::string& value) {
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void Action::set_name(std::string&& value) {
+inline void ProtoAction::set_name(std::string&& value) {
   
   name_.Set(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:athena.Action.name)
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoAction.name)
 }
-inline void Action::set_name(const char* value) {
+inline void ProtoAction::set_name(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
               GetArena());
-  // @@protoc_insertion_point(field_set_char:athena.Action.name)
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.name)
 }
-inline void Action::set_name(const char* value,
+inline void ProtoAction::set_name(const char* value,
     size_t size) {
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:athena.Action.name)
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.name)
 }
-inline std::string* Action::_internal_mutable_name() {
+inline std::string* ProtoAction::_internal_mutable_name() {
   
   return name_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline std::string* Action::release_name() {
-  // @@protoc_insertion_point(field_release:athena.Action.name)
+inline std::string* ProtoAction::release_name() {
+  // @@protoc_insertion_point(field_release:athena.ProtoAction.name)
   return name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void Action::set_allocated_name(std::string* name) {
+inline void ProtoAction::set_allocated_name(std::string* name) {
   if (name != nullptr) {
     
   } else {
@@ -1084,16 +1084,16 @@ inline void Action::set_allocated_name(std::string* name) {
   }
   name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:athena.Action.name)
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoAction.name)
 }
-inline std::string* Action::unsafe_arena_release_name() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:athena.Action.name)
+inline std::string* ProtoAction::unsafe_arena_release_name() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoAction.name)
   GOOGLE_DCHECK(GetArena() != nullptr);
   
   return name_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       GetArena());
 }
-inline void Action::unsafe_arena_set_allocated_name(
+inline void ProtoAction::unsafe_arena_set_allocated_name(
     std::string* name) {
   GOOGLE_DCHECK(GetArena() != nullptr);
   if (name != nullptr) {
@@ -1103,246 +1103,246 @@ inline void Action::unsafe_arena_set_allocated_name(
   }
   name_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       name, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.Action.name)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoAction.name)
 }
 
 // int32 id = 2;
-inline void Action::clear_id() {
+inline void ProtoAction::clear_id() {
   id_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::id() const {
-  // @@protoc_insertion_point(field_get:athena.Action.id)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::id() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.id)
   return _internal_id();
 }
-inline void Action::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
   id_ = value;
 }
-inline void Action::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:athena.Action.id)
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.id)
 }
 
 // int32 robotID = 3;
-inline void Action::clear_robotid() {
+inline void ProtoAction::clear_robotid() {
   robotid_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::_internal_robotid() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_robotid() const {
   return robotid_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::robotid() const {
-  // @@protoc_insertion_point(field_get:athena.Action.robotID)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::robotid() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.robotID)
   return _internal_robotid();
 }
-inline void Action::_internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::_internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
   robotid_ = value;
 }
-inline void Action::set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_robotid(value);
-  // @@protoc_insertion_point(field_set:athena.Action.robotID)
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.robotID)
 }
 
 // repeated string waypoints = 4;
-inline int Action::_internal_waypoints_size() const {
+inline int ProtoAction::_internal_waypoints_size() const {
   return waypoints_.size();
 }
-inline int Action::waypoints_size() const {
+inline int ProtoAction::waypoints_size() const {
   return _internal_waypoints_size();
 }
-inline void Action::clear_waypoints() {
+inline void ProtoAction::clear_waypoints() {
   waypoints_.Clear();
 }
-inline std::string* Action::add_waypoints() {
-  // @@protoc_insertion_point(field_add_mutable:athena.Action.waypoints)
+inline std::string* ProtoAction::add_waypoints() {
+  // @@protoc_insertion_point(field_add_mutable:athena.ProtoAction.waypoints)
   return _internal_add_waypoints();
 }
-inline const std::string& Action::_internal_waypoints(int index) const {
+inline const std::string& ProtoAction::_internal_waypoints(int index) const {
   return waypoints_.Get(index);
 }
-inline const std::string& Action::waypoints(int index) const {
-  // @@protoc_insertion_point(field_get:athena.Action.waypoints)
+inline const std::string& ProtoAction::waypoints(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.waypoints)
   return _internal_waypoints(index);
 }
-inline std::string* Action::mutable_waypoints(int index) {
-  // @@protoc_insertion_point(field_mutable:athena.Action.waypoints)
+inline std::string* ProtoAction::mutable_waypoints(int index) {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.waypoints)
   return waypoints_.Mutable(index);
 }
-inline void Action::set_waypoints(int index, const std::string& value) {
-  // @@protoc_insertion_point(field_set:athena.Action.waypoints)
+inline void ProtoAction::set_waypoints(int index, const std::string& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.waypoints)
   waypoints_.Mutable(index)->assign(value);
 }
-inline void Action::set_waypoints(int index, std::string&& value) {
-  // @@protoc_insertion_point(field_set:athena.Action.waypoints)
+inline void ProtoAction::set_waypoints(int index, std::string&& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.waypoints)
   waypoints_.Mutable(index)->assign(std::move(value));
 }
-inline void Action::set_waypoints(int index, const char* value) {
+inline void ProtoAction::set_waypoints(int index, const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   waypoints_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.waypoints)
 }
-inline void Action::set_waypoints(int index, const char* value, size_t size) {
+inline void ProtoAction::set_waypoints(int index, const char* value, size_t size) {
   waypoints_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.waypoints)
 }
-inline std::string* Action::_internal_add_waypoints() {
+inline std::string* ProtoAction::_internal_add_waypoints() {
   return waypoints_.Add();
 }
-inline void Action::add_waypoints(const std::string& value) {
+inline void ProtoAction::add_waypoints(const std::string& value) {
   waypoints_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.waypoints)
 }
-inline void Action::add_waypoints(std::string&& value) {
+inline void ProtoAction::add_waypoints(std::string&& value) {
   waypoints_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.waypoints)
 }
-inline void Action::add_waypoints(const char* value) {
+inline void ProtoAction::add_waypoints(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   waypoints_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_add_char:athena.ProtoAction.waypoints)
 }
-inline void Action::add_waypoints(const char* value, size_t size) {
+inline void ProtoAction::add_waypoints(const char* value, size_t size) {
   waypoints_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:athena.Action.waypoints)
+  // @@protoc_insertion_point(field_add_pointer:athena.ProtoAction.waypoints)
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-Action::waypoints() const {
-  // @@protoc_insertion_point(field_list:athena.Action.waypoints)
+ProtoAction::waypoints() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoAction.waypoints)
   return waypoints_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-Action::mutable_waypoints() {
-  // @@protoc_insertion_point(field_mutable_list:athena.Action.waypoints)
+ProtoAction::mutable_waypoints() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoAction.waypoints)
   return &waypoints_;
 }
 
 // int32 material = 5;
-inline void Action::clear_material() {
+inline void ProtoAction::clear_material() {
   material_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::_internal_material() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_material() const {
   return material_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::material() const {
-  // @@protoc_insertion_point(field_get:athena.Action.material)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::material() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.material)
   return _internal_material();
 }
-inline void Action::_internal_set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::_internal_set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
   material_ = value;
 }
-inline void Action::set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_material(value);
-  // @@protoc_insertion_point(field_set:athena.Action.material)
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.material)
 }
 
 // repeated int32 parents = 6;
-inline int Action::_internal_parents_size() const {
+inline int ProtoAction::_internal_parents_size() const {
   return parents_.size();
 }
-inline int Action::parents_size() const {
+inline int ProtoAction::parents_size() const {
   return _internal_parents_size();
 }
-inline void Action::clear_parents() {
+inline void ProtoAction::clear_parents() {
   parents_.Clear();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::_internal_parents(int index) const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_parents(int index) const {
   return parents_.Get(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::parents(int index) const {
-  // @@protoc_insertion_point(field_get:athena.Action.parents)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::parents(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.parents)
   return _internal_parents(index);
 }
-inline void Action::set_parents(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::set_parents(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
   parents_.Set(index, value);
-  // @@protoc_insertion_point(field_set:athena.Action.parents)
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.parents)
 }
-inline void Action::_internal_add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::_internal_add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
   parents_.Add(value);
 }
-inline void Action::add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_add_parents(value);
-  // @@protoc_insertion_point(field_add:athena.Action.parents)
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.parents)
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
-Action::_internal_parents() const {
+ProtoAction::_internal_parents() const {
   return parents_;
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
-Action::parents() const {
-  // @@protoc_insertion_point(field_list:athena.Action.parents)
+ProtoAction::parents() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoAction.parents)
   return _internal_parents();
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
-Action::_internal_mutable_parents() {
+ProtoAction::_internal_mutable_parents() {
   return &parents_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
-Action::mutable_parents() {
-  // @@protoc_insertion_point(field_mutable_list:athena.Action.parents)
+ProtoAction::mutable_parents() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoAction.parents)
   return _internal_mutable_parents();
 }
 
 // -------------------------------------------------------------------
 
-// Method
+// ProtoMethod
 
 // string name = 1;
-inline void Method::clear_name() {
+inline void ProtoMethod::clear_name() {
   name_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline const std::string& Method::name() const {
-  // @@protoc_insertion_point(field_get:athena.Method.name)
+inline const std::string& ProtoMethod::name() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.name)
   return _internal_name();
 }
-inline void Method::set_name(const std::string& value) {
+inline void ProtoMethod::set_name(const std::string& value) {
   _internal_set_name(value);
-  // @@protoc_insertion_point(field_set:athena.Method.name)
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.name)
 }
-inline std::string* Method::mutable_name() {
-  // @@protoc_insertion_point(field_mutable:athena.Method.name)
+inline std::string* ProtoMethod::mutable_name() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoMethod.name)
   return _internal_mutable_name();
 }
-inline const std::string& Method::_internal_name() const {
+inline const std::string& ProtoMethod::_internal_name() const {
   return name_.Get();
 }
-inline void Method::_internal_set_name(const std::string& value) {
+inline void ProtoMethod::_internal_set_name(const std::string& value) {
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void Method::set_name(std::string&& value) {
+inline void ProtoMethod::set_name(std::string&& value) {
   
   name_.Set(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:athena.Method.name)
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoMethod.name)
 }
-inline void Method::set_name(const char* value) {
+inline void ProtoMethod::set_name(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
               GetArena());
-  // @@protoc_insertion_point(field_set_char:athena.Method.name)
+  // @@protoc_insertion_point(field_set_char:athena.ProtoMethod.name)
 }
-inline void Method::set_name(const char* value,
+inline void ProtoMethod::set_name(const char* value,
     size_t size) {
   
   name_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:athena.Method.name)
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoMethod.name)
 }
-inline std::string* Method::_internal_mutable_name() {
+inline std::string* ProtoMethod::_internal_mutable_name() {
   
   return name_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline std::string* Method::release_name() {
-  // @@protoc_insertion_point(field_release:athena.Method.name)
+inline std::string* ProtoMethod::release_name() {
+  // @@protoc_insertion_point(field_release:athena.ProtoMethod.name)
   return name_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void Method::set_allocated_name(std::string* name) {
+inline void ProtoMethod::set_allocated_name(std::string* name) {
   if (name != nullptr) {
     
   } else {
@@ -1350,16 +1350,16 @@ inline void Method::set_allocated_name(std::string* name) {
   }
   name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:athena.Method.name)
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoMethod.name)
 }
-inline std::string* Method::unsafe_arena_release_name() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:athena.Method.name)
+inline std::string* ProtoMethod::unsafe_arena_release_name() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoMethod.name)
   GOOGLE_DCHECK(GetArena() != nullptr);
   
   return name_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       GetArena());
 }
-inline void Method::unsafe_arena_set_allocated_name(
+inline void ProtoMethod::unsafe_arena_set_allocated_name(
     std::string* name) {
   GOOGLE_DCHECK(GetArena() != nullptr);
   if (name != nullptr) {
@@ -1369,155 +1369,155 @@ inline void Method::unsafe_arena_set_allocated_name(
   }
   name_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       name, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.Method.name)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoMethod.name)
 }
 
 // int32 id = 2;
-inline void Method::clear_id() {
+inline void ProtoMethod::clear_id() {
   id_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Method::_internal_id() const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::_internal_id() const {
   return id_;
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Method::id() const {
-  // @@protoc_insertion_point(field_get:athena.Method.id)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::id() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.id)
   return _internal_id();
 }
-inline void Method::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoMethod::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
   id_ = value;
 }
-inline void Method::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoMethod::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:athena.Method.id)
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.id)
 }
 
 // repeated int32 actions_ids = 3;
-inline int Method::_internal_actions_ids_size() const {
+inline int ProtoMethod::_internal_actions_ids_size() const {
   return actions_ids_.size();
 }
-inline int Method::actions_ids_size() const {
+inline int ProtoMethod::actions_ids_size() const {
   return _internal_actions_ids_size();
 }
-inline void Method::clear_actions_ids() {
+inline void ProtoMethod::clear_actions_ids() {
   actions_ids_.Clear();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Method::_internal_actions_ids(int index) const {
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::_internal_actions_ids(int index) const {
   return actions_ids_.Get(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Method::actions_ids(int index) const {
-  // @@protoc_insertion_point(field_get:athena.Method.actions_ids)
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::actions_ids(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.actions_ids)
   return _internal_actions_ids(index);
 }
-inline void Method::set_actions_ids(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoMethod::set_actions_ids(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
   actions_ids_.Set(index, value);
-  // @@protoc_insertion_point(field_set:athena.Method.actions_ids)
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.actions_ids)
 }
-inline void Method::_internal_add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoMethod::_internal_add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
   actions_ids_.Add(value);
 }
-inline void Method::add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoMethod::add_actions_ids(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_add_actions_ids(value);
-  // @@protoc_insertion_point(field_add:athena.Method.actions_ids)
+  // @@protoc_insertion_point(field_add:athena.ProtoMethod.actions_ids)
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
-Method::_internal_actions_ids() const {
+ProtoMethod::_internal_actions_ids() const {
   return actions_ids_;
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
-Method::actions_ids() const {
-  // @@protoc_insertion_point(field_list:athena.Method.actions_ids)
+ProtoMethod::actions_ids() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoMethod.actions_ids)
   return _internal_actions_ids();
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
-Method::_internal_mutable_actions_ids() {
+ProtoMethod::_internal_mutable_actions_ids() {
   return &actions_ids_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
-Method::mutable_actions_ids() {
-  // @@protoc_insertion_point(field_mutable_list:athena.Method.actions_ids)
+ProtoMethod::mutable_actions_ids() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoMethod.actions_ids)
   return _internal_mutable_actions_ids();
 }
 
 // -------------------------------------------------------------------
 
-// ExecutionPlan
+// ProtoExecutionPlan
 
-// repeated .athena.Action action = 1;
-inline int ExecutionPlan::_internal_action_size() const {
+// repeated .athena.ProtoAction action = 1;
+inline int ProtoExecutionPlan::_internal_action_size() const {
   return action_.size();
 }
-inline int ExecutionPlan::action_size() const {
+inline int ProtoExecutionPlan::action_size() const {
   return _internal_action_size();
 }
-inline void ExecutionPlan::clear_action() {
+inline void ProtoExecutionPlan::clear_action() {
   action_.Clear();
 }
-inline ::athena::Action* ExecutionPlan::mutable_action(int index) {
-  // @@protoc_insertion_point(field_mutable:athena.ExecutionPlan.action)
+inline ::athena::ProtoAction* ProtoExecutionPlan::mutable_action(int index) {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoExecutionPlan.action)
   return action_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Action >*
-ExecutionPlan::mutable_action() {
-  // @@protoc_insertion_point(field_mutable_list:athena.ExecutionPlan.action)
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoAction >*
+ProtoExecutionPlan::mutable_action() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoExecutionPlan.action)
   return &action_;
 }
-inline const ::athena::Action& ExecutionPlan::_internal_action(int index) const {
+inline const ::athena::ProtoAction& ProtoExecutionPlan::_internal_action(int index) const {
   return action_.Get(index);
 }
-inline const ::athena::Action& ExecutionPlan::action(int index) const {
-  // @@protoc_insertion_point(field_get:athena.ExecutionPlan.action)
+inline const ::athena::ProtoAction& ProtoExecutionPlan::action(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoExecutionPlan.action)
   return _internal_action(index);
 }
-inline ::athena::Action* ExecutionPlan::_internal_add_action() {
+inline ::athena::ProtoAction* ProtoExecutionPlan::_internal_add_action() {
   return action_.Add();
 }
-inline ::athena::Action* ExecutionPlan::add_action() {
-  // @@protoc_insertion_point(field_add:athena.ExecutionPlan.action)
+inline ::athena::ProtoAction* ProtoExecutionPlan::add_action() {
+  // @@protoc_insertion_point(field_add:athena.ProtoExecutionPlan.action)
   return _internal_add_action();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Action >&
-ExecutionPlan::action() const {
-  // @@protoc_insertion_point(field_list:athena.ExecutionPlan.action)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoAction >&
+ProtoExecutionPlan::action() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoExecutionPlan.action)
   return action_;
 }
 
-// repeated .athena.Method method = 2;
-inline int ExecutionPlan::_internal_method_size() const {
+// repeated .athena.ProtoMethod method = 2;
+inline int ProtoExecutionPlan::_internal_method_size() const {
   return method_.size();
 }
-inline int ExecutionPlan::method_size() const {
+inline int ProtoExecutionPlan::method_size() const {
   return _internal_method_size();
 }
-inline void ExecutionPlan::clear_method() {
+inline void ProtoExecutionPlan::clear_method() {
   method_.Clear();
 }
-inline ::athena::Method* ExecutionPlan::mutable_method(int index) {
-  // @@protoc_insertion_point(field_mutable:athena.ExecutionPlan.method)
+inline ::athena::ProtoMethod* ProtoExecutionPlan::mutable_method(int index) {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoExecutionPlan.method)
   return method_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Method >*
-ExecutionPlan::mutable_method() {
-  // @@protoc_insertion_point(field_mutable_list:athena.ExecutionPlan.method)
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoMethod >*
+ProtoExecutionPlan::mutable_method() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoExecutionPlan.method)
   return &method_;
 }
-inline const ::athena::Method& ExecutionPlan::_internal_method(int index) const {
+inline const ::athena::ProtoMethod& ProtoExecutionPlan::_internal_method(int index) const {
   return method_.Get(index);
 }
-inline const ::athena::Method& ExecutionPlan::method(int index) const {
-  // @@protoc_insertion_point(field_get:athena.ExecutionPlan.method)
+inline const ::athena::ProtoMethod& ProtoExecutionPlan::method(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoExecutionPlan.method)
   return _internal_method(index);
 }
-inline ::athena::Method* ExecutionPlan::_internal_add_method() {
+inline ::athena::ProtoMethod* ProtoExecutionPlan::_internal_add_method() {
   return method_.Add();
 }
-inline ::athena::Method* ExecutionPlan::add_method() {
-  // @@protoc_insertion_point(field_add:athena.ExecutionPlan.method)
+inline ::athena::ProtoMethod* ProtoExecutionPlan::add_method() {
+  // @@protoc_insertion_point(field_add:athena.ProtoExecutionPlan.method)
   return _internal_add_method();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::Method >&
-ExecutionPlan::method() const {
-  // @@protoc_insertion_point(field_list:athena.ExecutionPlan.method)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::athena::ProtoMethod >&
+ProtoExecutionPlan::method() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoExecutionPlan.method)
   return method_;
 }
 

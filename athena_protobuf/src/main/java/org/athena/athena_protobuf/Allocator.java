@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.athena.athena_protobuf.Action;
-import org.athena.athena_protobuf.ExecutionPlan;
-import org.athena.athena_protobuf.Method;
+import org.athena.athena_protobuf.ProtoAction;
+import org.athena.athena_protobuf.ProtoExecutionPlan;
+import org.athena.athena_protobuf.ProtoMethod;
 
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
@@ -24,10 +24,10 @@ public class Allocator {
         return cycles;
     }
 
-    public int[][] optimize(List<Action> actions, List<Method> methods){
+    public int[][] optimize(List<ProtoAction> actions, List<ProtoMethod> methods){
         Loader.loadNativeLibraries();
         List<Integer> machines = new ArrayList<>();
-        for (Action act: actions){
+        for (ProtoAction act: actions){
             if(!machines.contains(act.getRobotID())){
                 machines.add(act.getRobotID());
             }
@@ -40,13 +40,13 @@ public class Allocator {
         Literal[][] variables = new Literal[machines.size()][methods.size()];
         for(int machine: machines){
             int i = machines.indexOf(machine);
-            for(Method method : methods){
+            for(ProtoMethod method : methods){
                 int j = methods.indexOf(method);
                 variables[i][j] = model.newBoolVar("x"+"["+machine+","+method+"]");
             }
         }
         // Each method is assigned to exactly one machine.
-        for(Method method : methods){
+        for(ProtoMethod method : methods){
             int j = methods.indexOf(method);
             List<Literal> cm = new ArrayList<>();
             for(int machine: machines){
@@ -68,8 +68,8 @@ public class Allocator {
         amounts.put(3,20.0);
 
         HashMap<Integer, Integer> piles = new HashMap<Integer, Integer>();
-        for(Method method : methods){
-            for(Action act: actions){
+        for(ProtoMethod method : methods){
+            for(ProtoAction act: actions){
                 if (method.getActionsIdsList().contains(act.getId())){
                     int matID = act.getMaterial();
                     piles.put(method.getId(), matID);
@@ -101,11 +101,11 @@ public class Allocator {
             private int solutionCount = 0;
             private double optimal_cost = 1000000;
             private final List<Integer> machines;
-            private final List<Method> methods;
+            private final List<ProtoMethod> methods;
             private final Literal[][] variables;
             
             public SolutionPrinterWithLimit(
-                List<Integer> machines, List<Method> methods, Literal[][] variables) {
+                List<Integer> machines, List<ProtoMethod> methods, Literal[][] variables) {
                 solutionCount = 0;
                 this.machines = machines;
                 this.methods = methods;
@@ -184,8 +184,8 @@ public class Allocator {
         }
 
         // Read the existing address book.
-        ExecutionPlan plan = ExecutionPlan.parseFrom(new FileInputStream(args[0]));
-        ExecutionPlan.Builder optimizedPlan = ExecutionPlan.newBuilder();
+        ProtoExecutionPlan plan = ProtoExecutionPlan.parseFrom(new FileInputStream(args[0]));
+        ProtoExecutionPlan.Builder optimizedPlan = ProtoExecutionPlan.newBuilder();
         Allocator allocator = new Allocator();
         allocator.optimize(plan.getActionList(), plan.getMethodList());
 

@@ -109,11 +109,11 @@ jar {
 //}
 
 
-jar {
-  manifest {
-    attributes 'Main-Class': application.mainClass
-  }
-}
+//jar {
+  //manifest {
+   // attributes 'Main-Class': application.mainClass
+  //}
+//}
 
 protobuf {
   protoc {
@@ -124,6 +124,7 @@ protobuf {
     grpc {
       artifact = 'io.grpc:protoc-gen-grpc-java:1.35.0'
     }
+    //cpp {}
   }
   
   generateProtoTasks {
@@ -141,4 +142,4 @@ protobuf {
   }
 }
 
-
+defaultTasks 'clean', 'build'

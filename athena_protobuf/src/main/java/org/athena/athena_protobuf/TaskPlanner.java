@@ -9,9 +9,9 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import org.athena.athena_protobuf.Action;
-import org.athena.athena_protobuf.ExecutionPlan;
-import org.athena.athena_protobuf.Method;
+import org.athena.athena_protobuf.ProtoAction;
+import org.athena.athena_protobuf.ProtoExecutionPlan;
+import org.athena.athena_protobuf.ProtoMethod;
 import se.oru.planning.planning_oru.ai_planning.problems.AbstractPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.problems.NumericalPlanningProblem;
 import se.oru.planning.planning_oru.ai_planning.problems.SymbolicPlanningProblem;
@@ -35,7 +35,7 @@ class TaskPlanner{
 	private String problem_type;
 	private AbstractPlanningProblem planningProblem;
 
-	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ExecutionPlan.Builder planPr) throws FileNotFoundException{
+	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ProtoExecutionPlan.Builder planPr) throws FileNotFoundException{
 
 		switch (PROBLEM.valueOf(problem_type.toUpperCase())){
 				case SYMBOLIC:
@@ -71,7 +71,7 @@ class TaskPlanner{
 			String name = act.getName();
 			Set<DefaultEdge> edges = graphPlan.incomingEdgesOf(act);
 			//Create the protobuf action
-			Action.Builder action = Action.newBuilder();
+			ProtoAction.Builder action = ProtoAction.newBuilder();
 			action.setName(name);
 			action.setId(act.getID());
 			ArrayList<SymbolicSymbol> inputs = act.getInputs();
@@ -99,7 +99,7 @@ class TaskPlanner{
 		}
 
 		for(se.oru.planning.planning_oru.ai_planning.parser.Method method : executionPlan.getMethods()){
-			Method.Builder m = Method.newBuilder();
+			ProtoMethod.Builder m = ProtoMethod.newBuilder();
 			m.setId(method.getID());
 			m.setName(method.getName());
 			for(Integer ID : method.getActions()){
@@ -111,7 +111,7 @@ class TaskPlanner{
 
   // Main function:
   public static void main(String[] args) throws Exception {
-	ExecutionPlan.Builder planPr = ExecutionPlan.newBuilder();
+	ProtoExecutionPlan.Builder planPr = ProtoExecutionPlan.newBuilder();
 	TaskPlanner plan = new TaskPlanner();
 	AbstractPlanner planner = null;
 	if (args.length <= 0) {
