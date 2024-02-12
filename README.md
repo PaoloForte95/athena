@@ -22,6 +22,23 @@ $ git clone https://gitsvn-nt.oru.se/pofe/athena.git
 $ cd athena
 $ colcon build --packages-up-to athena
 ```
+If not installed, install java 17 by running the command:
+```
+$ sudo apt-get install openjdk-17-jdk
+```
+Download PDDL4j and build it. It is not necessary to do this in the ros2 workspace.
+```
+git clone https://github.com/pellierd/pddl4j.git
+cd pddl4j
+git checkout devel
+./gradlew build -PnoCheckStyle -PnoTest
+```
+If you encounter any problem with the Java version, update the distributionUrl in the gradle-wrapper: 
+```
+distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip
+```
+Then, copy the generated jar lib into the folder athena_protobuf/lib.
+
 To build the task planner executable that calls the Java code to parse the planning problem and compute the execution plan:
 ```
 $ cd src/athena/athena_protobuf/
