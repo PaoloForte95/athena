@@ -44,14 +44,14 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
     }
     RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
     if(current_level_ >max_level_ ){
-        return BT::NodeStatus::FAILURE;
+        return BT::NodeStatus::SUCCESS;
     }
     int exeActs = executableMethods(plan_methods_);
     if(methods_count_ == completed_methods_.size()){
-        return BT::NodeStatus::FAILURE;
+        return BT::NodeStatus::SUCCESS;
     }
     if(exeActs > 0){
-         return BT::NodeStatus::SUCCESS;
+         return BT::NodeStatus::FAILURE;
     }
     return BT::NodeStatus::RUNNING;
     

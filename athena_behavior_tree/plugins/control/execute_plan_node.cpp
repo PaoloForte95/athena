@@ -49,7 +49,14 @@ BT::NodeStatus ExecutePlanNode::tick()
       switch (child_status) {
         case BT::NodeStatus::SUCCESS:
           {
-            if (actions_count_ < plan_length_) {
+            // reset node and return SUCCESS when first child returns success (plan is completed)
+            halt();
+            return BT::NodeStatus::SUCCESS;
+
+          }
+
+        case BT::NodeStatus::FAILURE:
+           if (actions_count_ < plan_length_) {
               // halt first child and tick second child in next iteration
               ControlNode::haltChild(0);
               current_child_idx_++;
@@ -59,15 +66,6 @@ BT::NodeStatus ExecutePlanNode::tick()
               halt();
               return BT::NodeStatus::FAILURE;
             }
-
-          }
-
-        case BT::NodeStatus::FAILURE:
-          {
-            // reset node and return SUCCESS when first child returns failure (plan is completed)
-            halt();
-            return BT::NodeStatus::SUCCESS;
-          }
 
         case BT::NodeStatus::RUNNING:
           {

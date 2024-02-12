@@ -43,12 +43,15 @@ inline BT::NodeStatus DispatchTasksAction::tick()
         plan_actions_ = readPlan();
     }
      RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
+    if(current_level_ >max_level_ ){
+        return BT::NodeStatus::SUCCESS;
+    }
     int exeActs = executableActions(plan_actions_);
     if(actions_count_ == completed_actions_.size()){
-        return BT::NodeStatus::FAILURE;
+        return BT::NodeStatus::SUCCESS;
     }
     if(exeActs > 0){
-         return BT::NodeStatus::SUCCESS;
+         return BT::NodeStatus::FAILURE;
     }
     return BT::NodeStatus::RUNNING;
     
