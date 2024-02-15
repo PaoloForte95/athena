@@ -23,12 +23,12 @@ namespace athena_behavior_tree
 DispatchMethodsAction::DispatchMethodsAction(
   const std::string & action_name,
   const BT::NodeConfiguration & conf)
-: ActionNodeBase(action_name, conf),
-current_level_(1),max_level_(1), methods_count_(0)
+: ActionNodeBase(action_name, conf)
 {
-    node_ = rclcpp::Node::make_shared("dispatch_methods_client_node");   
+    node_ = rclcpp::Node::make_shared("dispatch_methods_client_node");
     IDs completed_methods;
     config().blackboard->set<IDs>("completed_methods", completed_methods);
+    first_time_ = true;
 }
 
 
@@ -39,17 +39,20 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
     getInput("execution_plan", execution_plan_);
     //Get the completed methods
     getInput("completed_methods", completed_methods_);
-    if(plan_methods_.empty()){
-        plan_methods_ = readPlan();
+    if(first_time_){
+        readPlan();
     }
-    RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
-    if(current_level_ >max_level_ ){
+    bool plan_completed = true;
+    for(const auto& pair : robots_methods){
+        if(!pair.second.empty()){
+            plan_completed = false;
+            break;
+        }
+    }
+    if(plan_completed){
         return BT::NodeStatus::SUCCESS;
     }
-    int exeActs = executableMethods(plan_methods_);
-    if(methods_count_ == completed_methods_.size()){
-        return BT::NodeStatus::SUCCESS;
-    }
+    int exeActs = sendMethods();
     if(exeActs > 0){
          return BT::NodeStatus::FAILURE;
     }
@@ -57,7 +60,7 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
     
 }
 
-std::vector<athena_msgs::msg::Method> DispatchMethodsAction::readPlan(){
+void DispatchMethodsAction::readPlan(){
     Methods methods;
     IDs robotIDs;
     //Gettind IDs from actions
@@ -66,93 +69,76 @@ std::vector<athena_msgs::msg::Method> DispatchMethodsAction::readPlan(){
         auto itr = std::find(robotIDs.begin(), robotIDs.end(), robotID);
         if (itr == robotIDs.end()){
             robotIDs.push_back(robotID);
+            auto robot_state = "robot_" + std::to_string(robotID) + "_state";
+            config().blackboard->set<std::string>(robot_state, "free");
         }
     }
     config().blackboard->set<IDs>("robot_ids", robotIDs);
     int level = 1;
     for(athena_msgs::msg::Method method : execution_plan_.methods){
-        RCLCPP_INFO(node_->get_logger(), "DispatchMethodsAction Method: %s", method.name.c_str());
         auto mutex = false;
-        for(int parID : method.substasks){
-            RCLCPP_INFO(node_->get_logger(), "DispatchMethodsAction subtask: %d", parID);
-            //Take the highest level from precedence constraints
-            for(athena_msgs::msg::Method m : methods){
-                auto itr = std::find(m.substasks.begin(), m.substasks.end(), parID);
-                RCLCPP_INFO(node_->get_logger(), "Method %d Mutex with method: %d",method.id, m.id);
-                if (itr != robotIDs.end()){
-                    level += 1;
-                    mutex = true;
+        int subTask = method.substasks[0];
+        for(athena_msgs::msg::Action action : execution_plan_.actions){
+            if( action.action_id == subTask){
+                RCLCPP_INFO(node_->get_logger(), "Method: %s associated to robot %d", method.name.c_str(), method.robotid);
+                auto it = robots_methods.find(action.robotid);
+                if (it != robots_methods.end()){
+                    auto set_methods = robots_methods[action.robotid];
+                    set_methods.push_back(method);
+                }
+                else{
+                    Methods m;
+                    m.push_back(method);
+                    robots_methods.insert(std::pair<int, Methods>( action.robotid, m));
+                }
+                break;
+            }
+            }
+        }
+    first_time_ = false;
+    }
+
+
+int DispatchMethodsAction::sendMethods(){
+    //Check which methods of the plan can be executed next
+    int methods_send;
+    Actions concurrent_actions;
+    Methods concurrent_methods;
+    for(const auto& pair : robots_methods){
+        auto robot = pair.first;
+        std::string robot_state;
+        config().blackboard->get<std::string>("robot_" + std::to_string(robot) + "_state", robot_state);
+        if(robot_state == "free"){
+            bool method_can_be_executed = true;
+            auto set_methods = robots_methods[robot];
+            auto curr_method = set_methods[0];
+            for(auto pm : curr_method.parents){
+                int parent_id = pm;
+                auto it_parent = std::find(completed_methods_.begin(), completed_methods_.end(), parent_id);
+                if(it_parent == completed_methods_.end()){
+                    method_can_be_executed = false;
+                    RCLCPP_INFO(node_->get_logger(), "Method %d cannot be execute because its parent %d has not been completed yet!", curr_method.id, pm);
                     break;
                 }
             }
-            if(mutex){
-                break;
-            }
-        }
-        methods.push_back(method);
-        method_levels_.insert(std::pair<int, int>(method.id, level));
-    }
-    max_level_ = level;
-    for(athena_msgs::msg::Method method : execution_plan_.methods){
-        int level = 1;
-        RCLCPP_INFO(node_->get_logger(), "DispatchMethodsAction Method: %s", method.name.c_str());
-        for(int i: method.substasks){
-            RCLCPP_INFO(node_->get_logger(), "DispatchMethodsAction subtask: %d", i);
-        }
-        
-    }
-    return methods;
-}
+            if(method_can_be_executed){
+                RCLCPP_INFO(node_->get_logger(), "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
+                concurrent_methods.push_back(curr_method);
+                methods_send +=1;
+                config().blackboard->set<std::string>("robot_" + std::to_string(robot) + "_state", "busy");
 
-int DispatchMethodsAction::executableMethods(std::vector<athena_msgs::msg::Method> methods){
-    //Check which methods of the plan can be executed next
-    Methods concurrent_methods, empty_set;
-    Actions concurrent_actions;
-    std::vector<bool> levelCanBeExecuted;
-    for(athena_msgs::msg::Method method : methods){
-        int m_level = method_levels_.find(method.id)->second;
-        if(m_level == current_level_){
-            bool canBeExecuted = true;
-            //Check if the actions that have a precedence constraint with this one have been completed
-            for(int index = 0; index < m_level; index ++){  
-                auto m = methods[index];
-                if(m.id != method.id){
-                auto itr = std::find(completed_methods_.begin(), completed_methods_.end(), m.id);
-                 //If absent, parent actions haven't been completed yet. Wa only if absent
-                    if (itr == completed_methods_.end()){
-                        RCLCPP_INFO(node_->get_logger(), "Method %d cannot be execute because its parent %d has not been completed yet!", method.id, m.id);
-                        canBeExecuted = false;
-                        break;
-                    }
-                }
-            }  
-            levelCanBeExecuted.push_back(canBeExecuted);
-            if(canBeExecuted){
-                RCLCPP_INFO(node_->get_logger(), "Sending method %d, %s....", method.id, method.name.c_str());
-                concurrent_methods.push_back(method);
-               for(athena_msgs::msg::Action action : execution_plan_.actions){
-                    auto itr = std::find(method.substasks.begin(), method.substasks.end(), action.action_id);
-                    if (itr != method.substasks.end()) {
+                for(athena_msgs::msg::Action action : execution_plan_.actions){
+                    auto itr = std::find(curr_method.substasks.begin(), curr_method.substasks.end(), action.action_id);
+                    if (itr != curr_method.substasks.end()) {
                         concurrent_actions.push_back(action);
                     }
                 }
-                config().blackboard->set<Actions>("concurrent_actions", concurrent_actions);
-            }else{
-                break;
             }
         }
     }
-    if(std::all_of(levelCanBeExecuted.begin(), levelCanBeExecuted.end(), [](bool v) { return v; }) && !levelCanBeExecuted.empty()){
-        current_level_ ++;
-        setOutput("concurrent_methods", concurrent_methods);
-        methods_count_ += static_cast<int>(concurrent_methods.size());
-        config().blackboard->set<int>("methods_count", methods_count_);
-        return static_cast<int>(concurrent_methods.size()); 
-    }
-    
-    config().blackboard->set<int>("methods_count", methods_count_);
-    setOutput("concurrent_methods", empty_set);
-    return 0;
+    config().blackboard->set<Actions>("concurrent_actions", concurrent_actions);
+    setOutput("concurrent_methods", concurrent_methods);
+    return methods_send;
     
 }
 

@@ -76,10 +76,9 @@ private:
   IDs completed_methods_;
   Methods plan_methods_;
   athena_msgs::msg::Plan execution_plan_;
-  std::map<int, int> method_levels_;
-  int current_level_, max_level_;
+  std::map<int, Methods> robots_methods;
   int robots;
-  int methods_count_;
+  bool first_time_;
 
   /**
    * @brief Read the methods from the exection plan
@@ -87,9 +86,9 @@ private:
    * @param execution_plan_ The execution plan
    * @return The set of methods defined in the exeuction plan
    */
-  Methods readPlan();
+  void readPlan();
 
-  int executableMethods(Methods methods);
+  int sendMethods();
 
   athena_msgs::msg::Method getMethod (int methodID);
 
