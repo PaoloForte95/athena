@@ -22,6 +22,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    "msg/BehaviorTreeStatusChange.msg"
    "msg/PlanningProblem.msg"
    "msg/Method.msg"
+   "msg/Execution.msg"
    #Services
    "srv/GetPlan.srv"
    "srv/RecomputePlan.srv"
