@@ -27,6 +27,13 @@ public:
      */
     void setName(std::string name);
 
+     /**
+      * @brief Add a parent to the method, i.e., a method with a precedence constraint on this.
+      * 
+      * @param ID The ID of the parent method to add.
+      */
+    void addParent(int ID);
+
 
      /**
       * @brief Add a subtask to the method 
@@ -77,6 +84,7 @@ protected:
 
   int ID_;
   std::string name_;
+  std::vector<int> parents_;
   std::vector<int> subtasks_;
   bool executed_;
 

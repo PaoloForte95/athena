@@ -102,8 +102,38 @@ class TaskPlanner{
 			ProtoMethod.Builder m = ProtoMethod.newBuilder();
 			m.setId(method.getID());
 			m.setName(method.getName());
+			int parentID = -1;
 			for(Integer ID : method.getActions()){
 				m.addActionsIds(ID);
+				for(ProtoAction protoAct: planPr.getActionList()){
+					if(protoAct.getId() == ID){
+						int robotID = protoAct.getRobotID();
+						m.setRobotid(robotID);
+						break;
+					}
+					
+				}
+				for (se.oru.planning.planning_oru.ai_planning.parser.Action act: graphPlan.vertexSet()){
+					if(act.getID() == ID){
+						Set<DefaultEdge> edges = graphPlan.incomingEdgesOf(act);
+						for (DefaultEdge edge : edges){
+							se.oru.planning.planning_oru.ai_planning.parser.Action parent = graphPlan.getEdgeSource(edge);
+							for(se.oru.planning.planning_oru.ai_planning.parser.Method parentMethod : executionPlan.getMethods()){
+								if(parentMethod.getID() != method.getID()){
+									if(parentMethod.getActions().contains(parent.getID())){
+										if(parentMethod.getID() >parentID){
+											parentID = parentMethod.getID();
+											
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if(parentID != -1){
+				m.addParents(parentID);
 			}
 			planPr.addMethod(m);
 		}

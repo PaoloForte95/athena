@@ -25,6 +25,15 @@ Method::~Method()
 
 }
 
+void Method::addParent(int parent_id){
+    auto itr = std::find(parents_.begin(), parents_.end(), parent_id);
+    //Add only if absent
+    if (itr == parents_.end()){
+        std::cout << "Adding Subtask ID " << parent_id  << " ";
+        parents_.push_back(parent_id);
+    }
+}
+
 void Method::addSubtask(int subtask_id){
      auto itr = std::find(subtasks_.begin(), subtasks_.end(), subtask_id);
     //Add only if absent
@@ -32,7 +41,7 @@ void Method::addSubtask(int subtask_id){
         std::cout << "Adding Subtask ID " << subtask_id  << " ";
         subtasks_.push_back(subtask_id);
     }
-    subtasks_.push_back(subtask_id);
+
 }
 
 void Method::setName(std::string name){

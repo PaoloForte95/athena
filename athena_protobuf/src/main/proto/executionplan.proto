@@ -31,7 +31,9 @@ message ProtoAction {
 message ProtoMethod{
   string name = 1;
   int32 id = 2;
-  repeated int32 actions_ids = 3;
+  int32 robotid = 3;
+  repeated int32 parents = 4;
+  repeated int32 actions_ids = 5;
 }
 
 // The execution Plan contains a set of actions

@@ -608,11 +608,35 @@ class ProtoMethod PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kActionsIdsFieldNumber = 3,
+    kParentsFieldNumber = 4,
+    kActionsIdsFieldNumber = 5,
     kNameFieldNumber = 1,
     kIdFieldNumber = 2,
+    kRobotidFieldNumber = 3,
   };
-  // repeated int32 actions_ids = 3;
+  // repeated int32 parents = 4;
+  int parents_size() const;
+  private:
+  int _internal_parents_size() const;
+  public:
+  void clear_parents();
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_parents(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      _internal_parents() const;
+  void _internal_add_parents(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      _internal_mutable_parents();
+  public:
+  ::PROTOBUF_NAMESPACE_ID::int32 parents(int index) const;
+  void set_parents(int index, ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void add_parents(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      parents() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      mutable_parents();
+
+  // repeated int32 actions_ids = 5;
   int actions_ids_size() const;
   private:
   int _internal_actions_ids_size() const;
@@ -668,6 +692,15 @@ class ProtoMethod PROTOBUF_FINAL :
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // int32 robotid = 3;
+  void clear_robotid();
+  ::PROTOBUF_NAMESPACE_ID::int32 robotid() const;
+  void set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_robotid() const;
+  void _internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:athena.ProtoMethod)
  private:
   class _Internal;
@@ -675,10 +708,13 @@ class ProtoMethod PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > parents_;
+  mutable std::atomic<int> _parents_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > actions_ids_;
   mutable std::atomic<int> _actions_ids_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
+  ::PROTOBUF_NAMESPACE_ID::int32 robotid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
 };
@@ -1392,7 +1428,74 @@ inline void ProtoMethod::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:athena.ProtoMethod.id)
 }
 
-// repeated int32 actions_ids = 3;
+// int32 robotid = 3;
+inline void ProtoMethod::clear_robotid() {
+  robotid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::_internal_robotid() const {
+  return robotid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::robotid() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.robotid)
+  return _internal_robotid();
+}
+inline void ProtoMethod::_internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  robotid_ = value;
+}
+inline void ProtoMethod::set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_robotid(value);
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.robotid)
+}
+
+// repeated int32 parents = 4;
+inline int ProtoMethod::_internal_parents_size() const {
+  return parents_.size();
+}
+inline int ProtoMethod::parents_size() const {
+  return _internal_parents_size();
+}
+inline void ProtoMethod::clear_parents() {
+  parents_.Clear();
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::_internal_parents(int index) const {
+  return parents_.Get(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::parents(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.parents)
+  return _internal_parents(index);
+}
+inline void ProtoMethod::set_parents(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+  parents_.Set(index, value);
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.parents)
+}
+inline void ProtoMethod::_internal_add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  parents_.Add(value);
+}
+inline void ProtoMethod::add_parents(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_add_parents(value);
+  // @@protoc_insertion_point(field_add:athena.ProtoMethod.parents)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+ProtoMethod::_internal_parents() const {
+  return parents_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+ProtoMethod::parents() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoMethod.parents)
+  return _internal_parents();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+ProtoMethod::_internal_mutable_parents() {
+  return &parents_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+ProtoMethod::mutable_parents() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoMethod.parents)
+  return _internal_mutable_parents();
+}
+
+// repeated int32 actions_ids = 5;
 inline int ProtoMethod::_internal_actions_ids_size() const {
   return actions_ids_.size();
 }
