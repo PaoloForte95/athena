@@ -35,8 +35,7 @@ BtPlanner::BtPlanner(const rclcpp::NodeOptions & options)
   RCLCPP_INFO(get_logger(), "Creating");
 
   const std::vector<std::string> plugin_libs = {
-    "athena_compute_plan_action_bt_node",
-    "athena_is_action_condition_bt_node"
+    "athena_compute_plan_action_bt_node"
 
   };
 

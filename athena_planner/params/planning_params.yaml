@@ -12,8 +12,8 @@ bt_planner:
     - nav2_rate_controller_bt_node
     - athena_compute_plan_action_bt_node
     - athena_dispatch_tasks_action_bt_node
-    - athena_is_action_condition_bt_node
     - athena_execute_plan_node_bt_node
+    - athena_selected_robot_controller_bt_node
 
 task_planner_server:
  ros__parameters:

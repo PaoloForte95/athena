@@ -43,5 +43,8 @@
       <input_port name="hz">Rate</input_port>
     </Decorator>
 
+    <Decorator ID="SelectedRobotController"> 
+      <input_port name="robot_id">The id of the robot</input_port>
+    </Decorator>
   </TreeNodesModel>
 </root>

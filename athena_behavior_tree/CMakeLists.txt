@@ -84,11 +84,9 @@ list(APPEND plugin_libs athena_dispatch_methods_action_bt_node)
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs athena_execute_plan_node_bt_node)
 
-#Conditions
-add_library(athena_is_action_condition_bt_node SHARED plugins/condition/is_action_condition.cpp)
-list(APPEND plugin_libs athena_is_action_condition_bt_node)
-
-
+#Decorator
+add_library(athena_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
+list(APPEND plugin_libs athena_selected_robot_controller_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
