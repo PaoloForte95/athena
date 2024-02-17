@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<root>
+  <TreeNodesModel>
+    <!-- ############################### ACTION NODES ################################# -->
+    <Action ID="SendMove">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
+    </Action>
+
+    <Action ID="SendTransport">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
+    </Action>
+    
+    <Action ID="SendLoad">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
+    </Action>
+    
+    <Action ID="SendDump">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
+    </Action>
+
+    <Action ID="Noop">
+      <input_port name="waiting_time">Wait time</input_port>
+      <input_port name="service_name">Server name</input_port>
+    </Action>
+
+    <!-- ############################### CONDITION NODES ############################## -->
+     <Condition ID="IsPileMoved">
+      <input_port name="criteria" default="NumberCycles">Criteria to use to check if the pile is completely moved.</input_port>
+      <input_port name="ticks" default="1">"Number of ticks to do (If NumberCycles criteria is selected)"</input_port>
+      <input_port name="global_frame" default="map">The global frame </input_port>
+      <input_port name="costmap_topic" default="local_costmap/costmap_raw">The global frame </input_port>
+       <input_port name="threshold" default="0.5">The global frame </input_port>
+    </Condition>
+
+    <!-- ############################### CONTROL NODES ################################ -->
+
+    <Control ID="MovePileMethodNode">
+    </Control>
+
+
+
+  </TreeNodesModel>
+</root>

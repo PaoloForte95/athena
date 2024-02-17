@@ -1,0 +1,11 @@
+#goal definition
+float32 target_boom
+float32 target_bucket
+int64 material_id
+---
+#result definition
+builtin_interfaces/Duration time
+---
+#feedback definition
+float32 position_boom
+float32 position_bucket

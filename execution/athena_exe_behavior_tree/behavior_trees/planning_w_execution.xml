@@ -1,0 +1,67 @@
+<!--
+This Behavior Tree computes and executed a plan. If the plan failed, it has recovery actions to recompute a plan.
+-->
+
+<root main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+  <Sequence>
+  <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
+  <RateController hz="3.0">
+  <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
+  </RateController>
+  <RecoveryNode number_of_retries="1" name="PlanningWRecovery">
+    <!--<SubTree ID="MovePile" __shared_blackboard="true"/>-->
+            <Fallback name= "Move Pile">
+         <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
+         <SendLoad name="Load" service_name="/send_load"/>
+         <SendTransport name="Drive 2" service_name="/navigate_to_pose"/>
+         <SendDump name="Dump" service_name="/send_dump"/>
+          </Fallback>
+    <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}"  domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  </RecoveryNode>
+ </ExecutePlanNode>
+  </Sequence> 
+</BehaviorTree>
+
+
+<BehaviorTree ID="MovePile">
+        <Fallback name= "Move Pile">
+         <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
+         <SendLoad name="Load" service_name="/send_load"/>
+         <SendTransport name="Drive 2" service_name="/navigate_to_pose"/>
+         <SendDump name="Dump" service_name="/send_dump"/>
+         <!--<IsPileMoved name="Check" /> -->
+        </Fallback>
+</BehaviorTree>
+
+<!-- <BehaviorTree ID="GoTo">
+        <Fallback>
+          <Sequence name="Move Action 1">
+            <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
+            <SendMove name="Drive 2" service_name="/navigate_to_pose"/>
+          </Sequence>
+          <SendMove name="Drive 3" service_name="/navigate_to_pose"/>
+
+        </Fallback>
+</BehaviorTree>
+
+<BehaviorTree ID="Load">
+        <Fallback>
+        <SendMove name="Pick" service_name="/navigate_to_pose"/>
+        <SendMove name="Push"  service_name="/navigate_to_pose"/>
+        <SendMove name="Unstack"  service_name="/navigate_to_pose"/>
+        </Fallback>
+</BehaviorTree>
+
+<BehaviorTree ID="Dump">
+        <Fallback>
+        <SendMove name="Drop" service_name="/navigate_to_pose"/>
+        <SendMove name="Stack"  service_name="/navigate_to_pose"/>
+        </Fallback>
+</BehaviorTree>
+-->
+
+
+</root>

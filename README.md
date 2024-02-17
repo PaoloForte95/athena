@@ -58,7 +58,7 @@ ros2 launch athena_launch planning.py
 ```
 3) Open a new terminal, source the setup file, and run: 
 ```
-ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/athena_example/HDDL/construction/problems/pfile01.hddl}"
+ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/planning/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/planning/athena_example/HDDL/construction/problems/pfile00.hddl}"
 
 ```
 

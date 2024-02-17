@@ -18,6 +18,10 @@
   <exec_depend>athena_planner</exec_depend>
   <exec_depend>athena_protobuf</exec_depend>
   <exec_depend>athena_util</exec_depend>
+  <exec_depend>athena_exe_behavior_tree</exec_depend>
+  <exec_depend>athena_exe_launch</exec_depend>
+  <exec_depend>athena_exe_msgs</exec_depend>
+  
 
   <export>
     <build_type>ament_cmake</build_type>
