@@ -1,0 +1,14 @@
+<root main_tree_to_execute="MovePile">
+
+<BehaviorTree ID="MovePile">
+        <MovePileMethodNode name= "Move Pile">
+         <SendMove name="Drive 1" service_name="/navigate_to_pose"/>
+         <SendLoad name="Load" service_name="/send_load"/>
+         <SendTransport name="Drive 2" service_name="/navigate_to_pose"/>
+         <SendDump name="Dump" service_name="/send_dump"/>
+        <IsPileMoved name="Check" ticks='3'/>
+        </MovePileMethodNode>
+</BehaviorTree>
+
+
+</root>

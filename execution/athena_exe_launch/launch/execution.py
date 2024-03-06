@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Paolo Forte
+# Copyright (c) 2023 Paolo Forte
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ from nav2_common.launch import RewrittenYaml
 def generate_launch_description():
     # Get the launch directory
 
-    params_dir = get_package_share_directory('athena_launch')
+    params_dir = get_package_share_directory('athena_exe_launch')
 
 
     namespace = LaunchConfiguration('namespace')
@@ -36,18 +36,9 @@ def generate_launch_description():
     params_file = LaunchConfiguration('params_file')
     log_level = LaunchConfiguration('log_level')
     autostart = LaunchConfiguration('autostart')
-    use_task_planner = LaunchConfiguration('use_task_planner')
     use_respawn = LaunchConfiguration('use_respawn')
 
-    lifecycle_nodes = ['bt_planner','task_planner_server']
-
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
-    # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
-
+    lifecycle_nodes = ['bt_executor']
     
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
@@ -68,7 +59,7 @@ def generate_launch_description():
 
     declare_autostart_cmd = DeclareLaunchArgument(
         'autostart', default_value='true',
-        description='Automatically startup the athena stack')
+        description='Automatically startup the nav2 stack')
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -87,18 +78,12 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(params_dir, 'params', 'planning_params.yaml'),
+        default_value=os.path.join(params_dir, 'params', 'executor_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_log_level_cmd = DeclareLaunchArgument(
         'log_level', default_value='info',
         description='log level')
-
-
-    declare_use_task_planner_cmd = DeclareLaunchArgument(
-        'use_task_planner', 
-        default_value= 'True',
-        description='Use the task planner if true')
     
     declare_use_respawn_cmd = DeclareLaunchArgument(
         'use_respawn', default_value='False',
@@ -112,9 +97,9 @@ def generate_launch_description():
             namespace=namespace),
         
         Node(
-                package='athena_bt_planner',
-                executable='bt_planner',
-                name='bt_planner',
+                package='athena_bt_executor',
+                executable='bt_executor',
+                name='bt_executor',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
@@ -122,21 +107,11 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
         
-        Node(
-                condition=IfCondition(use_task_planner),
-                package='athena_planner',
-                executable='task_planner_server',
-                name='task_planner_server',
-                output='screen',
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
 
         Node(
                 package='athena_lifecycle_manager',
                 executable='task_lifecycle_manager',
-                name='lifecycle_manager_task_planner',
+                name='lifecycle_manager_task_execution',
                 output='screen',
                 arguments=['--ros-args', '--log-level', log_level],
                 parameters=[{'use_sim_time': use_sim_time},
@@ -162,7 +137,6 @@ def generate_launch_description():
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_log_level_cmd)
-    ld.add_action(declare_use_task_planner_cmd)
     ld.add_action(declare_use_respawn_cmd)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)

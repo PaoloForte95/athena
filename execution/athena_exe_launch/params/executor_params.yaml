@@ -1,0 +1,21 @@
+bt_executor:
+  ros__parameters:
+    use_sim_time: True
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    bt_package_dir: 'athena_exe_behavior_tree'
+    default_plan_bt_xml: 'execution.xml'
+    plugin_lib_names:
+    - nav2_recovery_node_bt_node
+    - nav2_rate_controller_bt_node
+    - athena_exe_noop_action_bt_node
+    - athena_compute_plan_action_bt_node
+    - athena_exe_send_move_action_bt_node
+    - athena_exe_send_transport_action_bt_node
+    - athena_dispatch_tasks_action_bt_node
+    - athena_execute_plan_node_bt_node
+    - athena_exe_move_pile_method_node
+    - athena_exe_send_load_action_bt_node
+    - athena_exe_send_dump_action_bt_node
+    - athena_exe_is_pile_moved_condition_bt_node
+    - athena_selected_robot_controller_bt_node

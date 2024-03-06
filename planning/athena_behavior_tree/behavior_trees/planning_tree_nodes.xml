@@ -23,6 +23,11 @@
             <input_port name="completed_methods">The set of completed methods</input_port>
     </Action>
 
+    <Action ID="SendMethod">
+            <input_port name="service_name"></input_port>
+            <input_port name="robot_id">The id of the robot to be associated with this action</input_port>
+    </Action>
+
     <!-- ############################### CONDITION NODES ############################## -->
      <Condition ID="IsAction">
       <input_port name="action_name">The name of the action</input_port>

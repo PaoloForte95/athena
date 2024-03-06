@@ -1,0 +1,22 @@
+<!--
+This Behavior Tree computes and executed a plan. If the plan failed, it has recovery actions to recompute a plan.
+-->
+
+<root main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+  <Sequence>
+  <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
+  <RateController hz="3.0">
+  <DispatchMethods name="MethodDispatcher"  execution_plan="{execution_plan}" concurrent_methods="{concurrent_methods}" completed_methods="{completed_methods}"/>
+  </RateController>
+  <SendMethod name="SendMethod" robot_id="1" service_name="method_executor" />
+ </ExecutePlanNode>
+  </Sequence> 
+</BehaviorTree>
+
+
+
+
+</root>
