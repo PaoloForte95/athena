@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_EXE_BT_EXECUTOR__BT_EXECUTOR_HPP_
-#define ATHENA_EXE_BT_EXECUTOR__BT_EXECUTOR_HPP_
+#ifndef ATHENA_BT_EXECUTOR__BT_EXECUTOR_HPP_
+#define ATHENA_BT_EXECUTOR__BT_EXECUTOR_HPP_
 
 #include <memory>
 #include <string>
@@ -22,11 +22,11 @@
 #include "athena_util/lifecycle_node.hpp"
 #include "athena_util/odometry_utils.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "athena_execution_bt_executor/executor.hpp"
+#include "athena_bt_executor/method_executor.hpp"
 
-namespace athena_bt_planner
+namespace athena
 {
-
+namespace execution{
 /**
  * @class athena_bt_planner::BtPlanner
  * @brief An action server that uses behavior tree for task planning
@@ -80,11 +80,11 @@ protected:
   athena_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
   // To handle all the BT related execution
-  std::unique_ptr<athena_bt_planner::Planner<athena_msgs::action::ComputePlan>> planner_;
-  athena_bt_planner::PlannerMuxer plugin_muxer_;
+  std::unique_ptr<athena::execution::Executor<athena_msgs::action::ExecuteMethod>> executor_;
+  athena::execution::ExecutorMuxer plugin_muxer_;
 
 };
-
+}
 }  
 
 #endif 

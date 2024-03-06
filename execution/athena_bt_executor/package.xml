@@ -1,15 +1,20 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>athena_execution_bt_executor</name>
+  <name>athena_bt_executor</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="paolo.forte@oru.se">pofe</maintainer>
   <license>GPL-3.0-only</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>athena</depend>
+  <depend>athena_util</depend>
+  <depend>athena_msgs</depend>
+  <depend>athena_behavior_tree</depend>
+  <depend>athena_bt_planner</depend>
+
   <test_depend>ament_lint_auto</test_depend>
+  
   <test_depend>ament_lint_common</test_depend>
 
   <export>

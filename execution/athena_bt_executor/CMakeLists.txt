@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(athena_execution_bt_executor)
+project(athena_bt_executor)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -40,6 +40,8 @@ set(dependencies
 )
 
 set(executable_name bt_executor)
+set(library_name ${executable_name}_core)
+
 
 add_executable(${executable_name} src/main.cpp
 )
@@ -48,21 +50,19 @@ ament_target_dependencies(${executable_name}
   ${dependencies}
 )
 
-target_link_libraries(${executable_name} ${library_name})
-
-
-set(library_name ${executable_name}_core)
-
 add_library(${library_name} SHARED
   src/bt_executor.cpp
-  src/executor.cpp
+  src/method_executor.cpp
 )
 
 ament_target_dependencies(${library_name}
   ${dependencies}
 )
 
-rclcpp_components_register_nodes(${library_name} "athena_execution_bt_executor::BtExecutor")
+target_link_libraries(${executable_name} ${library_name})
+
+
+rclcpp_components_register_nodes(${library_name} "athena::execution::BtExecutor")
 
 install(TARGETS ${library_name}
   ARCHIVE DESTINATION lib
