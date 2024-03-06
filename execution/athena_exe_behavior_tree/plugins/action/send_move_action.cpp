@@ -32,6 +32,9 @@ SendMoveAction::SendMoveAction(
     getInput("global_frame", global_frame_);
     getInput("waypoints_filename", waypoints_filename_);
     node_ = rclcpp::Node::make_shared("send_move_client_node");
+    RCLCPP_ERROR(node_->get_logger(),"namespaceee %s", node_->get_namespace());
+    auto service_name = node_->get_namespace() + service_name_;
+    client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name);
     parseWaypoints();
 }
 
@@ -89,15 +92,6 @@ void SendMoveAction::parseWaypoints(){
 inline BT::NodeStatus SendMoveAction::tick()
 { 
     setStatus(BT::NodeStatus::RUNNING);
-    if(clients_ptr_.empty()){
-      IDs robotIDs;  
-      config().blackboard->get<IDs>("robot_ids", robotIDs);
-      for(int robotID : robotIDs){
-        std::string service_name = "/robot"+std::to_string(robotID) + service_name_;
-        auto client_ptr = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name);
-        clients_ptr_.insert(std::pair<int, Client>(robotID, client_ptr));
-      }
-    }
 
     //Get the move actions 
     Actions actions = getMoveActions();
@@ -123,7 +117,7 @@ inline BT::NodeStatus SendMoveAction::tick()
 
 Actions SendMoveAction::getMoveActions(){
     Actions move_actions_;
-    config().blackboard->get<Actions>("concurrent_actions", actions_);
+    config().blackboard->get<Actions>("actions", actions_);
     for(athena_msgs::msg::Action act : actions_){
       if(act.name.find("move") != std::string::npos || act.name.find("drive") != std::string::npos){
          RCLCPP_INFO( node_->get_logger(), "Received moving action!");
@@ -136,15 +130,15 @@ Actions SendMoveAction::getMoveActions(){
 void SendMoveAction::sendMove(Actions actions)
   {
     using namespace std::placeholders;
-
+     
     for(athena_msgs::msg::Action move_action: actions){
       int robotID = move_action.robotid;
-      auto client_ptr = clients_ptr_.find(robotID)->second;
-      auto is_action_server_ready = client_ptr->wait_for_action_server(std::chrono::seconds(5));
+      auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
       if (!is_action_server_ready) { 
           RCLCPP_ERROR( node_->get_logger(), "navigate_to_pose action server is not available." " Is the initial pose set?"); 
           return ;
       }
+      
       
       auto wp = move_action.waypoints[move_action.waypoints.size()-1];
       auto goal_msg = getGoalLocation(wp);
@@ -158,7 +152,7 @@ void SendMoveAction::sendMove(Actions actions)
       send_goal_options.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
       //send_goal_options.feedback_callback = std::bind(&SendMoveAction::feedback_callback, this, std::placeholders::_1,std::placeholders::_2);
       send_goal_options.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
-      auto future_goal_handle = client_ptr->async_send_goal(goal_msg, send_goal_options);
+      auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
       if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
       {
           RCLCPP_INFO(node_->get_logger(), "Failed sending goal");
@@ -167,7 +161,7 @@ void SendMoveAction::sendMove(Actions actions)
       }
       send_move_handler_ = future_goal_handle.get();
 
-      auto future_result = client_ptr->async_get_result(send_move_handler_);
+      auto future_result = client_ptr_->async_get_result(send_move_handler_);
       RCLCPP_INFO(node_->get_logger(), "Executing Operation...!");
       rclcpp::spin_until_future_complete(node_, future_result);
 

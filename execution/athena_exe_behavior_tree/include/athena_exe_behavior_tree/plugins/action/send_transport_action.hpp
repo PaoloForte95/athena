@@ -95,7 +95,7 @@ protected:
 
 private:
   std::string service_name_, global_frame_, waypoints_filename_;
-  std::map<int, Client> clients_ptr_;
+  Client client_ptr_;
   GoalHandleSendMove::SharedPtr send_move_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;

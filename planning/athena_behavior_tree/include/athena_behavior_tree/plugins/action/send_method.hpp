@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Paolo Forte
+// Copyright (c) 2024 Paolo Forte
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,16 +13,16 @@
 // limitations under the License.
 
 
-#ifndef ATHENA_CE_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
-#define ATHENA_CE_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
+#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_METHOD_ACTION_HPP_
+#define ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_METHOD_ACTION_HPP_
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "athena_exe_msgs/action/bucket_command.hpp"
+#include "athena_msgs/action/execute_method.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
-
-namespace athena_exe_behavior_tree
+typedef std::vector<athena_msgs::msg::Action> Actions;
+namespace athena_behavior_tree
 {
 
 enum class ActionStatus
@@ -39,7 +39,7 @@ enum class ActionStatus
  * 
  */
 
-class SendLoadAction : public BT::ActionNodeBase
+class SendMethodAction : public BT::ActionNodeBase
 {
 public:
   /**
@@ -47,7 +47,7 @@ public:
    * @param action_name Action name this node creates a client for
    * @param conf BT node configuration
    */
-  SendLoadAction(
+  SendMethodAction(
     const std::string & action_name,
     const BT::NodeConfiguration & conf);
 
@@ -72,30 +72,31 @@ public:
     return 
       {
         BT::InputPort<std::string>("service_name", "The name of the service"), 
-        BT::InputPort<std::string>("global_frame", "map","Global frame"),
+         BT::InputPort<int>("robot_id", "The id of the robot to be associated with this action"), 
+
       };
   }
 
 protected:
-  typedef std::vector<athena_msgs::msg::Action> Actions;
-  typedef rclcpp_action::Client<athena_exe_msgs::action::BucketCommand>::SharedPtr Client;
-  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::BucketCommand>;
-  void sendLoad(Actions actions);
-  Actions getLoadActions();
+  typedef rclcpp_action::Client<athena_msgs::action::ExecuteMethod>::SharedPtr Client;
+  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<athena_msgs::action::ExecuteMethod>;
+  void sendMethod(athena_msgs::msg::Method method);
 
 
 
 private:
   std::string service_name_, global_frame_;
-  Client client_ptr_;
   GoalHandleSendLoad::SharedPtr send_load_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;
-  Actions actions_;
+  athena_msgs::msg::Method method_;
+  Actions concurrent_actions_;
+  int robot_id_;
+  Client client_;
 
    void goal_response_callback(const GoalHandleSendLoad::SharedPtr & goal_handle);
 
-   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const athena_exe_msgs::action::BucketCommand::Feedback> feedback);
+   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const athena_msgs::action::ExecuteMethod::Feedback> feedback);
 
    void result_callback(const GoalHandleSendLoad::WrappedResult & result);
 
@@ -104,6 +105,6 @@ private:
 }; //End Class
 
 
-}  
+}  //end namespace
 
 #endif  

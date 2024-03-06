@@ -50,6 +50,7 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
         }
     }
     if(plan_completed){
+        RCLCPP_INFO(node_->get_logger(), "Execution plan has been completed successfully!");
         return BT::NodeStatus::SUCCESS;
     }
     int exeActs = sendMethods();

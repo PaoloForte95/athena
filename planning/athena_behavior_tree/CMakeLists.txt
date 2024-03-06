@@ -80,6 +80,9 @@ list(APPEND plugin_libs athena_dispatch_tasks_action_bt_node)
 add_library(athena_dispatch_methods_action_bt_node SHARED plugins/action/dispatch_methods_action.cpp)
 list(APPEND plugin_libs athena_dispatch_methods_action_bt_node)
 
+add_library(athena_send_method_action_bt_node SHARED plugins/action/send_method.cpp)
+list(APPEND plugin_libs athena_send_method_action_bt_node)
+
 #Control
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs athena_execute_plan_node_bt_node)
