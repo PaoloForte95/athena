@@ -10,7 +10,6 @@
 		wp_2 - location
 		wp_3 - location
 		wp_4 - location
-		wheel_loader_0 - vehicle
 		wheel_loader_1 - vehicle
 	)
 	(:htn
@@ -69,9 +68,7 @@
 
 		(on mat_2 mat_1 wp_1)
 
-		(at wheel_loader_0 home1)
-		(can_load wheel_loader_0)
-		(at wheel_loader_1 home2)
+		(at wheel_loader_1 home1)
 		(can_load wheel_loader_1)
 	)
 )

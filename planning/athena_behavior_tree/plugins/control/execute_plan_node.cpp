@@ -82,7 +82,7 @@ BT::NodeStatus ExecutePlanNode::tick()
       switch (child_status) {
         case BT::NodeStatus::SUCCESS:
           {
-            // halt second child, increment recovery count, and tick first child in next iteration
+            // halt second child, and tick first child in next iteration
             ControlNode::haltChild(1);
             config().blackboard->get<int>("actions_count", actions_count_);
             current_child_idx_--;

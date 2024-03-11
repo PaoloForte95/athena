@@ -18,13 +18,9 @@
 		:subtasks (and
 		 (task0 (move_pile mat_1 wp_4))
 		 (task1 (move_pile mat_2 wp_4))
-		 (task2 (go_to wheel_loader_0 home1))
-		 (task3 (go_to wheel_loader_1 home2))
 		)
 		:ordering (and
 			(< task1 task0)
-			(< task0 task2)
-			(< task2 task3)
 		)
 	)
 	(:init
