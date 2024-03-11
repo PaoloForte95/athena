@@ -152,19 +152,19 @@ class TaskPlanner{
 	String ps = args[0].toUpperCase();
 	switch (PLANNERS.valueOf(ps)){
 		case LPG:
-			planner = new LPG("src/athena/athena_planner/Planners/LPG-td-1.4/");
+			planner = new LPG("src/athena/planning/athena_planner/Planners/LPG-td-1.4/");
 			System.out.println("Using LPG planner!");
 			break;
 		case METRICFF:
-			planner = new MetricFF("src/athena/athena_planner/Planners/Metric-FF-v2.1/");
+			planner = new MetricFF("src/athena/planning/athena_planner/Planners/Metric-FF-v2.1/");
 			System.out.println("Using MetricFF planner!");
 			break;
 		case TFD:
-			planner = new TFD("src/athena/athena_planner/Planners/TFD/");
+			planner = new TFD("src/athena/planning/athena_planner/Planners/TFD/");
 			System.out.println("Using TFD planner!");
 			break;
 		case LILOTANE:
-			planner = new Lilotane("src/athena/athena_planner/Planners/Lilotane/");
+			planner = new Lilotane("src/athena/planning/athena_planner/Planners/Lilotane/");
 			System.out.println("Using LILOTANE planner!");
 			break;
 		default:

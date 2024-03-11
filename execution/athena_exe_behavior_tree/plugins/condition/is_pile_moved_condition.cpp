@@ -72,6 +72,7 @@ BT::NodeStatus IsPileMovedCondition::tick()
             return BT::NodeStatus::FAILURE;
         }
         RCLCPP_INFO(node_->get_logger(),"Cycle %d/%d... Move Piled completed", current_tick_, ticks_);
+        current_tick_ = 0;
         return BT::NodeStatus::SUCCESS;
   }
   else{

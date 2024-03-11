@@ -63,7 +63,7 @@ inline BT::NodeStatus SendMethodAction::tick()
         completed_actions.push_back(completed_action.action_id);
       }
       config().blackboard->set<IDs>("completed_actions", completed_actions);
-
+      config().blackboard->set<std::string>("robot_" + std::to_string(robot_id_) + "_state", "free");
    
 
       return BT::NodeStatus::SUCCESS;

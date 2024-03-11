@@ -49,6 +49,7 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
             break;
         }
     }
+      
     if(plan_completed){
         RCLCPP_INFO(node_->get_logger(), "Execution plan has been completed successfully!");
         return BT::NodeStatus::SUCCESS;
@@ -81,16 +82,19 @@ void DispatchMethodsAction::readPlan(){
         int subTask = method.substasks[0];
         for(athena_msgs::msg::Action action : execution_plan_.actions){
             if( action.action_id == subTask){
-                RCLCPP_INFO(node_->get_logger(), "Method: %s associated to robot %d", method.name.c_str(), method.robotid);
+                RCLCPP_INFO(node_->get_logger(), "Method: (%s, %d) associated to robot %d", method.name.c_str(),method.id, method.robotid);
                 auto it = robots_methods.find(action.robotid);
+                Methods set_methods;
                 if (it != robots_methods.end()){
-                    auto set_methods = robots_methods[action.robotid];
+                    set_methods = robots_methods[action.robotid];
                     set_methods.push_back(method);
+                      robots_methods[action.robotid] = set_methods;
+                     
                 }
                 else{
-                    Methods m;
-                    m.push_back(method);
-                    robots_methods.insert(std::pair<int, Methods>( action.robotid, m));
+                    set_methods.push_back(method);
+                    robots_methods.insert(std::pair<int, Methods>( action.robotid, set_methods));
+
                 }
                 break;
             }
@@ -125,6 +129,7 @@ int DispatchMethodsAction::sendMethods(){
             if(method_can_be_executed){
                 RCLCPP_INFO(node_->get_logger(), "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
                 concurrent_methods.push_back(curr_method);
+                robots_methods[robot].erase(robots_methods[robot].begin());
                 methods_send +=1;
                 config().blackboard->set<std::string>("robot_" + std::to_string(robot) + "_state", "busy");
 
