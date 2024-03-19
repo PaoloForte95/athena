@@ -49,6 +49,17 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
             break;
         }
     }
+    IDs robotIDs;
+    config().blackboard->get<IDs>("robot_ids", robotIDs);
+
+    for(int id: robotIDs){
+        std::string robot_state;
+        config().blackboard->get<std::string>("robot_" + std::to_string(id) + "_state", robot_state);
+         if(robot_state == "busy"){
+            plan_completed = false;
+            break;
+         }
+    }
       
     if(plan_completed){
         RCLCPP_INFO(node_->get_logger(), "Execution plan has been completed successfully!");
@@ -94,7 +105,6 @@ void DispatchMethodsAction::readPlan(){
                 else{
                     set_methods.push_back(method);
                     robots_methods.insert(std::pair<int, Methods>( action.robotid, set_methods));
-
                 }
                 break;
             }
