@@ -14,6 +14,9 @@
 
 
 #include "athena_exe_behavior_tree/plugins/condition/is_pile_moved_condition.hpp"
+#include "sensor_msgs/point_cloud2_iterator.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2/convert.h"
 #include <chrono>
 #include <memory>
 #include <string>
@@ -21,51 +24,137 @@
 namespace athena_exe_behavior_tree
 {
 
+bool getTransform(
+  const std::string & source_frame_id,
+  const std::string & target_frame_id,
+  const tf2::Duration & transform_tolerance,
+  const std::shared_ptr<tf2_ros::Buffer> tf_buffer,
+  tf2::Transform & tf2_transform)
+{
+  geometry_msgs::msg::TransformStamped transform;
+  tf2_transform.setIdentity();  // initialize by identical transform
+
+  if (source_frame_id == target_frame_id) {
+    // We are already in required frame
+    return true;
+  }
+
+  try {
+    // Obtaining the transform to get data from source to target frame
+    transform = tf_buffer->lookupTransform(
+      target_frame_id, source_frame_id,
+      tf2::TimePointZero, transform_tolerance);
+  } catch (tf2::TransformException & e) {
+    RCLCPP_ERROR(
+      rclcpp::get_logger("getTransform"),
+      "Failed to get \"%s\"->\"%s\" frame transform: %s",
+      source_frame_id.c_str(), target_frame_id.c_str(), e.what());
+    return false;
+  }
+
+  // Convert TransformStamped to TF2 transform
+  tf2::fromMsg(transform.transform, tf2_transform);
+  return true;
+}
+
+
+
 IsPileMovedCondition::IsPileMovedCondition(
   const std::string & condition_name,
   const BT::NodeConfiguration & conf)
 : BT::ConditionNode(condition_name, conf), current_tick_(0)
 {
-  node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
-  auto test = rclcpp::Node::make_shared("costmap_node");
+  node_ = rclcpp::Node::make_shared("check_material_amount_client_node");
+  tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
   getInput<std::string>("criteria", criteria_);
   getInput<std::string>("global_frame", global_frame_);
-  getInput<std::string>("costmap_topic", costmap_topic_);
+  getInput<std::string>("scan_topic", scan_topic_);
+  getInput<std::string>("image_topic", image_topic_);
   getInput<int>("ticks", ticks_);
   getInput<double>("threshold", threshold_);
  
-  costmap_client_ = node_->create_client<nav2_msgs::srv::GetCostmap>(costmap_topic_);
+  scan_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(scan_topic_,
+  rclcpp::SystemDefaultsQoS(),
+  std::bind(&IsPileMovedCondition::lidarSensorCallback, this, std::placeholders::_1));
+
+
+   image_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(image_topic_,
+   rclcpp::SystemDefaultsQoS(),
+   std::bind(&IsPileMovedCondition::cameraSensorCallback, this, std::placeholders::_1));
+
+   material_amount_client_ =  node_->create_client<athena_exe_msgs::srv::GetMaterialAmount>("get_material_amount");
 }
 
 BT::NodeStatus IsPileMovedCondition::tick()
 {
-    current_tick_ += 1;
-    if(criteria_ == "LidarScan"){
-      RCLCPP_INFO(node_->get_logger(),"Using lidar for checking the pile" );
-      auto request = std::make_shared<nav2_msgs::srv::GetCostmap::Request>();
-      while (!costmap_client_->wait_for_service(std::chrono::seconds(1))) {
-        if (!rclcpp::ok()) {
-          RCLCPP_ERROR(node_->get_logger(), "Interrupted while waiting for the service. Exiting.");
-        }
-        RCLCPP_INFO(node_->get_logger(), "service not available, waiting again...");
-      }
-      auto result = costmap_client_->async_send_request(request);
-      if (rclcpp::spin_until_future_complete(node_, result) ==
-        rclcpp::FutureReturnCode::SUCCESS)
-      {
-        RCLCPP_INFO(node_->get_logger(), "Success:");
-      } else {
-        RCLCPP_ERROR(node_->get_logger(), "Failed to call service %s", costmap_topic_);
-      }
-      auto data = result.get()->map.data;
-      for(auto value : data){
-        if(value >threshold_){
-          return BT::NodeStatus::FAILURE;
-        }
-      }
-      return BT::NodeStatus::SUCCESS;
+  current_tick_ += 1;
+  RCLCPP_INFO(node_->get_logger(), "Checking material amount using %s data", criteria_.c_str());
+  if(criteria_ == "Amount"){
+    std::string material;
+    config().blackboard->get<std::string>("material_loaded", material);
+    auto request = std::make_shared<athena_exe_msgs::srv::GetMaterialAmount::Request>();
+    request->pile_id = material;
 
-  }else if(criteria_ == "NumberCycles"){
+    auto result = material_amount_client_->async_send_request(request);
+      if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
+    {
+      double current_amount = result.get()->amount;
+      if(current_amount > threshold_){
+        RCLCPP_INFO(node_->get_logger(), "Progress Material %s moving: %f... %f", material.c_str(), current_amount, threshold_);
+        return BT::NodeStatus::FAILURE;
+      }
+      RCLCPP_INFO(node_->get_logger(), "Material %s has been moved!", material.c_str());
+      return BT::NodeStatus::SUCCESS;
+    } else {
+      RCLCPP_ERROR(node_->get_logger(), "Failed to get material %s amount",material.c_str());
+    }
+  }
+  
+  else if(criteria_ == "LidarScan"){
+    RCLCPP_INFO(node_->get_logger(),"Using lidar for checking the pile" );
+    tf2::Transform tf_transform;
+    getTransform(
+        data_->header.frame_id, global_frame_,
+        tf2::durationFromSec(0.5), tf_buffer_, tf_transform);
+
+    sensor_msgs::PointCloud2ConstIterator<float> iter_x(*data_, "x");
+    sensor_msgs::PointCloud2ConstIterator<float> iter_y(*data_, "y");
+    sensor_msgs::PointCloud2ConstIterator<float> iter_z(*data_, "z");
+      
+    for (; iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
+      // Transform point coordinates from source frame -> to base frame
+      tf2::Vector3 p_v3_s(*iter_x, *iter_y, *iter_z);
+      tf2::Vector3 p_v3_b = tf_transform * p_v3_s;
+      if (p_v3_b.z() >= threshold_ ) {
+        RCLCPP_INFO(node_->get_logger(), "Z value exceeds threshold: %f", *iter_z);
+        return BT::NodeStatus::FAILURE;
+        }
+    }
+    return BT::NodeStatus::SUCCESS;
+  }else if(criteria_ == "Camera"){
+    RCLCPP_INFO(node_->get_logger(),"Using lidar for checking the pile" );
+    tf2::Transform tf_transform;
+    getTransform(
+        data_->header.frame_id, global_frame_,
+        tf2::durationFromSec(0.5), tf_buffer_, tf_transform);
+
+    sensor_msgs::PointCloud2ConstIterator<float> iter_x(*data_, "x");
+    sensor_msgs::PointCloud2ConstIterator<float> iter_y(*data_, "y");
+    sensor_msgs::PointCloud2ConstIterator<float> iter_z(*data_, "z");
+      
+    for (; iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
+      // Transform point coordinates from source frame -> to base frame
+      tf2::Vector3 p_v3_s(*iter_x, *iter_y, *iter_z);
+      tf2::Vector3 p_v3_b = tf_transform * p_v3_s;
+      if (p_v3_b.z() >= threshold_ ) {
+        RCLCPP_INFO(node_->get_logger(), "Z value exceeds threshold: %f", *iter_z);
+        return BT::NodeStatus::FAILURE;
+        }
+    }
+    return BT::NodeStatus::SUCCESS;
+
+  }
+  else if(criteria_ == "NumberCycles"){
         RCLCPP_INFO(node_->get_logger(),"Using estimated number of cycles for checking the pile...");
         if(current_tick_ < ticks_){
           RCLCPP_INFO(node_->get_logger(),"Cycle %d/%d... Moving Pile", current_tick_, ticks_);
@@ -76,12 +165,26 @@ BT::NodeStatus IsPileMovedCondition::tick()
         return BT::NodeStatus::SUCCESS;
   }
   else{
-     RCLCPP_INFO(node_->get_logger(),"Criteria %s not supported. Choose between: LidarScan or NumberCycles", criteria_.c_str() );
+     RCLCPP_INFO(node_->get_logger(),"Criteria %s not supported. Choose between: LidarScan, Camera, Amount or NumberCycles", criteria_.c_str() );
      BT::NodeStatus::IDLE;
-  }
-    
+  }   
 }
-}  // namespace
+
+  void IsPileMovedCondition::lidarSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr data)
+  {
+    data_ = data;
+  }
+
+  void IsPileMovedCondition::cameraSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr data)
+  {
+    depth_image_ = data;
+  }
+
+
+}// namespace
+
+
+
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 BT_REGISTER_NODES(factory)

@@ -87,6 +87,8 @@ void SendLoadAction::sendLoad(Actions actions)
       goal_msg.target_boom = 0.4;
       goal_msg.target_bucket = 0.4;
       goal_msg.material_id = load_action.material;
+      std::string mat = "p" + std::to_string(int(load_action.material));
+      config().blackboard->set<std::string>("material_loaded", mat);
       RCLCPP_INFO(node_->get_logger(), "Sending load");
       auto send_goal_options = rclcpp_action::Client<athena_exe_msgs::action::BucketCommand>::SendGoalOptions();
       send_goal_options.goal_response_callback =std::bind(&SendLoadAction::goal_response_callback, this, std::placeholders::_1);

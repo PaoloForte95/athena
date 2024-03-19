@@ -32,7 +32,8 @@
       <input_port name="criteria" default="NumberCycles">Criteria to use to check if the pile is completely moved.</input_port>
       <input_port name="ticks" default="1">"Number of ticks to do (If NumberCycles criteria is selected)"</input_port>
       <input_port name="global_frame" default="map">The global frame </input_port>
-      <input_port name="costmap_topic" default="local_costmap/costmap_raw">The global frame </input_port>
+      <input_port name="scan_topic" default="scan">The lidar scan topic </input_port>
+      <input_port name="image_topic" default="scan">The camera image topic</input_port>
        <input_port name="threshold" default="0.5">The global frame </input_port>
     </Condition>
 

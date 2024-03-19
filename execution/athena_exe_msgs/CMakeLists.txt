@@ -17,7 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    #Msgs
 
    #Services
-    
+   "srv/GetMaterialAmount.srv"
    #Actions
    "action/BucketCommand.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces

@@ -1,0 +1,4 @@
+string pile_id
+float32[] pile_location
+---
+float32 amount
