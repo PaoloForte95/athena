@@ -14,6 +14,7 @@ find_package(athena_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(nav2_util REQUIRED)
+find_package(nav2_costmap_2d REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(athena_protobuf REQUIRED)
 find_package(Protobuf REQUIRED)
@@ -31,6 +32,7 @@ set(dependencies
   ament_index_cpp
   rclcpp_components
   nav2_util
+  nav2_costmap_2d
   athena_core
   athena_msgs
   athena_protobuf
