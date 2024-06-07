@@ -16,14 +16,14 @@
 #include <fstream>
 #include "ament_index_cpp/get_package_share_directory.hpp"
 #include "athena_exe_behavior_tree/plugins/action/send_move_action.hpp"
-
+#include "athena_exe_msgs/action/move_to_pose.hpp"
 typedef std::vector<athena_msgs::msg::Action> Actions;
 typedef std::vector<int> IDs;
 
 namespace athena_exe_behavior_tree
 {
-
-SendMoveAction::SendMoveAction(
+template<typename MoveT>
+SendMoveAction<MoveT>::SendMoveAction(
   const std::string & action_name,
   const BT::NodeConfiguration & conf)
 : ActionNodeBase(action_name, conf)
@@ -32,13 +32,15 @@ SendMoveAction::SendMoveAction(
     getInput("global_frame", global_frame_);
     getInput("waypoints_filename", waypoints_filename_);
     node_ = rclcpp::Node::make_shared("send_move_client_node");
-    RCLCPP_ERROR(node_->get_logger(),"namespaceee %s", node_->get_namespace());
+    RCLCPP_ERROR(node_->get_logger(),"namespace %s", node_->get_namespace());
     auto service_name = node_->get_namespace() + service_name_;
-    client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(node_, service_name);
+    client_ptr_ = rclcpp_action::create_client<MoveT>(node_, service_name);
     parseWaypoints();
 }
 
-void SendMoveAction::parseWaypoints(){
+
+template<typename MoveT>
+void SendMoveAction<MoveT>::parseWaypoints(){
     std::string file_path = ament_index_cpp::get_package_share_directory("athena_exe_launch") + "/waypoints/" + waypoints_filename_;
     std::ifstream file(file_path);
     if (!file.is_open()) {
@@ -89,7 +91,8 @@ void SendMoveAction::parseWaypoints(){
 
 }
 
-inline BT::NodeStatus SendMoveAction::tick()
+template<typename MoveT>
+inline BT::NodeStatus SendMoveAction<MoveT>::tick()
 { 
     setStatus(BT::NodeStatus::RUNNING);
 
@@ -114,8 +117,8 @@ inline BT::NodeStatus SendMoveAction::tick()
     return BT::NodeStatus::RUNNING;
 }
 
-
-Actions SendMoveAction::getMoveActions(){
+template<typename MoveT>
+Actions SendMoveAction<MoveT>::getMoveActions(){
     Actions move_actions_;
     config().blackboard->get<Actions>("actions", actions_);
     for(athena_msgs::msg::Action act : actions_){
@@ -127,32 +130,34 @@ Actions SendMoveAction::getMoveActions(){
     return move_actions_;
 }
 
-void SendMoveAction::sendMove(Actions actions)
+
+
+
+template<typename MoveT>
+void SendMoveAction<MoveT>::sendMove(Actions actions)
   {
     using namespace std::placeholders;
      
     for(athena_msgs::msg::Action move_action: actions){
       int robotID = move_action.robotid;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
-      if (!is_action_server_ready) { 
+      auto wp = move_action.waypoints[move_action.waypoints.size()-1];
+      getGoalLocation(wp);
+      if (!is_action_server_ready) {
           RCLCPP_ERROR( node_->get_logger(), "navigate_to_pose action server is not available." " Is the initial pose set?"); 
           return ;
       }
-      
-      
-      auto wp = move_action.waypoints[move_action.waypoints.size()-1];
-      auto goal_msg = getGoalLocation(wp);
 
+      config().blackboard->set<std::string>("load_position", wp);
       RCLCPP_INFO(node_->get_logger(), "Sending goal");
-
-      auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+      setGoalOption();
       //send_goal_options.result_callback = [this](auto) {
       //send_move_handler_.reset();
       //};
-      send_goal_options.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
+      send_goal_options_.goal_response_callback =std::bind(&SendMoveAction::goal_response_callback, this, std::placeholders::_1);
       //send_goal_options.feedback_callback = std::bind(&SendMoveAction::feedback_callback, this, std::placeholders::_1,std::placeholders::_2);
-      send_goal_options.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
-      auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
+      send_goal_options_.result_callback = std::bind(&SendMoveAction::result_callback, this,std::placeholders::_1);
+      auto future_goal_handle = client_ptr_->async_send_goal(goal_, send_goal_options_);
       if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
       {
           RCLCPP_INFO(node_->get_logger(), "Failed sending goal");
@@ -160,23 +165,33 @@ void SendMoveAction::sendMove(Actions actions)
           return ;
       }
       send_move_handler_ = future_goal_handle.get();
-
       auto future_result = client_ptr_->async_get_result(send_move_handler_);
       RCLCPP_INFO(node_->get_logger(), "Executing Operation...!");
       rclcpp::spin_until_future_complete(node_, future_result);
-
-      rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>::WrappedResult wrapped_result = future_result.get();
+      GoalHandleSendMoveWrappedResult wrapped_result = future_result.get();
     }
-
 }
 
-  nav2_msgs::action::NavigateToPose::Goal SendMoveAction::getGoalLocation(std::string goal_waypoint){
+template<>
+  void SendMoveAction<nav2_msgs::action::NavigateToPose>::setGoalOption(){
+    send_goal_options_ = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+
+  }
+
+template<>
+  void SendMoveAction<athena_exe_msgs::action::MoveToPose>::setGoalOption(){
+    send_goal_options_ = rclcpp_action::Client<athena_exe_msgs::action::MoveToPose>::SendGoalOptions();
+
+  }
+
+template<>
+  void SendMoveAction<nav2_msgs::action::NavigateToPose>::getGoalLocation(std::string goal_waypoint){
       auto msg = nav2_msgs::action::NavigateToPose::Goal();
       msg.pose.header.frame_id = global_frame_;
       auto it = waypoints_.find(goal_waypoint);
       if (it == waypoints_.end()) {
          RCLCPP_ERROR(node_->get_logger()," Waypoint %s not found!", goal_waypoint.c_str());
-        return msg;
+        return ;
       }
       Waypoint loc = it->second;
       msg.pose.pose.position.x = loc.x;
@@ -188,10 +203,33 @@ void SendMoveAction::sendMove(Actions actions)
       msg.pose.pose.orientation.y = quaternion.y();
       msg.pose.pose.orientation.z = quaternion.z();
       msg.pose.pose.orientation.w = quaternion.w();
-      return msg;
+      goal_ = msg;
+  }
+  
+template<>
+  void SendMoveAction<athena_exe_msgs::action::MoveToPose>::getGoalLocation(std::string goal_waypoint){
+      auto msg = athena_exe_msgs::action::MoveToPose::Goal();
+      msg.pose.header.frame_id = global_frame_;
+      auto it = waypoints_.find(goal_waypoint);
+      if (it == waypoints_.end()) {
+         RCLCPP_ERROR(node_->get_logger()," Waypoint %s not found!", goal_waypoint.c_str());
+        return ;
+      }
+      Waypoint loc = it->second;
+      msg.pose.pose.position.x = loc.x;
+      msg.pose.pose.position.y = loc.y;
+      msg.pose.pose.position.z = 0.0;
+      Eigen::Quaterniond quaternion = rpyToQuaternion(0, 0, loc.theta);
+      RCLCPP_INFO(node_->get_logger()," Goal for Robot Arm: %s, %f, %f, %f",goal_waypoint.c_str(),loc.x, loc.y, loc.theta);
+      msg.pose.pose.orientation.x = quaternion.x();
+      msg.pose.pose.orientation.y = quaternion.y();
+      msg.pose.pose.orientation.z = quaternion.z();
+      msg.pose.pose.orientation.w = quaternion.w();
+      goal_ = msg;
   }
 
-   void SendMoveAction::goal_response_callback(const GoalHandleSendMove::SharedPtr & goal_handle)
+template<typename MoveT>
+   void SendMoveAction<MoveT>::goal_response_callback(const GoalHandleSendMovePtr & goal_handle)
   {
     if (!goal_handle) {
       RCLCPP_ERROR(node_->get_logger(), "Goal was rejected by server");
@@ -200,15 +238,15 @@ void SendMoveAction::sendMove(Actions actions)
     }
   }
 
-
-  void SendMoveAction::feedback_callback(GoalHandleSendMove::SharedPtr,const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback)
+template<typename MoveT>
+  void SendMoveAction<MoveT>::feedback_callback(GoalHandleSendMovePtr,const std::shared_ptr<const MoveFeedback> feedback)
   {
 
     RCLCPP_INFO(node_->get_logger(), "distance %f",  feedback->distance_remaining);
   }
 
-
-   void SendMoveAction::result_callback(const GoalHandleSendMove::WrappedResult & result)
+template<typename MoveT>
+   void SendMoveAction<MoveT>::result_callback(const GoalHandleSendMoveWrappedResult & result)
   {
     switch (result.code) {
       case rclcpp_action::ResultCode::SUCCEEDED:
@@ -237,5 +275,6 @@ void SendMoveAction::sendMove(Actions actions)
 #include "behaviortree_cpp_v3/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<athena_exe_behavior_tree::SendMoveAction>("SendMove");
+  factory.registerNodeType<athena_exe_behavior_tree::SendMoveAction<nav2_msgs::action::NavigateToPose>>("SendMove");
+  factory.registerNodeType<athena_exe_behavior_tree::SendMoveAction<athena_exe_msgs::action::MoveToPose>>("SendArmMove");
 }
