@@ -1,0 +1,14 @@
+#goal definition
+
+uint16 LOAD=1
+uint16 DUMP=2
+
+
+int64 material_id
+string location
+uint16 operation
+---
+#result definition
+builtin_interfaces/Duration time
+bool material_loaded
+---

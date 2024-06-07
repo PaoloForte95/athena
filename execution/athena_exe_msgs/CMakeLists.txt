@@ -12,6 +12,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(action_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME} 
    #Msgs
@@ -19,8 +20,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    #Services
    "srv/GetMaterialAmount.srv"
    #Actions
-   "action/BucketCommand.action"
-  DEPENDENCIES std_msgs action_msgs builtin_interfaces
+   "action/LoadOrDump.action"
+   "action/MoveToPose.action"
+  DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs
 )
 
 ament_export_dependencies(rosidl_default_runtime)

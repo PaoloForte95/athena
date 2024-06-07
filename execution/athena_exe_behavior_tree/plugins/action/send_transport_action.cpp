@@ -142,7 +142,7 @@ void SendTransportAction::sendMove(Actions actions)
       
       auto wp = move_action.waypoints[move_action.waypoints.size()-1];
       auto goal_msg = getGoalLocation(wp);
-
+      config().blackboard->set<std::string>("dump_position", wp);
       RCLCPP_INFO(node_->get_logger(), "Sending goal");
 
       auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();

@@ -18,7 +18,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "athena_exe_msgs/action/bucket_command.hpp"
+#include "athena_exe_msgs/action/load_or_dump.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
 
@@ -77,8 +77,8 @@ public:
 
 protected:
   typedef std::vector<athena_msgs::msg::Action> Actions;
-  typedef rclcpp_action::Client<athena_exe_msgs::action::BucketCommand>::SharedPtr Client;
-  using GoalHandleSendDump = rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::BucketCommand>;
+  typedef rclcpp_action::Client<athena_exe_msgs::action::LoadOrDump>::SharedPtr Client;
+  using GoalHandleSendDump = rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::LoadOrDump>;
   void sendDump(Actions actions);
   Actions getDumpActions();
 
@@ -94,7 +94,7 @@ private:
 
    void goal_response_callback(const GoalHandleSendDump::SharedPtr & goal_handle);
 
-   void feedback_callback(GoalHandleSendDump::SharedPtr, const std::shared_ptr<const athena_exe_msgs::action::BucketCommand::Feedback> feedback);
+   void feedback_callback(GoalHandleSendDump::SharedPtr, const std::shared_ptr<const athena_exe_msgs::action::LoadOrDump::Feedback> feedback);
 
    void result_callback(const GoalHandleSendDump::WrappedResult & result);
 

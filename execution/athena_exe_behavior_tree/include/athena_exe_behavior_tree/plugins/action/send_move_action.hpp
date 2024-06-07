@@ -46,6 +46,8 @@ struct Waypoint {
  * 
  */
 
+
+template<typename MoveT>
 class SendMoveAction : public BT::ActionNodeBase
 {
 public:
@@ -86,8 +88,13 @@ public:
 
 protected:
   typedef std::vector<athena_msgs::msg::Action> Actions;
-  typedef rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr Client;
-  using GoalHandleSendMove = rclcpp_action::ClientGoalHandle<nav2_msgs::action::NavigateToPose>;
+  typedef typename rclcpp_action::Client<MoveT>::SharedPtr Client;
+  typedef typename rclcpp_action::ClientGoalHandle<MoveT> GoalHandleSendMove;
+  typedef typename GoalHandleSendMove::WrappedResult GoalHandleSendMoveWrappedResult;
+  typedef typename GoalHandleSendMove::SharedPtr GoalHandleSendMovePtr;
+  typedef typename MoveT::Feedback MoveFeedback;
+  typedef typename MoveT::Goal MoveGoal;
+  typedef typename rclcpp_action::Client<MoveT>::SendGoalOptions SendGoalOptions;
   void sendMove(Actions actions);
   Actions getMoveActions();
 
@@ -96,22 +103,26 @@ protected:
 private:
   std::string service_name_, global_frame_, waypoints_filename_;
   Client client_ptr_;
-  GoalHandleSendMove::SharedPtr send_move_handler_;
+  GoalHandleSendMovePtr send_move_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;
   Actions actions_;
   std::map<std::string, Waypoint> waypoints_;
+  MoveGoal goal_;
+  SendGoalOptions send_goal_options_;
 
 
-   void goal_response_callback(const GoalHandleSendMove::SharedPtr & goal_handle);
+   void goal_response_callback(const GoalHandleSendMovePtr & goal_handle);
 
-   void feedback_callback(GoalHandleSendMove::SharedPtr, const std::shared_ptr<const nav2_msgs::action::NavigateToPose::Feedback> feedback);
+   void feedback_callback(GoalHandleSendMovePtr, const std::shared_ptr<const MoveFeedback> feedback);
 
-   void result_callback(const GoalHandleSendMove::WrappedResult & result);
+   void result_callback(const GoalHandleSendMoveWrappedResult & result);
    
-   nav2_msgs::action::NavigateToPose::Goal getGoalLocation(std::string goal_waypoint);
+   void getGoalLocation(std::string goal_waypoint);
    
    void parseWaypoints();
+
+   void setGoalOption();
 
     Eigen::Quaterniond rpyToQuaternion(double roll, double pitch, double yaw) {
       Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());

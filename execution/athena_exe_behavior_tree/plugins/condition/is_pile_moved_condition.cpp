@@ -90,10 +90,12 @@ BT::NodeStatus IsPileMovedCondition::tick()
   current_tick_ += 1;
   RCLCPP_INFO(node_->get_logger(), "Checking material amount using %s data", criteria_.c_str());
   if(criteria_ == "Amount"){
-    std::string material;
+    std::string material, location;
     config().blackboard->get<std::string>("material_loaded", material);
+    config().blackboard->get<std::string>("dump_position", location);
     auto request = std::make_shared<athena_exe_msgs::srv::GetMaterialAmount::Request>();
     request->pile_id = material;
+    request->pile_location = location;
 
     auto result = material_amount_client_->async_send_request(request);
       if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
