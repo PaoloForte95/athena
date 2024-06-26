@@ -20,7 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    #Services
    "srv/GetMaterialAmount.srv"
    #Actions
-   "action/LoadOrDump.action"
+   "action/MoveJoint.action"
    "action/MoveToPose.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs
 )

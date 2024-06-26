@@ -30,7 +30,7 @@ SendDumpAction::SendDumpAction(
     getInput("global_frame", global_frame_);
     node_ = rclcpp::Node::make_shared("send_dump_client_node");
     auto service_name = node_->get_namespace() + service_name_;
-    client_ptr_ = rclcpp_action::create_client<athena_exe_msgs::action::LoadOrDump>(node_, service_name);
+    client_ptr_ = rclcpp_action::create_client<athena_exe_msgs::action::MoveJoint>(node_, service_name);
 }
 
 inline BT::NodeStatus SendDumpAction::tick()
@@ -79,14 +79,14 @@ void SendDumpAction::sendDump(Actions actions)
           RCLCPP_ERROR( node_->get_logger(), "dump action server is not available."); 
           return ;
       }
-      auto goal_msg = athena_exe_msgs::action::LoadOrDump::Goal();
+      auto goal_msg = athena_exe_msgs::action::MoveJoint::Goal();
       goal_msg.material_id = dump_action.material;
       goal_msg.operation = 2;
       std::string location;
       config().blackboard->get<std::string>("dump_position", location);
       goal_msg.location = location;
       RCLCPP_INFO(node_->get_logger(), "Sending dump");
-      auto send_goal_options = rclcpp_action::Client<athena_exe_msgs::action::LoadOrDump>::SendGoalOptions();
+      auto send_goal_options = rclcpp_action::Client<athena_exe_msgs::action::MoveJoint>::SendGoalOptions();
       send_goal_options.goal_response_callback =std::bind(&SendDumpAction::goal_response_callback, this, std::placeholders::_1);
     
       send_goal_options.result_callback = std::bind(&SendDumpAction::result_callback, this,std::placeholders::_1);
@@ -101,7 +101,7 @@ void SendDumpAction::sendDump(Actions actions)
       auto future_result = client_ptr_->async_get_result(send_dump_handler_);
       RCLCPP_INFO(node_->get_logger(), "Executing dumping for robot %d...!", robotID);
       rclcpp::spin_until_future_complete(node_, future_result);
-      rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::LoadOrDump>::WrappedResult wrapped_result = future_result.get();
+      rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::MoveJoint>::WrappedResult wrapped_result = future_result.get();
     }
 
 }
@@ -117,7 +117,7 @@ void SendDumpAction::sendDump(Actions actions)
   }
 
 
-  void SendDumpAction::feedback_callback(GoalHandleSendDump::SharedPtr,const std::shared_ptr<const athena_exe_msgs::action::LoadOrDump::Feedback> feedback)
+  void SendDumpAction::feedback_callback(GoalHandleSendDump::SharedPtr,const std::shared_ptr<const athena_exe_msgs::action::MoveJoint::Feedback> feedback)
   {
     RCLCPP_INFO(node_->get_logger(), "Executing Dumping...");
   }
