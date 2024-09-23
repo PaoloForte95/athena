@@ -1,5 +1,6 @@
 bt_planner:
   ros__parameters:
+    groot_port: 1668
     use_sim_time: True
     global_frame: map
     robot_base_frame: base_link

@@ -241,6 +241,7 @@ protected:
 
   //Groot2 Publisher
   std::unique_ptr<BT::Groot2Publisher> groot_publisher_;
+  int port_;
 };
 
 }  // namespace athena_behavior_tree
