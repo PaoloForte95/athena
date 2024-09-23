@@ -42,7 +42,7 @@ inline BT::NodeStatus DispatchTasksAction::tick()
     if(plan_actions_.empty()){
         plan_actions_ = readPlan();
     }
-     RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
+    RCLCPP_INFO(node_->get_logger(), "Current plan level %d....%d", current_level_,max_level_);
     if(current_level_ >max_level_ ){
         return BT::NodeStatus::SUCCESS;
     }
@@ -87,6 +87,7 @@ int DispatchTasksAction::executableActions(std::vector<athena_msgs::msg::Action>
     Actions concurrent_actions, empty_set;
 
     std::vector<bool> levelCanBeExecuted;
+    int prev_action_blocked = -1;
     for(athena_msgs::msg::Action action :  actions){
         int act_level = action_levels.find(action.action_id)->second;
         if(act_level == current_level_){
@@ -96,7 +97,11 @@ int DispatchTasksAction::executableActions(std::vector<athena_msgs::msg::Action>
                 auto itr = std::find(completed_actions_.begin(), completed_actions_.end(), parID);
                  //If absent, parent actions haven't been completed yet. Wa only if absent
                 if (itr == completed_actions_.end()){
-                    RCLCPP_INFO(node_->get_logger(), "Action %d cannot be execute because its parent %d has not been completed yet!", action.action_id, parID);
+                    if(prev_action_blocked != action.action_id){
+                        prev_action_blocked = action.action_id;
+                        RCLCPP_INFO_ONCE(node_->get_logger(), "Action %d cannot be execute because its parent %d has not been completed yet!", action.action_id, parID);
+                    }
+                    
                     canBeExecuted = false;
                     break;
                 }
@@ -134,7 +139,7 @@ athena_msgs::msg::Action DispatchTasksAction::getAction (int ID){
 
 } // namespace athena_behavior_tree
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
   factory.registerNodeType<athena_behavior_tree::DispatchTasksAction>("DispatchTasks");

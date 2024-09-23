@@ -35,8 +35,8 @@ BT::NodeStatus ExecutePlanNode::tick()
   
   getInput("plan_length", plan_length_);
 
-  if (children_count != 2) {
-    throw BT::BehaviorTreeException("Execute Plan Node '" + name() + "' must only have 2 children. The first need to be the dispatcher, the second the logic to execute the actions.");
+  if (children_count > 2) {
+    throw BT::BehaviorTreeException("Execute Plan Node '" + name() + "' must have 2 children. The first need to be the dispatcher, the second the logic to execute the actions.");
   }
 
   setStatus(BT::NodeStatus::RUNNING);
@@ -123,7 +123,7 @@ void ExecutePlanNode::halt()
 
 }  // namespace athena_behavior_tree
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
   factory.registerNodeType<athena_behavior_tree::ExecutePlanNode>("ExecutePlanNode");

@@ -2,7 +2,7 @@
 This Behavior Tree computes and executed a plan. If the plan failed, it has recovery actions to recompute a plan.
 -->
 
-<root main_tree_to_execute="MasterTree">
+<root BTCPP_format="4" main_tree_to_execute="MasterTree">
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
@@ -15,8 +15,5 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
  </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>
-
-
-
 
 </root>

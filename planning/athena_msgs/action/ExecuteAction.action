@@ -1,0 +1,7 @@
+#goal definition
+athena_msgs/Action action
+string behavior_tree
+---
+#result definition
+std_msgs/String result
+---

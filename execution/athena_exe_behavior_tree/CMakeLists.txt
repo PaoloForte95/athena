@@ -33,7 +33,7 @@ find_package(tf2_ros REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(athena_util REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(athena_exe_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
@@ -56,7 +56,7 @@ set(dependencies
   sensor_msgs
   nav2_msgs
   nav_msgs
-  behaviortree_cpp_v3
+  behaviortree_cpp
   tf2_ros
   tf2
   tf2_geometry_msgs

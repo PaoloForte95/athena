@@ -25,7 +25,7 @@
 #include <athena_msgs/action/compute_plan.hpp>
 #include "athena_behavior_tree/bt_action_server.hpp"
 #include "ament_index_cpp/get_package_share_directory.hpp"
-
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
 namespace athena_behavior_tree
 {
 
@@ -86,7 +86,7 @@ bool BtActionServer<ActionT>::on_configure()
 
   // Support for handling the topic-based goal pose from rviz
   client_node_ = std::make_shared<rclcpp::Node>("_", options);
-
+  
   action_server_ = std::make_shared<ActionServer>(
     node->get_node_base_interface(),
     node->get_node_clock_interface(),
@@ -100,13 +100,10 @@ bool BtActionServer<ActionT>::on_configure()
   bt_loop_duration_ = std::chrono::milliseconds(timeout);
   node->get_parameter("default_server_timeout", timeout);
   default_server_timeout_ = std::chrono::milliseconds(timeout);
-
   // Create the class that registers our custom nodes and executes the BT
   bt_ = std::make_unique<athena_behavior_tree::BehaviorTreeEngine>(plugin_lib_names_);
-
   // Create the blackboard that will be shared by all of the nodes in the tree
   blackboard_ = BT::Blackboard::create();
-
   // Put items on the blackboard
   blackboard_->set<rclcpp::Node::SharedPtr>("node", client_node_);  // NOLINT
   blackboard_->set<std::chrono::milliseconds>("server_timeout", default_server_timeout_);  // NOLINT
@@ -174,6 +171,7 @@ bool BtActionServer<ActionT>::loadBehaviorTree(const std::string & bt_xml_filena
   // Create the Behavior Tree from the XML input
   try {
     tree_ = bt_->createTreeFromText(xml_string, blackboard_);
+     BT::Groot2Publisher publisher(tree_);
   } catch (const std::exception & e) {
     RCLCPP_ERROR(logger_, "Exception when loading BT: %s", e.what());
     return false;

@@ -16,7 +16,7 @@
 #define ATHENA_BEHAVIOR_TREE__PLUGINS__CONTROL__EXECUTE_PLAN_NODE_HPP_
 
 #include <string>
-#include "behaviortree_cpp_v3/control_node.h"
+#include "behaviortree_cpp/control_node.h"
 
 namespace athena_behavior_tree
 {

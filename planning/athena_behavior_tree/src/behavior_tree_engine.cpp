@@ -1,4 +1,5 @@
-// Copyright (c) 2023 Paolo Forte
+// Copyright (c) 2018 Intel Corporation
+// Copyright (c) 2020 Florian Gramss
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
-#include "behaviortree_cpp_v3/utils/shared_library.h"
+#include "behaviortree_cpp/utils/shared_library.h"
 
 namespace athena_behavior_tree
 {
@@ -28,9 +29,18 @@ BehaviorTreeEngine::BehaviorTreeEngine(const std::vector<std::string> & plugin_l
 {
   BT::SharedLibrary loader;
   for (const auto & p : plugin_libraries) {
+    RCLCPP_ERROR(
+      rclcpp::get_logger("BehaviorTreeEngine"),
+      "test: %s", p.c_str());
     factory_.registerFromPlugin(loader.getOSName(p));
   }
+
+  // FIXME: the next two line are needed for back-compatibility with BT.CPP 3.8.x
+  // Note that the can be removed, once we migrate from BT.CPP 4.5.x to 4.6+
+  BT::ReactiveSequence::EnableException(false);
+  BT::ReactiveFallback::EnableException(false);
 }
+
 
 BtStatus
 BehaviorTreeEngine::run(
@@ -46,11 +56,11 @@ BehaviorTreeEngine::run(
   try {
     while (rclcpp::ok() && result == BT::NodeStatus::RUNNING) {
       if (cancelRequested()) {
-        tree->rootNode()->halt();
+        tree->haltTree();
         return BtStatus::CANCELED;
       }
 
-      result = tree->tickRoot();
+      result = tree->tickOnce();
 
       onLoop();
 
@@ -86,17 +96,13 @@ BehaviorTreeEngine::createTreeFromFile(
 void
 BehaviorTreeEngine::haltAllActions(BT::TreeNode * root_node)
 {
-  if (!root_node) {
-    return;
-  }
-
   // this halt signal should propagate through the entire tree.
-  root_node->halt();
+  root_node->haltNode();
 
   // but, just in case...
   auto visitor = [](BT::TreeNode * node) {
       if (node->status() == BT::NodeStatus::RUNNING) {
-        node->halt();
+        node->haltNode();
       }
     };
   BT::applyRecursiveVisitor(root_node, visitor);

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Paolo Forte
+// Copyright (c) 2018 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,35 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__DECORATOR__SELECTED_ROBOT_CONTROLLER_HPP_
-#define ATHENA_BEHAVIOR_TREE__PLUGINS__DECORATOR__SELECTED_ROBOT_CONTROLLER_HPP_
+#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__DECORATOR__RATE_CONTROLLER_HPP_
+#define ATHENA_BEHAVIOR_TREE__PLUGINS__DECORATOR__RATE_CONTROLLER_HPP_
 
-#include <memory>
+#include <chrono>
 #include <string>
 
-#include "geometry_msgs/msg/pose_stamped.hpp"
-#include "visualization_msgs/msg/marker_array.hpp"
-#include "tf2_ros/buffer.h"
-#include "athena_msgs/msg/method.hpp"
-#include "athena_msgs/msg/action.hpp"
 #include "behaviortree_cpp/decorator_node.h"
 
-typedef std::vector<athena_msgs::msg::Method> Methods;
 namespace athena_behavior_tree
 {
 
 /**
- * @brief A BT::DecoratorNode that ticks its child every time the current action need to be executed by the robot associated to this decorator.
+ * @brief A BT::DecoratorNode that ticks its child at a specified rate
  */
-class SelectedRobotController : public BT::DecoratorNode
+class RateController : public BT::DecoratorNode
 {
 public:
   /**
-   * @brief A constructor for athena_behavior_tree::SelectedRobotController
+   * @brief A constructor for athena_behavior_tree::RateController
    * @param name Name for the XML tag for this node
    * @param conf BT node configuration
    */
-  SelectedRobotController(
+  RateController(
     const std::string & name,
     const BT::NodeConfiguration & conf);
 
@@ -51,7 +45,7 @@ public:
   static BT::PortsList providedPorts()
   {
     return {
-      BT::InputPort<double>("robot_id", "The id of the robot "),
+      BT::InputPort<double>("hz", 10.0, "Rate")
     };
   }
 
@@ -62,8 +56,8 @@ private:
    */
   BT::NodeStatus tick() override;
 
-  rclcpp::Node::SharedPtr node_;
-  int robot_id_;
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_;
+  double period_;
   bool first_time_;
 };
 

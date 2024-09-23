@@ -19,7 +19,7 @@
 #include <string>
 #include <chrono>
 
-#include "behaviortree_cpp_v3/action_node.h"
+#include "behaviortree_cpp/action_node.h"
 #include "athena_util/node_utils.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "athena_behavior_tree/bt_conversions.hpp"

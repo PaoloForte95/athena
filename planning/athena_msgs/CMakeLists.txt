@@ -31,6 +31,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    "action/ComputePlan.action"
    "action/OptmizePlan.action"
    "action/ExecuteMethod.action"
+   "action/ExecuteAction.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces
 )
 

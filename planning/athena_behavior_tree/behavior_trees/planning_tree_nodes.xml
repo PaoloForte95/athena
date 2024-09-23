@@ -11,6 +11,19 @@
             <input_port name="planner">The PDDL planner to use</input_port>
     </Action>
 
+    <Action ID="ComputePDDLProblem">
+            <output_port name="problem_file">The computed execution plan</output_port>
+            <output_port name="objects_list">The computed list of objects</output_port>
+            <input_port name="instruction">Instruction</input_port>
+            <input_port name="prompt">Prompt</input_port>
+    </Action>
+
+
+    <Action ID="EstimateObjectsPoses">
+            <output_port name="object_poses">The estimated pose of the objects</output_port>
+            <input_port name="objects_list">List of object in the scene</input_port>
+    </Action>
+
     <Action ID="DispatchTasks">
             <output_port name="concurrent_actions">The set of all actions that can be executed at current step</output_port>
             <input_port name="execution_plan">The computed execution plan</input_port>
@@ -26,6 +39,16 @@
     <Action ID="SendMethod">
             <input_port name="service_name"></input_port>
             <input_port name="robot_id">The id of the robot to be associated with this action</input_port>
+    </Action>
+
+    <Action ID="SendAction">
+            <input_port name="service_name"></input_port>
+            <input_port name="robot_id">The id of the robot to be associated with this action</input_port>
+    </Action>
+
+     <Action ID="UpdatePrompt">
+            <input_port name="previous_prompt">The previous prompt</input_port>
+            <output_port name="updated_prompt">The updated Prompt</output_port>
     </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->
@@ -46,6 +69,10 @@
 
     <Decorator ID="RateController">
       <input_port name="hz">Rate</input_port>
+    </Decorator>
+
+    <Decorator ID="ChangedPrompt">
+      <input_port name="prompt">The prompt to VLM</input_port>
     </Decorator>
 
     <Decorator ID="SelectedRobotController"> 

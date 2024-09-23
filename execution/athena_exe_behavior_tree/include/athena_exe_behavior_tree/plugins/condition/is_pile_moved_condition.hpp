@@ -20,7 +20,7 @@
 #include <mutex>
 
 #include "rclcpp/rclcpp.hpp"
-#include "behaviortree_cpp_v3/condition_node.h"
+#include "behaviortree_cpp/condition_node.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "sensor_msgs/msg/point_cloud2.hpp"
 #include "sensor_msgs/msg/image.hpp"

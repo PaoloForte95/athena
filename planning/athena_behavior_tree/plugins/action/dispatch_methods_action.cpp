@@ -168,7 +168,7 @@ athena_msgs::msg::Method DispatchMethodsAction::getMethod (int ID){
 }
 }
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
   factory.registerNodeType<athena_behavior_tree::DispatchMethodsAction>("DispatchMethods");

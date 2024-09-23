@@ -161,7 +161,7 @@ public:
     blackboard->set<bool>("initial_pose_received", false);  // NOLINT
     blackboard->set<int>("number_recoveries", 0);  // NOLINT
     blackboard->set<std::shared_ptr<athena_util::OdomSmoother>>("odom_smoother", odom_smoother);  // NOLINT
-
+    
     return configure(parent_node, odom_smoother) && ok;
   }
 

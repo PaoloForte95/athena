@@ -95,7 +95,7 @@ template<typename MoveT>
 inline BT::NodeStatus SendMoveAction<MoveT>::tick()
 { 
     setStatus(BT::NodeStatus::RUNNING);
-
+    
     //Get the move actions 
     Actions actions = getMoveActions();
     if(actions.empty()){
@@ -272,7 +272,7 @@ template<typename MoveT>
 }  // namespace athena_exe_behavior_tree
 
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
   factory.registerNodeType<athena_exe_behavior_tree::SendMoveAction<nav2_msgs::action::NavigateToPose>>("SendMove");

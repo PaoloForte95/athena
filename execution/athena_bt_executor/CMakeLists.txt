@@ -12,7 +12,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(athena_util REQUIRED)
 find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
@@ -34,12 +34,13 @@ set(dependencies
   athena_util
   athena_core
   athena_behavior_tree
-  behaviortree_cpp_v3
+  behaviortree_cpp
   athena_bt_planner
   std_msgs
 )
 
 set(executable_name bt_executor)
+set(executable_name_action bt_action_executor)
 set(library_name ${executable_name}_core)
 
 
@@ -50,9 +51,18 @@ ament_target_dependencies(${executable_name}
   ${dependencies}
 )
 
+add_executable(${executable_name_action} src/main_action.cpp
+)
+
+ament_target_dependencies(${executable_name_action}
+  ${dependencies}
+)
+
 add_library(${library_name} SHARED
   src/bt_executor.cpp
   src/method_executor.cpp
+  src/action_executor.cpp
+  src/bt_action_executor.cpp
 )
 
 ament_target_dependencies(${library_name}
@@ -60,9 +70,11 @@ ament_target_dependencies(${library_name}
 )
 
 target_link_libraries(${executable_name} ${library_name})
+target_link_libraries(${executable_name_action} ${library_name})
 
 
 rclcpp_components_register_nodes(${library_name} "athena::execution::BtExecutor")
+rclcpp_components_register_nodes(${library_name} "athena::execution::BtActionExecutor")
 
 install(TARGETS ${library_name}
   ARCHIVE DESTINATION lib
@@ -71,6 +83,10 @@ install(TARGETS ${library_name}
 )
 
 install(TARGETS ${executable_name}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS ${executable_name_action}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

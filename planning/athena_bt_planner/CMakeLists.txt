@@ -15,7 +15,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(athena_util REQUIRED)
@@ -48,7 +48,7 @@ set(dependencies
   athena_util
   athena_core
   athena_behavior_tree
-  behaviortree_cpp_v3
+  behaviortree_cpp
   std_srvs
   tf2_ros
   nav2_common

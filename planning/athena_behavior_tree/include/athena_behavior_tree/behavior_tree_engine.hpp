@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Paolo Forte
+// Copyright (c) 202 Paolo Forte
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@
 #include <string>
 #include <vector>
 
-#include "behaviortree_cpp_v3/behavior_tree.h"
-#include "behaviortree_cpp_v3/bt_factory.h"
-#include "behaviortree_cpp_v3/xml_parsing.h"
-#include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
+#include "behaviortree_cpp/behavior_tree.h"
+#include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/xml_parsing.h"
 
 
 namespace athena_behavior_tree
