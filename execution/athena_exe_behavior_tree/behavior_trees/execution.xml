@@ -1,4 +1,4 @@
-<root main_tree_to_execute="MovePile">
+<root BTCPP_format="4" main_tree_to_execute="MovePile">
 
 <BehaviorTree ID="MovePile">
         <MovePileMethodNode name= "Move Pile">

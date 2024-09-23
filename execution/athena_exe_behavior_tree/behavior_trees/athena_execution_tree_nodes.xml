@@ -7,6 +7,11 @@
             <input_port name="global_frame">The global frame </input_port>
     </Action>
 
+        <Action ID="SendArmMove">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="global_frame">The global frame </input_port>
+    </Action>
+
     <Action ID="SendTransport">
             <input_port name="service_name">The name of the service </input_port>
             <input_port name="global_frame">The global frame </input_port>

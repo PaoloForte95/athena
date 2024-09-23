@@ -1,0 +1,13 @@
+<root BTCPP_format="4" main_tree_to_execute="MovePile">
+
+<BehaviorTree ID="MovePile">
+        <Fallback name= "ActionFallback">
+         <SendArmMove name="Drive 1" service_name="/navigate_to_pose"/>
+         <SendLoad name="Load" service_name="/send_load"/>
+         <SendArmMove name="Drive 2" service_name="/navigate_to_pose"/>
+         <SendDump name="Dump" service_name="/send_dump"/>
+        </Fallback>
+</BehaviorTree>
+
+
+</root>
