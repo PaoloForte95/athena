@@ -100,6 +100,15 @@ athena_msgs::msg::Plan MetricFF::computeExecutionPlan(const std::string & domain
 athena_msgs::msg::Plan execution_plan;
 RCLCPP_INFO(logger_, "Domain: %s", domain.c_str() );
 RCLCPP_INFO(logger_, "Problem: %s", problem.c_str() );
+auto cmd = "java -jar src/athena/planning/athena_planner/Planners/task_planner.jar metricff " + 
+problem_type_ + " " +
+domain + " " + 
+problem + " " + 
+plan_type_+ " " +
+output_filename_ + " " +
+robot_definition_ + " " +
+location_definition_;
+RCLCPP_INFO(logger_, "CMD: %s", cmd.c_str() );
 int status = system(("java -jar src/athena/planning/athena_planner/Planners/task_planner.jar metricff " + 
 problem_type_ + " " +
 domain + " " + 
