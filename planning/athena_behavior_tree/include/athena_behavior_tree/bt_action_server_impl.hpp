@@ -25,7 +25,7 @@
 #include <athena_msgs/action/compute_plan.hpp>
 #include "athena_behavior_tree/bt_action_server.hpp"
 #include "ament_index_cpp/get_package_share_directory.hpp"
-#include "behaviortree_cpp/loggers/groot2_publisher.h"
+
 namespace athena_behavior_tree
 {
 
@@ -171,14 +171,15 @@ bool BtActionServer<ActionT>::loadBehaviorTree(const std::string & bt_xml_filena
   // Create the Behavior Tree from the XML input
   try {
     tree_ = bt_->createTreeFromText(xml_string, blackboard_);
-     BT::Groot2Publisher publisher(tree_);
+    const unsigned port = 1667;
+    groot_publisher_ = std::make_unique<BT::Groot2Publisher>(tree_, port);
+
   } catch (const std::exception & e) {
     RCLCPP_ERROR(logger_, "Exception when loading BT: %s", e.what());
     return false;
   }
 
   topic_logger_ = std::make_unique<RosTopicLogger>(client_node_, tree_);
-
   current_bt_xml_filename_ = filename;
   return true;
 }

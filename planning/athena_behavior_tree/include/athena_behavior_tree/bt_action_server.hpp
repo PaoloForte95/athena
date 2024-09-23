@@ -24,6 +24,7 @@
 #include "athena_behavior_tree/ros_topic_logger.hpp"
 #include "athena_util/lifecycle_node.hpp"
 #include "athena_util/simple_action_server.hpp"
+#include "behaviortree_cpp/loggers/groot2_publisher.h"
 
 namespace athena_behavior_tree
 {
@@ -237,6 +238,9 @@ protected:
   OnLoopCallback on_loop_callback_;
   OnPreemptCallback on_preempt_callback_;
   OnCompletionCallback on_completion_callback_;
+
+  //Groot2 Publisher
+  std::unique_ptr<BT::Groot2Publisher> groot_publisher_;
 };
 
 }  // namespace athena_behavior_tree
