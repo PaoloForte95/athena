@@ -23,14 +23,11 @@
 		)
 	)
 	(:init
-
 		(free wp_1)
 		(free wp_2)
 		(free wp_3)
 		(free wp_4)
-
 		(at red_block wp_1)
-
 		(at arm1 home1)
 	)
 )

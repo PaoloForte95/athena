@@ -2,73 +2,40 @@
 	(problem pfile01)
 	(:domain  domain_htn)
 	(:objects
-		mat_1 - material
-		mat_2 - material
+		red_block - item
+		green_block - item
+		book - item
+		apple - item
 		home1 - location
-		home2 - location
 		wp_1 - location
 		wp_2 - location
 		wp_3 - location
 		wp_4 - location
-		wheel_loader_1 - vehicle
+		arm1 - robot
 	)
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_pile mat_1 wp_4))
-		 (task1 (move_pile mat_2 wp_4))
+		 (task0 (move_item red_block wp_4))
+		 (task1 (move_item green_block wp_4))
 		)
 		:ordering (and
 			(< task1 task0)
 		)
 	)
+
 	(:init
-
-		(road home1 wp_1)
-		(road home1 wp_2)
-		(road home1 wp_3)
-		(road home1 wp_4)
-
-		(road home2 wp_1)
-		(road home2 wp_2)
-		(road home2 wp_3)
-		(road home2 wp_4)
-
-		(road wp_1 home1)
-		(road wp_1 home2)
-		(road wp_1 wp_2)
-		(road wp_1 wp_3)
-		(road wp_1 wp_4)
-
-		(road wp_2 home1)
-		(road wp_2 home2)
-		(road wp_2 wp_1)
-		(road wp_2 wp_3)
-		(road wp_2 wp_4)
-
-		(road wp_3 home1)
-		(road wp_3 home2)
-		(road wp_3 wp_1)
-		(road wp_3 wp_2)
-		(road wp_3 wp_4)
-
-		(road wp_4 home1)
-		(road wp_4 home2)
-		(road wp_4 wp_1)
-		(road wp_4 wp_2)
-		(road wp_4 wp_3)
-
 		(free wp_1)
 		(free wp_2)
 		(free wp_3)
 		(free wp_4)
-
-		(at mat_1 wp_1)
-		(at mat_2 wp_1)
-
-		(on mat_2 mat_1 wp_1)
-
-		(at wheel_loader_1 home1)
-		(can_load wheel_loader_1)
+		(at red_block wp_1)
+		(at green_block wp_2)
+		(at arm1 home1)
+	)
+	(:goal 
+	(and
+	;;(at red_block wp4)
+	)
 	)
 )
