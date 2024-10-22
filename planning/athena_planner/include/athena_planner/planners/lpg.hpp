@@ -17,7 +17,7 @@
 
 #include "athena_core/planner.hpp"
 #include "athena_msgs/msg/plan.hpp"
-#include "nav2_util/lifecycle_node.hpp"
+#include "athena_util/lifecycle_node.hpp"
 
 namespace athena_planner
 {

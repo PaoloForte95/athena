@@ -15,7 +15,7 @@
 #include "gtest/gtest.h"
 #include "athena_planner/planners/lpg.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "nav2_util/lifecycle_node.hpp"
+#include "athena_util/lifecycle_node.hpp"
 
 class RclCppFixture
 {

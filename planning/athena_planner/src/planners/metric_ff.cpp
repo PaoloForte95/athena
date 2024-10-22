@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-#include "nav2_util/node_utils.hpp"
+#include "athena_util/node_utils.hpp"
 
 #include "athena_planner/planners/metric_ff.hpp"
 
@@ -48,22 +48,22 @@ void MetricFF::configure(
   
   RCLCPP_INFO(logger_, "Configuring %s of type MetricFF", name.c_str());
 
-  nav2_util::declare_parameter_if_not_declared(node, name + ".problem_type", rclcpp::ParameterValue(""));
+  athena_util::declare_parameter_if_not_declared(node, name + ".problem_type", rclcpp::ParameterValue(""));
   node->get_parameter<std::string>(name + ".problem_type", problem_type_);
   
-  nav2_util::declare_parameter_if_not_declared(node, name + ".output_name", rclcpp::ParameterValue("plan.pddl"));
+  athena_util::declare_parameter_if_not_declared(node, name + ".output_name", rclcpp::ParameterValue("plan.pddl"));
   node->get_parameter<std::string>(name + ".output_name", output_filename_);
 
-  nav2_util::declare_parameter_if_not_declared(node, name + ".proto_filename", rclcpp::ParameterValue("ExePlan.data"));
+  athena_util::declare_parameter_if_not_declared(node, name + ".proto_filename", rclcpp::ParameterValue("ExePlan.data"));
   node->get_parameter<std::string>(name + ".proto_filename", proto_filename_);
 
-  nav2_util::declare_parameter_if_not_declared(node, name + ".definition.robot", rclcpp::ParameterValue(""));
+  athena_util::declare_parameter_if_not_declared(node, name + ".definition.robot", rclcpp::ParameterValue(""));
   node->get_parameter<std::string>(name + ".definition.robot", robot_definition_);
 
-  nav2_util::declare_parameter_if_not_declared(node, name + ".definition.location", rclcpp::ParameterValue(""));
+  athena_util::declare_parameter_if_not_declared(node, name + ".definition.location", rclcpp::ParameterValue(""));
   node->get_parameter<std::string>(name + ".definition.location", location_definition_);
 
-  nav2_util::declare_parameter_if_not_declared(node, name + ".plan_type", rclcpp::ParameterValue("TOTAL_ORDERED"));
+  athena_util::declare_parameter_if_not_declared(node, name + ".plan_type", rclcpp::ParameterValue("TOTAL_ORDERED"));
   node->get_parameter<std::string>(name + ".plan_type", plan_type_);
   
   

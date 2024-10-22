@@ -25,10 +25,10 @@
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
-#include "nav2_util/lifecycle_node.hpp"
+#include "athena_util/lifecycle_node.hpp"
 #include "athena_msgs/action/compute_plan.hpp"
-#include "nav2_util/robot_utils.hpp"
-#include "nav2_util/simple_action_server.hpp"
+#include "athena_util/robot_utils.hpp"
+#include "athena_util/simple_action_server.hpp"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
@@ -44,7 +44,7 @@ namespace athena_planner
  * @brief An action server implements the behavior tree's ComputePathToPose
  * interface and hosts various plugins of different algorithms to compute plans.
  */
-class TaskPlannerServer : public nav2_util::LifecycleNode
+class TaskPlannerServer : public athena_util::LifecycleNode
 {
 public:
   /**
@@ -78,34 +78,34 @@ protected:
    * @param state Reference to LifeCycle node state
    * @return SUCCESS or FAILURE
    */
-  nav2_util::CallbackReturn on_configure(const rclcpp_lifecycle::State & state) override;
+  athena_util::CallbackReturn on_configure(const rclcpp_lifecycle::State & state) override;
   /**
    * @brief Activate member variables
    * @param state Reference to LifeCycle node state
    * @return SUCCESS or FAILURE
    */
-  nav2_util::CallbackReturn on_activate(const rclcpp_lifecycle::State & state) override;
+  athena_util::CallbackReturn on_activate(const rclcpp_lifecycle::State & state) override;
   /**
    * @brief Deactivate member variables
    * @param state Reference to LifeCycle node state
    * @return SUCCESS or FAILURE
    */
-  nav2_util::CallbackReturn on_deactivate(const rclcpp_lifecycle::State & state) override;
+  athena_util::CallbackReturn on_deactivate(const rclcpp_lifecycle::State & state) override;
   /**
    * @brief Reset member variables
    * @param state Reference to LifeCycle node state
    * @return SUCCESS or FAILURE
    */
-  nav2_util::CallbackReturn on_cleanup(const rclcpp_lifecycle::State & state) override;
+  athena_util::CallbackReturn on_cleanup(const rclcpp_lifecycle::State & state) override;
   /**
    * @brief Called when in shutdown state
    * @param state Reference to LifeCycle node state
    * @return SUCCESS or FAILURE
    */
-  nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
+  athena_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
   using ActionPlan = athena_msgs::action::ComputePlan;
-  using ActionServerPlan = nav2_util::SimpleActionServer<ActionPlan>;
+  using ActionServerPlan = athena_util::SimpleActionServer<ActionPlan>;
 
   /**
    * @brief Check if an action server is valid / active
@@ -113,7 +113,7 @@ protected:
    * @return SUCCESS or FAILURE
    */
   template<typename T>
-  bool isServerInactive(std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server);
+  bool isServerInactive(std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server);
 
   /**
    * @brief Check if an action server has a cancellation request pending
@@ -121,7 +121,7 @@ protected:
    * @return SUCCESS or FAILURE
    */
   template<typename T>
-  bool isCancelRequested(std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server);
+  bool isCancelRequested(std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server);
 
 
   /**
@@ -132,7 +132,7 @@ protected:
    */
   template<typename T>
   void getPreemptedGoalIfRequested(
-    std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server,
+    std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server,
     typename std::shared_ptr<const typename T::Goal> goal);
 
 

@@ -13,8 +13,7 @@ find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(nav2_util REQUIRED)
-find_package(nav2_costmap_2d REQUIRED)
+find_package(athena_util REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(athena_protobuf REQUIRED)
 find_package(Protobuf REQUIRED)
@@ -31,10 +30,9 @@ set(dependencies
   pluginlib
   ament_index_cpp
   rclcpp_components
-  nav2_util
-  nav2_costmap_2d
   athena_core
   athena_msgs
+  athena_util
   athena_protobuf
   Protobuf
 )
@@ -46,6 +44,7 @@ add_executable(${executable_name}
 )
 
 set(library_name athena_planner)
+set(updater_library_name athena_updater)
 
 add_library(${library_name} SHARED
   src/task_planner_server.cpp
@@ -53,6 +52,12 @@ add_library(${library_name} SHARED
 ament_target_dependencies(${library_name} ${dependencies})
 rclcpp_components_register_nodes(${library_name} "athena_planner::TaskPlannerServer")
 
+
+add_library(${updater_library_name} SHARED
+  src/state_updater_server.cpp
+)
+ament_target_dependencies(${updater_library_name} ${dependencies})
+rclcpp_components_register_nodes(${updater_library_name} "athena_planner::StateUpdaterServer")
 
 
 add_library(${library_name}_metricff SHARED
@@ -91,7 +96,7 @@ ament_target_dependencies(${library_name}_lilotane
 
 
 ament_target_dependencies(${executable_name} ${dependencies})
-target_link_libraries(${executable_name} ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
+target_link_libraries(${executable_name} ${library_name} ${updater_library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
 
 install(TARGETS ${executable_name}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -101,7 +106,7 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane
+install(TARGETS ${library_name} ${updater_library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -123,7 +128,7 @@ endif()
 
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
+ament_export_libraries(${library_name} ${updater_library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
 ament_export_dependencies(${dependencies})
 
 pluginlib_export_plugin_description_file(athena_core planners_plugin.xml)

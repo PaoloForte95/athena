@@ -24,10 +24,8 @@
 #include <utility>
 
 #include "builtin_interfaces/msg/duration.hpp"
-#include "nav2_util/costmap.hpp"
-#include "nav2_util/node_utils.hpp"
-#include "nav2_util/geometry_utils.hpp"
-#include "nav2_costmap_2d/cost_values.hpp"
+#include "athena_util/node_utils.hpp"
+#include "athena_util/geometry_utils.hpp"
 
 #include "athena_planner/task_planner_server.hpp"
 
@@ -39,7 +37,7 @@ namespace athena_planner
 {
 
 TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
-: nav2_util::LifecycleNode("task_planner_server", "", options),
+: athena_util::LifecycleNode("task_planner_server", "", options),
   gp_loader_("athena_core", "athena_core::Planner"),
   default_ids_{"MetricFF", "LPG"},
   default_types_{"athena_planner::LPG", "athena_planner::MetricFF"}
@@ -58,7 +56,7 @@ TaskPlannerServer::~TaskPlannerServer()
 
 }
 
-nav2_util::CallbackReturn
+athena_util::CallbackReturn
 TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   auto node = shared_from_this();
@@ -68,7 +66,7 @@ TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
   get_parameter("planner_plugins", planner_ids_);
   if (planner_ids_ == default_ids_) {
     for (size_t i = 0; i < default_ids_.size(); ++i) {
-      nav2_util::declare_parameter_if_not_declared(
+      athena_util::declare_parameter_if_not_declared(
         node, default_ids_[i] + ".plugin",
         rclcpp::ParameterValue(default_ids_[i]));
     }
@@ -84,7 +82,7 @@ TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
 
   for (size_t i = 0; i != planner_ids_.size(); i++) {
     try {
-      planner_types_[i] = nav2_util::get_plugin_type_param(
+      planner_types_[i] = athena_util::get_plugin_type_param(
         node, planner_ids_[i]);
       athena_core::Planner::Ptr task_planner =
         gp_loader_.createUniqueInstance(planner_types_[i]);
@@ -97,7 +95,7 @@ TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
       RCLCPP_FATAL(
         get_logger(), "Failed to create the task planner. Exception: %s",
         ex.what());
-      return nav2_util::CallbackReturn::FAILURE;
+      return athena_util::CallbackReturn::FAILURE;
     }
   }
 
@@ -122,10 +120,10 @@ TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
     std::chrono::milliseconds(500),
     true);
 
-  return nav2_util::CallbackReturn::SUCCESS;
+  return athena_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
+athena_util::CallbackReturn
 TaskPlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Activating");
@@ -149,10 +147,10 @@ TaskPlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
   // create bond connection
   createBond();
 
-  return nav2_util::CallbackReturn::SUCCESS;
+  return athena_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
+athena_util::CallbackReturn
 TaskPlannerServer::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Deactivating");
@@ -170,10 +168,10 @@ TaskPlannerServer::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
   // destroy bond connection
   destroyBond();
 
-  return nav2_util::CallbackReturn::SUCCESS;
+  return athena_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
+athena_util::CallbackReturn
 TaskPlannerServer::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Cleaning up");
@@ -188,19 +186,19 @@ TaskPlannerServer::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
   }
   planners_.clear();
 
-  return nav2_util::CallbackReturn::SUCCESS;
+  return athena_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
+athena_util::CallbackReturn
 TaskPlannerServer::on_shutdown(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(get_logger(), "Shutting down");
-  return nav2_util::CallbackReturn::SUCCESS;
+  return athena_util::CallbackReturn::SUCCESS;
 }
 
 template<typename T>
 bool TaskPlannerServer::isServerInactive(
-  std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server)
+  std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server)
 {
   if (action_server == nullptr || !action_server->is_server_active()) {
     RCLCPP_DEBUG(get_logger(), "Action server unavailable or inactive. Stopping.");
@@ -214,7 +212,7 @@ bool TaskPlannerServer::isServerInactive(
 
 template<typename T>
 bool TaskPlannerServer::isCancelRequested(
-  std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server)
+  std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server)
 {
   if (action_server->is_cancel_requested()) {
     RCLCPP_INFO(get_logger(), "Goal was canceled. Canceling planning action.");
@@ -227,7 +225,7 @@ bool TaskPlannerServer::isCancelRequested(
 
 template<typename T>
 void TaskPlannerServer::getPreemptedGoalIfRequested(
-  std::unique_ptr<nav2_util::SimpleActionServer<T>> & action_server,
+  std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server,
   typename std::shared_ptr<const typename T::Goal> goal)
 {
   if (action_server->is_preempt_requested()) {

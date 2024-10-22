@@ -14,8 +14,8 @@
   <depend>athena_core</depend>
   <depend>pluginlib</depend>
   <depend>ament_index_cpp</depend>
-  <depend>nav2_util</depend>
   <depend>athena_msgs</depend>
+  <depend>athena_util</depend>
   <depend>rclcpp_components</depend>
   <depend>athena_protobuf</depend>
 
