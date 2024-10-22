@@ -18,7 +18,6 @@
             <input_port name="prompt">Prompt</input_port>
     </Action>
 
-
     <Action ID="EstimateObjectsPoses">
             <output_port name="object_poses">The estimated pose of the objects</output_port>
             <input_port name="objects_list">List of object in the scene</input_port>
@@ -49,6 +48,12 @@
      <Action ID="UpdatePrompt">
             <input_port name="previous_prompt">The previous prompt</input_port>
             <output_port name="updated_prompt">The updated Prompt</output_port>
+    </Action>
+
+    <Action ID="UpdateState">
+            <input_port name="state_updater">The state updater to use</input_port>
+            <input_port name="previous_state">The previous state</input_port>
+            <output_port name="current_state">The updated state</output_port>
     </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->

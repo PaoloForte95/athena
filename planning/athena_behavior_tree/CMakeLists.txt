@@ -86,6 +86,9 @@ list(APPEND plugin_libs athena_send_method_action_bt_node)
 add_library(athena_send_action_action_bt_node SHARED plugins/action/send_action.cpp)
 list(APPEND plugin_libs athena_send_action_action_bt_node)
 
+add_library(athena_update_state_action_bt_node SHARED plugins/action/update_state_action.cpp)
+list(APPEND plugin_libs athena_update_state_action_bt_node)
+
 #Control
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs athena_execute_plan_node_bt_node)

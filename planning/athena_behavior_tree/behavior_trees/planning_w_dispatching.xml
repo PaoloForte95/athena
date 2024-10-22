@@ -19,7 +19,10 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
   <RateController hz="3.0">
   <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
   </RateController>
+  <Sequence>
   <SendAction name="SendAction" robot_id="1" service_name="action_executor" />
+   <UpdateState name="UpdateState" state_updater="SimpleStateUpdater" previous_state="{state}" current_state="{state}"/>
+   </Sequence> 
    </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>

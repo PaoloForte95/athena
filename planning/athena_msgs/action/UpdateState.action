@@ -1,0 +1,10 @@
+#goal definition
+athena_msgs/State previous_state
+athena_msgs/Action[] actions
+string state_updater
+---
+#result definition
+athena_msgs/State updated_state
+---
+#feedback definition
+string[] changed_predicates

@@ -17,12 +17,13 @@ find_package(action_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME} 
    #Msgs
    "msg/Action.msg"
-   "msg/Plan.msg"
    "msg/BehaviorTreeLog.msg"
    "msg/BehaviorTreeStatusChange.msg"
-   "msg/PlanningProblem.msg"
-   "msg/Method.msg"
    "msg/Execution.msg"
+   "msg/Method.msg"
+   "msg/Plan.msg"
+   "msg/PlanningProblem.msg"
+   "msg/State.msg"
    #Services
    "srv/GetPlan.srv"
    "srv/RecomputePlan.srv"
@@ -32,6 +33,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
    "action/OptmizePlan.action"
    "action/ExecuteMethod.action"
    "action/ExecuteAction.action"
+   "action/UpdateState.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces
 )
 
