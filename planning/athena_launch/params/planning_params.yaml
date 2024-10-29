@@ -8,7 +8,8 @@ bt_planner:
     bt_loop_duration: 10
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
-    default_plan_bt_xml: 'planning_w_dispatching.xml'
+    #default_plan_bt_xml: 'planning_w_dispatching.xml'
+    default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -58,3 +59,11 @@ task_planner_server:
         robot: "vehicle"
         location: "location"
       plan_type: "PARTIAL_ORDERED"
+
+state_updater_server:
+  ros__parameters:
+      use_sim_time: True
+      planner_frequency: 3.0
+      planner_plugins: ["SimpleStateUpdater"]
+      SimpleStateUpdater:
+        plugin: "athena_planner::SimpleStateUpdater"

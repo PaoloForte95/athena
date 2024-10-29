@@ -1,0 +1,11 @@
+<class_libraries>
+<library path="athena_updater_simple">
+	<class name="athena_planner::SimpleStateUpdater" type="athena_planner::SimpleStateUpdater" base_class_type="athena_core::StateUpdater">
+	  <description>
+      A simple state udpater
+      </description>
+	</class>
+</library>
+
+
+</class_libraries>

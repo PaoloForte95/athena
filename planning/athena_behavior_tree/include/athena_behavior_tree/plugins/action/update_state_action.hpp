@@ -68,6 +68,8 @@ public:
    */
   void halt() override;
 
+  void getInit(athena_msgs::msg::State &state);
+
 
  /**
    * @brief Creates list of BT ports

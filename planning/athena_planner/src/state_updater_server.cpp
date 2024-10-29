@@ -239,8 +239,8 @@ StateUpdaterServer::updateState()
     getPreemptedGoalIfRequested(action_server_update_, goal);
 
     RCLCPP_INFO( get_logger(), "Updating the state with: %s ", goal->state_updater.c_str());
-    auto prev_state = athena_msgs::msg::State();
-    result->updated_state = getUpdatedState(prev_state, goal->actions,  goal->state_updater);
+
+    result->updated_state = getUpdatedState(goal->previous_state, goal->actions,  goal->state_updater);
     auto message = athena_msgs::msg::State();
     message = result->updated_state;
     // Publish the plan for visualization purposes
@@ -259,12 +259,14 @@ athena_msgs::msg::State StateUpdaterServer::getUpdatedState(
     const std::string & state_updater)
 {
    RCLCPP_INFO(get_logger(), "Attempting to update the state using state updater %s\"",state_updater.c_str());
+    for (auto s : previous_state.state){
+      RCLCPP_INFO(get_logger(), "Prev state %s",s.c_str());
+    }
+    athena_msgs::msg::State state;
+      if (state_updaters_.find(state_updater) != state_updaters_.end()) {
 
-      athena_msgs::msg::State state;
-       if (state_updaters_.find(state_updater) != state_updaters_.end()) {
-  
-        return state_updaters_[state_updater]->updateState(actions,previous_state);
-      } else {
+      return state_updaters_[state_updater]->updateState(actions,previous_state);
+    } else {
     if (state_updaters_.size() == 1 && state_updater.empty()) {
       RCLCPP_WARN_ONCE(
         get_logger(), "No state updater specified in action call. "

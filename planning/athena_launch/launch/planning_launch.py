@@ -39,7 +39,7 @@ def generate_launch_description():
     use_task_planner = LaunchConfiguration('use_task_planner')
     use_respawn = LaunchConfiguration('use_respawn')
 
-    lifecycle_nodes = ['bt_planner','task_planner_server']
+    lifecycle_nodes = ['bt_planner','task_planner_server', 'state_updater_server']
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -127,6 +127,17 @@ def generate_launch_description():
                 package='athena_planner',
                 executable='task_planner_server',
                 name='task_planner_server',
+                output='screen',
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings),
+
+        Node(
+                condition=IfCondition(use_task_planner),
+                package='athena_planner',
+                executable='state_updater_server',
+                name='state_updater_server',
                 output='screen',
                 respawn_delay=2.0,
                 parameters=[configured_params],

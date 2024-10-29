@@ -14,6 +14,10 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <regex>
+#include <vector>
 
 #include "athena_behavior_tree/plugins/action/update_state_action.hpp"
 
@@ -31,9 +35,20 @@ UpdateStateAction::UpdateStateAction(
 
 void UpdateStateAction::on_tick()
 {   
-
     config().blackboard->get<Actions>("concurrent_actions", goal_.actions);
-    getInput("previous_state", goal_.previous_state);
+    std::string problem_file;
+    athena_msgs::msg::State inital_state;
+
+    if(!config().blackboard->get<athena_msgs::msg::State>("previous_state", inital_state)){
+      //if not present, get the initial state from the planning problem file
+      getInit(inital_state);
+      goal_.previous_state = inital_state;
+    }
+    else{
+      getInput("previous_state", goal_.previous_state);
+    } 
+    getInput("state_updater", goal_.state_updater);
+    
   
 }
 
@@ -60,6 +75,53 @@ void UpdateStateAction::halt()
 {
   setOutput("current_state", goal_.previous_state);
   BtActionNode::halt();
+}
+
+
+
+void UpdateStateAction::getInit(athena_msgs::msg::State &state){
+  // Get the problem file from the blackboard and opent it
+  RCLCPP_INFO( node_->get_logger(), "Getting the initial state from the plannign problem file."); 
+  std::string problem_file;
+  config().blackboard->get<std::string>("problem_file", problem_file);
+  std::ifstream file(problem_file);
+  if (!file) {
+      RCLCPP_ERROR( node_->get_logger(), "Unable to open file."); 
+      return;
+  }
+ 
+  // Regular expressions to search for
+  std::regex init_pattern(R"(:init)");
+  std::regex closing_parenthesis_pattern(R"(^\s*\)$)");
+  std::regex whitespace_pattern(R"(^\s*)"); // Regex to match leading whitespace
+ 
+  std::string line;
+  bool capturing = false;
+  std::vector<std::string> extracted_lines;
+ 
+  while (std::getline(file, line)) {
+      // Check if we found the init line
+      if (std::regex_search(line, init_pattern)) {
+          capturing = true; // Start capturing lines
+          continue; // Skip this line
+      }
+      // If we are capturing, check if we should add the line
+      if (capturing) {
+          // Check if the current line contains only a closing parenthesis
+          if (std::regex_match(line, closing_parenthesis_pattern)) {
+              break; // Stop capturing if we reach a line with only ")"
+          }
+          line = std::regex_replace(line, whitespace_pattern, ""); 
+          if (!line.empty()) {
+            extracted_lines.push_back(line); // Store the line
+            }
+      }
+  }
+ 
+  // Output the extracted text without adding extra newline at the end
+  for (size_t i = 0; i < extracted_lines.size(); ++i) {
+      state.state.push_back(extracted_lines[i]);
+  } 
 }
 
 }
