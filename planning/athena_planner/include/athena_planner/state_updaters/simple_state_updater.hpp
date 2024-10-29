@@ -82,7 +82,7 @@ public:
 protected:
 
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
-  std::string name_, proto_filename_, output_filename_, plan_type_,robot_definition_, location_definition_, problem_type_;
+  std::string name_, type_;
   rclcpp::Logger logger_{rclcpp::get_logger("SimpleStateUpdater")};
 
   // Dynamic parameters handler

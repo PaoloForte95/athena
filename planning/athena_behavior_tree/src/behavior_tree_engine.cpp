@@ -29,9 +29,6 @@ BehaviorTreeEngine::BehaviorTreeEngine(const std::vector<std::string> & plugin_l
 {
   BT::SharedLibrary loader;
   for (const auto & p : plugin_libraries) {
-    RCLCPP_ERROR(
-      rclcpp::get_logger("BehaviorTreeEngine"),
-      "test: %s", p.c_str());
     factory_.registerFromPlugin(loader.getOSName(p));
   }
 

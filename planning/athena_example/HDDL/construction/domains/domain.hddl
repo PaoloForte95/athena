@@ -18,7 +18,6 @@
 		(in ?arg0 - material ?arg1 - vehicle)
 		(at ?arg0 - locatable ?arg1 - location)
 		(free ?arg0 - location)
-		(road ?arg0 - location ?arg1 - location)
 		(on ?arg0 - material ?arg1 - material ?arg2 - location)
 	)
 
@@ -139,7 +138,6 @@
 			(and
 				(at ?v ?l1)
 				(free ?l2)
-				(road ?l1 ?l2)	
 				(forall (?m - material)
 						(not (in ?m ?v))
 				)
@@ -160,7 +158,6 @@
 			(and
 				(at ?v ?l1)
 				(free ?l2)
-				(road ?l1 ?l2)	
 				(in ?m ?v)
 			)
 		:effect

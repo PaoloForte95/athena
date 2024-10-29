@@ -5,7 +5,7 @@ bt_executor:
     bt_loop_duration: 10
     default_server_timeout: 20
     bt_package_dir: 'athena_exe_behavior_tree'
-    default_plan_bt_xml: 'execution_panda.xml'
+    default_plan_bt_xml: 'execution.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -28,7 +28,7 @@ bt_action_executor:
     bt_loop_duration: 10
     default_server_timeout: 20
     bt_package_dir: 'athena_exe_behavior_tree'
-    default_plan_bt_xml: 'execution_panda.xml'
+    default_plan_bt_xml: 'execution.xml'
     plugin_lib_names:
     - nav2_recovery_node_bt_node
     - nav2_rate_controller_bt_node

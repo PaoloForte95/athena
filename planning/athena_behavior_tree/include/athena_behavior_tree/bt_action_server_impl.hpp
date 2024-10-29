@@ -103,7 +103,7 @@ bool BtActionServer<ActionT>::on_configure()
   bt_loop_duration_ = std::chrono::milliseconds(timeout);
   node->get_parameter("default_server_timeout", timeout);
   node->get_parameter("groot_port", port_);
-  RCLCPP_ERROR(logger_, "Port for Groot2 %d", port_);
+  RCLCPP_INFO(logger_, "Port for Groot2 %d", port_);
   default_server_timeout_ = std::chrono::milliseconds(timeout);
   // Create the class that registers our custom nodes and executes the BT
   bt_ = std::make_unique<athena_behavior_tree::BehaviorTreeEngine>(plugin_lib_names_);
