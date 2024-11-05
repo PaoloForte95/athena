@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #ifndef ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
-#define ATHENA_PLANNER__PLANNERS__LILOTANE_HPP_
+#define ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
 
 #include "athena_core/state_updater.hpp"
 #include "athena_msgs/msg/state.hpp"
@@ -82,7 +82,7 @@ public:
 protected:
 
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
-  std::string name_, type_;
+  std::string name_;
   rclcpp::Logger logger_{rclcpp::get_logger("SimpleStateUpdater")};
 
   // Dynamic parameters handler

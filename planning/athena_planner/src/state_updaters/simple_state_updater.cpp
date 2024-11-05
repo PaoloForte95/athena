@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+#include <regex>
 #include "athena_util/node_utils.hpp"
 #include "athena_planner/state_updaters/simple_state_updater.hpp"
 
@@ -20,6 +20,43 @@ using rcl_interfaces::msg::ParameterType;
 
 namespace athena_planner
 {
+
+std::string transformState(const std::string& state) {
+    // Regular expression to check for negative state format
+    std::regex negative_pattern(R"(\(not\s*\((.+?)\)\))");
+
+    std::smatch match;
+    if (std::regex_match(state, match, negative_pattern)) {
+        // If it's a negative state (e.g., "(not (at red_plate wp1s))"),
+        // return the positive part inside "(not (...))"
+        return "(" + match[1].str() + ")";
+    } else {
+        // If it's a positive state (e.g., "(at red_plate wp1s)"),
+        // return it in the negative format "(not (at red_plate wp1s))"
+        return "(not " + state + ")";
+    }
+}
+
+void addState(std::vector<std::string>& states, const std::string& new_state) {
+    // Transform the new state to its opposite form
+    std::string opposite_state = transformState(new_state);
+
+    // Check if the opposite state exists in the vector
+    auto it = std::find(states.begin(), states.end(), opposite_state);
+    if (it != states.end()) {
+        // Remove the opposite state if it exists
+        states.erase(it);
+        //std::cout << "Removed opposite state: " << opposite_state << std::endl;
+    }
+
+    // Check if the state itself is already in the vector before adding
+    if (std::find(states.begin(), states.end(), new_state) == states.end()) {
+        states.push_back(new_state);
+        //std::cout << "Added state: " << new_state << std::endl;
+    } else {
+        //std::cout << "State already exists: " << new_state << std::endl;
+    }
+}
 
 SimpleStateUpdater::SimpleStateUpdater() {}
 
@@ -41,8 +78,6 @@ void SimpleStateUpdater::configure(
   
   RCLCPP_INFO(logger_, "Configuring %s of type SimpleStateUpdater", name.c_str());
   
-  athena_util::declare_parameter_if_not_declared(node, name + ".type", rclcpp::ParameterValue(""));
-  node->get_parameter<std::string>(name + ".type", type_);
   
 
   RCLCPP_INFO( logger_, "Configured plugin %s of type CostmapSelector with ", name_.c_str());
@@ -75,9 +110,17 @@ void SimpleStateUpdater::cleanup()
 
 athena_msgs::msg::State SimpleStateUpdater::updateState(const std::vector<athena_msgs::msg::Action> & actions, const athena_msgs::msg::State& previous_state){
     auto new_state = athena_msgs::msg::State();
+    auto state = previous_state.state;
     for(auto action : actions){ 
-        RCLCPP_INFO(logger_, "Action name: %s",action.name.c_str());
+      for(auto effect : action.effects){
+        addState(state, effect);
+        //RCLCPP_INFO(logger_, "Transformed Action effect: %s", changed_effect.c_str());
+      }
     }
+    // for (auto s : state){
+    //   RCLCPP_INFO(logger_, "Final state: %s", s.c_str());
+    // }
+    new_state.state = state;
     return new_state;
 
 }
