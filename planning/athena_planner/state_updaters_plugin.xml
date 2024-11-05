@@ -7,5 +7,12 @@
 	</class>
 </library>
 
+<library path="athena_updater_vlm">
+	 <class name="athena_planner::VlmStateUpdater" type="athena_planner::VlmStateUpdater" base_class_type="athena_core::StateUpdater">
+		<description>
+			 A state updater based on vlm. Update state is retrived by camera
+		</description>
+	</class>
+</library>
 
 </class_libraries>

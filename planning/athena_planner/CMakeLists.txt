@@ -11,6 +11,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(athena_util REQUIRED)
@@ -32,6 +33,7 @@ set(dependencies
   rclcpp_components
   athena_core
   athena_msgs
+  sensor_msgs
   athena_util
   athena_protobuf
   Protobuf
@@ -108,13 +110,20 @@ ament_target_dependencies(${updater_library_name}_simple
   ${dependencies}
 )
 
+add_library(${updater_library_name}_vlm SHARED
+  src/state_updaters/vlm_state_updater.cpp
+)
+
+ament_target_dependencies(${updater_library_name}_vlm
+  ${dependencies}
+)
 
 
 ament_target_dependencies(${executable_name} ${dependencies})
 target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
 
 ament_target_dependencies(${state_updater_executable_name} ${dependencies})
-target_link_libraries(${state_updater_executable_name} ${updater_library_name} ${updater_library_name}_simple)
+target_link_libraries(${state_updater_executable_name} ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
 
 
 install(TARGETS ${executable_name} ${state_updater_executable_name}
@@ -130,7 +139,7 @@ install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${l
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
-install(TARGETS ${updater_library_name} ${updater_library_name}_simple
+install(TARGETS ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -155,7 +164,7 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
-ament_export_libraries(${updater_library_name} ${updater_library_name}_simple)
+ament_export_libraries(${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
 ament_export_dependencies(${dependencies})
 
 pluginlib_export_plugin_description_file(athena_core planners_plugin.xml)
