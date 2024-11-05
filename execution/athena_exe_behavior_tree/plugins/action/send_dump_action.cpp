@@ -60,7 +60,7 @@ Actions  SendDumpAction::getDumpActions(){
     Actions dump_actions_;
     config().blackboard->get<Actions>("actions", actions_);
     for(athena_msgs::msg::Action act : actions_){
-      if(act.name.find("dump") != std::string::npos || act.name == "stack" || act.name.find("drop") != std::string::npos){
+      if(act.name.find("dump") != std::string::npos || act.name.find("stack") != std::string::npos || act.name.find("drop") != std::string::npos){
          RCLCPP_INFO( node_->get_logger(), "Received %s action with ID %d!",act.name.c_str(), act.action_id);
          dump_actions_.push_back(act);
       }
