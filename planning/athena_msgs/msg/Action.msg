@@ -5,3 +5,5 @@ int32 robotid
 int32[] parents
 int32 material
 string[] waypoints
+string[] preconditions
+string[] effects

@@ -25,6 +25,8 @@ message ProtoAction {
   repeated string waypoints = 4;
   int32 material = 5;
   repeated int32 parents = 6;
+  repeated string preconditions = 7;
+  repeated string effects = 8;
 }
 
 //A Method is defined by a set of actions. 

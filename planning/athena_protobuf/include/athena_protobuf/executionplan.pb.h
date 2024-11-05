@@ -373,6 +373,8 @@ class ProtoAction PROTOBUF_FINAL :
   enum : int {
     kWaypointsFieldNumber = 4,
     kParentsFieldNumber = 6,
+    kPreconditionsFieldNumber = 7,
+    kEffectsFieldNumber = 8,
     kNameFieldNumber = 1,
     kIdFieldNumber = 2,
     kRobotIDFieldNumber = 3,
@@ -423,6 +425,54 @@ class ProtoAction PROTOBUF_FINAL :
       parents() const;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
       mutable_parents();
+
+  // repeated string preconditions = 7;
+  int preconditions_size() const;
+  private:
+  int _internal_preconditions_size() const;
+  public:
+  void clear_preconditions();
+  const std::string& preconditions(int index) const;
+  std::string* mutable_preconditions(int index);
+  void set_preconditions(int index, const std::string& value);
+  void set_preconditions(int index, std::string&& value);
+  void set_preconditions(int index, const char* value);
+  void set_preconditions(int index, const char* value, size_t size);
+  std::string* add_preconditions();
+  void add_preconditions(const std::string& value);
+  void add_preconditions(std::string&& value);
+  void add_preconditions(const char* value);
+  void add_preconditions(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& preconditions() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_preconditions();
+  private:
+  const std::string& _internal_preconditions(int index) const;
+  std::string* _internal_add_preconditions();
+  public:
+
+  // repeated string effects = 8;
+  int effects_size() const;
+  private:
+  int _internal_effects_size() const;
+  public:
+  void clear_effects();
+  const std::string& effects(int index) const;
+  std::string* mutable_effects(int index);
+  void set_effects(int index, const std::string& value);
+  void set_effects(int index, std::string&& value);
+  void set_effects(int index, const char* value);
+  void set_effects(int index, const char* value, size_t size);
+  std::string* add_effects();
+  void add_effects(const std::string& value);
+  void add_effects(std::string&& value);
+  void add_effects(const char* value);
+  void add_effects(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& effects() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_effects();
+  private:
+  const std::string& _internal_effects(int index) const;
+  std::string* _internal_add_effects();
+  public:
 
   // string name = 1;
   void clear_name();
@@ -486,6 +536,8 @@ class ProtoAction PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> waypoints_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > parents_;
   mutable std::atomic<int> _parents_cached_byte_size_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> preconditions_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> effects_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
   ::PROTOBUF_NAMESPACE_ID::int32 robotid_;
@@ -1321,6 +1373,154 @@ inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
 ProtoAction::mutable_parents() {
   // @@protoc_insertion_point(field_mutable_list:athena.ProtoAction.parents)
   return _internal_mutable_parents();
+}
+
+// repeated string preconditions = 7;
+inline int ProtoAction::_internal_preconditions_size() const {
+  return preconditions_.size();
+}
+inline int ProtoAction::preconditions_size() const {
+  return _internal_preconditions_size();
+}
+inline void ProtoAction::clear_preconditions() {
+  preconditions_.Clear();
+}
+inline std::string* ProtoAction::add_preconditions() {
+  // @@protoc_insertion_point(field_add_mutable:athena.ProtoAction.preconditions)
+  return _internal_add_preconditions();
+}
+inline const std::string& ProtoAction::_internal_preconditions(int index) const {
+  return preconditions_.Get(index);
+}
+inline const std::string& ProtoAction::preconditions(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.preconditions)
+  return _internal_preconditions(index);
+}
+inline std::string* ProtoAction::mutable_preconditions(int index) {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.preconditions)
+  return preconditions_.Mutable(index);
+}
+inline void ProtoAction::set_preconditions(int index, const std::string& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.preconditions)
+  preconditions_.Mutable(index)->assign(value);
+}
+inline void ProtoAction::set_preconditions(int index, std::string&& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.preconditions)
+  preconditions_.Mutable(index)->assign(std::move(value));
+}
+inline void ProtoAction::set_preconditions(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  preconditions_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.preconditions)
+}
+inline void ProtoAction::set_preconditions(int index, const char* value, size_t size) {
+  preconditions_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.preconditions)
+}
+inline std::string* ProtoAction::_internal_add_preconditions() {
+  return preconditions_.Add();
+}
+inline void ProtoAction::add_preconditions(const std::string& value) {
+  preconditions_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.preconditions)
+}
+inline void ProtoAction::add_preconditions(std::string&& value) {
+  preconditions_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.preconditions)
+}
+inline void ProtoAction::add_preconditions(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  preconditions_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:athena.ProtoAction.preconditions)
+}
+inline void ProtoAction::add_preconditions(const char* value, size_t size) {
+  preconditions_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:athena.ProtoAction.preconditions)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ProtoAction::preconditions() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoAction.preconditions)
+  return preconditions_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ProtoAction::mutable_preconditions() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoAction.preconditions)
+  return &preconditions_;
+}
+
+// repeated string effects = 8;
+inline int ProtoAction::_internal_effects_size() const {
+  return effects_.size();
+}
+inline int ProtoAction::effects_size() const {
+  return _internal_effects_size();
+}
+inline void ProtoAction::clear_effects() {
+  effects_.Clear();
+}
+inline std::string* ProtoAction::add_effects() {
+  // @@protoc_insertion_point(field_add_mutable:athena.ProtoAction.effects)
+  return _internal_add_effects();
+}
+inline const std::string& ProtoAction::_internal_effects(int index) const {
+  return effects_.Get(index);
+}
+inline const std::string& ProtoAction::effects(int index) const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.effects)
+  return _internal_effects(index);
+}
+inline std::string* ProtoAction::mutable_effects(int index) {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.effects)
+  return effects_.Mutable(index);
+}
+inline void ProtoAction::set_effects(int index, const std::string& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.effects)
+  effects_.Mutable(index)->assign(value);
+}
+inline void ProtoAction::set_effects(int index, std::string&& value) {
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.effects)
+  effects_.Mutable(index)->assign(std::move(value));
+}
+inline void ProtoAction::set_effects(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  effects_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.effects)
+}
+inline void ProtoAction::set_effects(int index, const char* value, size_t size) {
+  effects_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.effects)
+}
+inline std::string* ProtoAction::_internal_add_effects() {
+  return effects_.Add();
+}
+inline void ProtoAction::add_effects(const std::string& value) {
+  effects_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.effects)
+}
+inline void ProtoAction::add_effects(std::string&& value) {
+  effects_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:athena.ProtoAction.effects)
+}
+inline void ProtoAction::add_effects(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  effects_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:athena.ProtoAction.effects)
+}
+inline void ProtoAction::add_effects(const char* value, size_t size) {
+  effects_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:athena.ProtoAction.effects)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ProtoAction::effects() const {
+  // @@protoc_insertion_point(field_list:athena.ProtoAction.effects)
+  return effects_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ProtoAction::mutable_effects() {
+  // @@protoc_insertion_point(field_mutable_list:athena.ProtoAction.effects)
+  return &effects_;
 }
 
 // -------------------------------------------------------------------

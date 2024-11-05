@@ -22,6 +22,12 @@ std::vector<athena_msgs::msg::Action> Plan::GetActions(const athena::ProtoExecut
     for (int parentID: execution_plan.action(i).parents()) {
       act.parents.push_back(parentID);
     }
+    for(std::string prec :execution_plan.action(i).preconditions()){
+      act.preconditions.push_back(prec);
+    }
+     for(std::string effect :execution_plan.action(i).effects()){
+      act.effects.push_back(effect);
+    }
     for (std::string waypoint : execution_plan.action(i).waypoints()) {
       act.waypoints.push_back(waypoint);
     }

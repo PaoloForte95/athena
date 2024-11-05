@@ -9,6 +9,8 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import fr.uga.pddl4j.parser.Expression;
+
 import org.athena.athena_protobuf.ProtoAction;
 import org.athena.athena_protobuf.ProtoExecutionPlan;
 import org.athena.athena_protobuf.ProtoMethod;
@@ -74,7 +76,16 @@ class TaskPlanner{
 			ProtoAction.Builder action = ProtoAction.newBuilder();
 			action.setName(name);
 			action.setId(act.getID());
+			for(Expression<String> prec: act.getPreconditions()){
+				action.addPreconditions(prec.toString());
+			}
+			for(Expression<String> effect: act.getEffects()){
+				action.addEffects(effect.toString());
+			}
+
 			ArrayList<SymbolicSymbol> inputs = act.getInputs();
+			
+
 			for (SymbolicSymbol input : inputs){
 				if(!Collections.disjoint(input.getType(),machines)){
 					int robotID = Integer.parseInt(input.getVariable().replaceAll("[^0-9]", ""));
