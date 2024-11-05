@@ -1,16 +1,21 @@
 # Athena
 
 <p align="center">
-  <img height="300" src="doc/logo.png" />
+  <img height="300" src="doc/logo_inv.png" />
 </p>
 
-Athena is a ROS2 planning framework based on behavior trees. Its main features are:
+Athena is planning framework based on behavior trees. Its main features are:
 
 * Compute execution plan for problem defined with PDDL 3.1 and HDDL 1.0.
 * Compute total ordered, partial ordered, and concurrent plans.
 * Dispatch and execute the actions using behavior tree.
 
+
 # Overview
+Athena is divided into two parts: planning and execution.
+The first is used to plan and compute an execution plan, while the second is used to dispatch and execute the actions/methods of the plan. Since actions are implemeneted as bt nodes, the actions execution can be customize. 
+
+For executing the actions, the usage of the atlantis framework is suggested. 
 
 # Getting Started
 First, install <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>.
@@ -26,7 +31,7 @@ If not installed, install java 17 by running the command:
 ```
 $ sudo apt-get install openjdk-17-jdk
 ```
-Download PDDL4j and build it. It is not necessary to do this in the ros2 workspace.
+Download PDDL4j and build it. It is not necessary to build it in the ros2 workspace.
 ```
 git clone https://github.com/pellierd/pddl4j.git
 cd pddl4j
@@ -41,7 +46,7 @@ Then, copy the generated jar lib into the folder athena_protobuf/lib.
 
 To build the task planner executable that calls the Java code to parse the planning problem and compute the execution plan:
 ```
-$ cd src/athena/athena_protobuf/
+$ cd src/athena/planning/athena_protobuf/
 $ ./gradlew build
 ```
 This will create an executable .jar file into athena_planner/Planners called task_planner. This will be used to compute the plan.

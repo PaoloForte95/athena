@@ -259,9 +259,9 @@ athena_msgs::msg::State StateUpdaterServer::getUpdatedState(
     const std::string & state_updater)
 {
    RCLCPP_INFO(get_logger(), "Attempting to update the state using state updater %s\"",state_updater.c_str());
-    for (auto s : previous_state.state){
-      RCLCPP_INFO(get_logger(), "Prev state %s",s.c_str());
-    }
+    //for (auto s : previous_state.state){
+      //RCLCPP_INFO(get_logger(), "Prev state %s",s.c_str());
+    //}
     athena_msgs::msg::State state;
       if (state_updaters_.find(state_updater) != state_updaters_.end()) {
 

@@ -6,7 +6,7 @@
          <SendLoad name="Load" service_name="/send_load"/>
          <SendTransport name="Drive 2" service_name="/navigate_to_pose"/>
          <SendDump name="Dump" service_name="/send_dump"/>
-        <IsPileMoved name="Check" ticks='3'/>
+        <IsPileMoved name="Check" ticks='1'/>
         </MovePileMethodNode>
 </BehaviorTree>
 
