@@ -25,6 +25,10 @@
 		:parameters (?m - material ?l - location)
 	)
 
+	(:task stack_pile
+		:parameters (?m1 ?m2 - material ?l - location)
+	)
+
 	(:task go_to
 		:parameters (?v - vehicle ?l - location)
 	)
@@ -52,6 +56,66 @@
 			(< task2 task3)
 		)
 	)
+
+	(:method m_stack_pile_ordering_0
+		:parameters (?l1 ?l2 ?l3 - location ?m1 ?m2 - material ?v - vehicle)
+		:task (stack_pile ?m1 ?m2 ?l3)
+		:subtasks (and
+		 (task0 (go_to ?v ?l1))
+		 (task1 (pick ?v ?l1 ?m2))
+		 (task2 (go_to ?v ?l3))
+		 (task3 (place ?v ?l3 ?m2))
+		 (task4 (go_to ?v ?l2))
+		 (task5 (pick ?v ?l2 ?m1))
+		 (task6 (go_to ?v ?l3))
+		 (task7 (place ?v ?l3 ?m1))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+			(< task3 task4)
+			(< task4 task5)
+			(< task5 task6)
+			(< task6 task7)
+		)
+	)
+
+
+	(:method m_stack_pile_ordering_1
+		:parameters (?l1 ?l2 ?l3 ?l4 - location ?m1 ?m2 - material ?v - vehicle)
+		:task (stack_pile ?m2 ?m1 ?l3)
+		:subtasks (and
+		 (task0 (go_to ?v ?l1))
+		 (task1 (pick ?v ?l1 ?m2))
+		 (task2 (go_to ?v ?l4))
+		 (task3 (place ?v ?l4 ?m2))
+		 (task4 (go_to ?v ?l2))
+		 (task5 (pick ?v ?l2 ?m1))
+		 (task6 (go_to ?v ?l3))
+		 (task7 (place ?v ?l3 ?m1))
+		 (task8 (go_to ?v ?l4))
+		 (task9 (pick ?v ?l4 ?m2))
+		 (task10 (go_to ?v ?l3))
+		 (task11 (place ?v ?l3 ?m2))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+			(< task3 task4)
+			(< task4 task5)
+			(< task5 task6)
+			(< task6 task7)
+			(< task7 task8)
+			(< task8 task9)
+			(< task9 task10)
+			(< task10 task11)
+		)
+	)
+
+
+
 
 	(:method m_place_ordering_0
 		:parameters (?l - location ?m - material ?v - vehicle)

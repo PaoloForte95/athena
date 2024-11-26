@@ -4,22 +4,17 @@
 	(:objects
 		mat_1 - material
 		mat_2 - material
-		home1 - location
-		home2 - location
-		wp1 - location
-		wp2 - location
-		wp3 - location
-		wp4 - location
+		home1 wp1 wp2 wp3 wp4 - location
 		wheel_loader_1 - vehicle
 	)
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_pile mat_1 wp4))
-		 (task1 (move_pile mat_2 wp4))
+		(task1 (stack_pile mat_2 mat_1 wp4))
+		;;(task0 (move_pile mat_1 wp4))
 		)
 		:ordering (and
-			;;(< task1 task0)
+			;;(< task0 task1)
 		)
 	)
 	(:init
@@ -30,8 +25,8 @@
 		(free wp4)
 
 		(at mat_1 wp1)
-		(at mat_2 wp1)
-		(on mat_2 mat_1 wp1)
+		(at mat_2 wp2)
+		;;(on mat_2 mat_1 wp1)
 		(at wheel_loader_1 home1)
 		(can_load wheel_loader_1)
 	)

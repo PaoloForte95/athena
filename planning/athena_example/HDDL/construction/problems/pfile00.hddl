@@ -3,11 +3,7 @@
 	(:domain  domain_htn)
 	(:objects
 		mat_1 - material
-		home1 - location
-		wp1 - location
-		wp2 - location
-		wp3 - location
-		wp4 - location
+		home1 wp1 wp2 wp3 wp4 - location
 		wheel_loader_1 - vehicle
 	)
 	(:htn
@@ -24,10 +20,8 @@
 		(free wp2)
 		(free wp3)
 		(free wp4)
-
-		(at mat_1 wp1)
-
 		(at wheel_loader_1 home1)
+		(at mat_1 wp1)
 		(can_load wheel_loader_1)
 	)
 )
