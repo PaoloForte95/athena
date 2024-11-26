@@ -5,7 +5,6 @@
 (:types
     location - object
     locatable - object
-    removable - object
     cutlery - locatable
     container - locatable
     plate - container

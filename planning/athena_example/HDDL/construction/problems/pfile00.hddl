@@ -16,7 +16,6 @@
 		 (task0 (move_pile mat_1 wp4))
 		)
 		:ordering (and
-			;;(< task1 task0)
 		)
 	)
 	(:init
