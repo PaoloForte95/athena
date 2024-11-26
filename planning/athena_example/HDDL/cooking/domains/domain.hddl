@@ -1,0 +1,155 @@
+(define (domain cooking)
+	(:requirements :negative-preconditions :typing :hierarchy :universal-preconditions :method-preconditions)
+	(:types
+		meat - ingredient
+		vegetable - ingredient
+		fish - ingredient
+		legume - ingredient
+		spice - ingredient
+		grain - ingredient
+		liquid - ingredient
+		plate - container 
+		pot - container 
+		pan - container 
+		container - locatable
+		stove - locatable
+		robot - locatable
+		ingredient - locatable
+		meal - object
+		locatable - object
+		location - object
+		
+	)
+	(:predicates
+		(collected ?arg0 - ingredient)
+		(added ?arg0 - ingredient ?arg1 - container)
+        (cooked ?arg0 - meal ?arg1 - container)
+        (open ?arg0 - stove)
+		(at ?arg0 - locatable ?arg1 - location)
+		(free ?arg0 - location)
+		(ready ?m - meal)
+		(in ?arg0 - ingredient ?arg1 - locatable)
+	)
+
+
+	(:task go_to
+		:parameters (?r - robot ?l - location)
+	)
+
+	(:task add_ingredient
+		:parameters (?ing - ingredient  ?con - container)
+	)
+
+	(:task cook
+		:parameters (?m - meal  ?con - container)
+	)
+
+
+	(:method m_add_ingredient_ordering_0
+		:parameters (?r - robot ?i - ingredient ?c - container ?l1 - location ?l2 - location)
+		:task (add_ingredient ?i ?c)
+		:subtasks (and
+		 (task0 (go_to ?r ?l1))
+		 (task1 (load ?r ?i ?l1))
+		 (task2 (go_to ?r ?l2))
+		 (task3 (dump ?r ?i ?c ?l2))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+		)
+	)
+
+	(:method m_cook_ordering_0
+		:parameters (?r - robot ?m - meal  ?con - container)
+		:task (cook ?m ?con)
+		:subtasks (and
+		 (task0 (prepare_meal ?r ?m ))
+		)
+	)
+
+
+	(:method m_i_am_there_ordering_0
+		:parameters (?r - robot ?l - location)
+		:task (go_to ?r ?l)
+		:subtasks (and
+		 (task0 (noop ?r ?l))
+		)
+	)
+
+	(:method m_move_to_ordering_0
+		:parameters (?r - robot ?l1 - location ?l2 - location)
+		:task (go_to ?r ?l2)
+		:subtasks (and
+		 (task0 (move ?r ?l1 ?l2))
+		)
+	)
+
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ACTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+	(:action move
+		:parameters (?r - robot ?l1 - location ?l2 - location)
+		:precondition 
+			(and
+				(at ?r ?l1)
+				(free ?l2)				
+			)
+		:effect
+			(and
+				(not (at ?r  ?l1))
+				(at ?r  ?l2)
+				(free ?l1)
+				(not (free ?l2))
+			)
+	)
+	(:action noop
+		:parameters (?r - robot ?l1 - location)
+		:precondition 
+			(and
+				(at ?r ?l1)
+			)
+		:effect ()
+	)
+
+	(:action prepare_meal
+		:parameters (?r - robot ?m - meal )
+		:precondition 
+			()
+		:effect (and
+				(ready ?m)
+			)
+	)
+
+	(:action load
+		:parameters (?r - robot ?i - ingredient ?l - location)
+		:precondition 
+			(and
+				(forall (?i - ingredient)
+					(not (in ?i ?r))
+				)
+				(at ?i ?l)
+			)
+		:effect
+			(and
+				(in ?i  ?r )
+			)
+	)
+
+	(:action dump
+		:parameters (?r - robot ?i - ingredient ?c - container ?l - location)
+		:precondition 
+			(and
+				(in ?i  ?r)
+				(at ?c ?l)
+			)
+		:effect
+			(and
+				(not (in ?i  ?r))
+				(in ?i  ?c)
+			)
+	)
+
+)

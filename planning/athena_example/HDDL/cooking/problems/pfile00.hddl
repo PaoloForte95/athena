@@ -1,0 +1,32 @@
+(define
+	(problem pfile01)
+	(:domain  cooking)
+	(:objects
+		salt water - ingredient
+		container1 - container
+		home1 wp1 wp2 - location
+		robot1 - robot
+		pasta - meal
+	)
+	(:htn
+		:parameters ()
+		:subtasks (and
+		(task0 (add_ingredient salt container1))
+		(task1 (add_ingredient water container1))
+		(task2 (cook pasta container1))
+		)
+		:ordering (and
+		(< task0 task1)
+		(< task1 task2)
+		)
+	)
+	(:init
+
+		(free wp1)
+		(free wp2)
+		(at salt wp1)
+		(at water wp1)
+		(at container1 wp2)
+		(at robot1 home1)
+	)
+)
