@@ -18,6 +18,8 @@ find_package(athena_util REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(athena_protobuf REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
 
 
 include_directories(
@@ -116,6 +118,8 @@ add_library(${updater_library_name}_vlm SHARED
 
 ament_target_dependencies(${updater_library_name}_vlm
   ${dependencies}
+  OpenCV
+  cv_bridge
 )
 
 

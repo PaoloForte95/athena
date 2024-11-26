@@ -89,13 +89,14 @@ protected:
 protected:
 
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
-  std::string name_, camera_topic_;
+  std::string name_, camera_topic_, image_filename_;
   rclcpp::Logger logger_{rclcpp::get_logger("VlmStateUpdater")};
 
   // Dynamic parameters handler
   std::mutex mutex_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr _dyn_params_handler;
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr camera_sub_;
+  sensor_msgs::msg::Image last_image_;
 
 }; 
 

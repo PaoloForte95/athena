@@ -14,6 +14,9 @@
 #include <regex>
 #include "athena_util/node_utils.hpp"
 #include "athena_planner/state_updaters/vlm_state_updater.hpp"
+#include "cv_bridge/cv_bridge.h"
+#include "opencv2/opencv.hpp"
+
 
 using std::placeholders::_1;
 using rcl_interfaces::msg::ParameterType;
@@ -42,6 +45,9 @@ void VlmStateUpdater::configure(
 
   athena_util::declare_parameter_if_not_declared(node, name + ".camera_topic", rclcpp::ParameterValue("/camera/camera/color/image_raw"));
   node->get_parameter<std::string>(name + ".camera_topic", camera_topic_);
+  athena_util::declare_parameter_if_not_declared(node, name + ".image_filename", rclcpp::ParameterValue("image.png"));
+  node->get_parameter<std::string>(name + ".image_filename", image_filename_);
+  
   
   RCLCPP_INFO(logger_, "Configuring %s of type VlmStateUpdater", name.c_str());
   rclcpp::QoS scan_qos = rclcpp::SensorDataQoS(); 
@@ -79,12 +85,32 @@ void VlmStateUpdater::cleanup()
 athena_msgs::msg::State VlmStateUpdater::updateState(const std::vector<athena_msgs::msg::Action> & actions, const athena_msgs::msg::State& previous_state){
     auto new_state = athena_msgs::msg::State();
     //Make the call to the vlm model in python to get the new state from camera image
+    if (last_image_.data.empty()){
+       RCLCPP_ERROR(logger_, "no image available!");
+    }
+
+    cv_bridge::CvImagePtr cv_ptr;
+    try {
+        cv_ptr = cv_bridge::toCvCopy(last_image_, sensor_msgs::image_encodings::BGR8);
+    } catch (const cv_bridge::Exception& e) {
+        RCLCPP_ERROR(logger_, "cv_bridge exception: %s", e.what());
+        return new_state;
+    }
+
+    // Save image to a file
+    if (cv::imwrite(image_filename_, cv_ptr->image)) {
+        RCLCPP_INFO(logger_, "Image saved as %s", image_filename_.c_str());
+    } else {
+        RCLCPP_ERROR(logger_, "Failed to save image");
+    }
+    
+
     return new_state;
 
 }
 
 void VlmStateUpdater::cameraCallback(sensor_msgs::msg::Image msg){
-
+  last_image_ = msg;
 }
 
 
