@@ -89,7 +89,7 @@ void SendLoadAction::sendLoad(Actions actions)
       config().blackboard->get<std::string>("load_position", location);
       goal_msg.location = location;
       goal_msg.material_id = load_action.material;
-      std::string mat = "p" + std::to_string(int(load_action.material));
+      std::string mat = "mat" + std::to_string(int(load_action.material));
       config().blackboard->set<std::string>("material_loaded", mat);
       RCLCPP_INFO(node_->get_logger(), "Sending load");
       auto send_goal_options = rclcpp_action::Client<athena_exe_msgs::action::MoveJoint>::SendGoalOptions();

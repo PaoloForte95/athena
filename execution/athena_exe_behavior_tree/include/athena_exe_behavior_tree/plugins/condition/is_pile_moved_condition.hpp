@@ -60,35 +60,25 @@ public:
   {
     return {
       BT::InputPort<std::string>("criteria", "NumberCycles", "Criteria to use to check if the pile is completely moved."),
-      BT::InputPort<std::string>("global_frame", "map","Global frame"),
-      BT::InputPort<std::string>("scan_topic", "scan","The lidar scan topic"),
-       BT::InputPort<std::string>("image_topic", "scan","The camera image topic"),
+      BT::InputPort<std::string>("image_topic", "image","The camera image topic"),
       BT::InputPort<int>("ticks", 1, "Number of ticks to do (If NumberCycles criteria is selected)"),
-      BT::InputPort<double>("threshold", 0.5, "The threshold value for which the position is considered free(If LidarScan criteria is selected)."),
+      BT::InputPort<double>("desired_amount",0.0,"The desired amount of material to move"),
     };
   }
 
 
 private: 
 
- void lidarSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr data);
-
- void cameraSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr image);
 
 
 private:
 
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::string global_frame_, scan_topic_, image_topic_;
+  std::string global_frame_, image_topic_;
   std::string criteria_;
   int ticks_;
   int current_tick_;
-  double threshold_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr scan_sub_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr image_sub_;
-  sensor_msgs::msg::PointCloud2::SharedPtr data_;
-  sensor_msgs::msg::PointCloud2::SharedPtr depth_image_;
+  double desired_amount_;
   rclcpp::Client<athena_exe_msgs::srv::GetMaterialAmount>::SharedPtr material_amount_client_;
 };
 

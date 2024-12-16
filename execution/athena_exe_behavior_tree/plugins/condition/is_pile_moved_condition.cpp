@@ -65,44 +65,32 @@ IsPileMovedCondition::IsPileMovedCondition(
 : BT::ConditionNode(condition_name, conf), current_tick_(0)
 {
   node_ = rclcpp::Node::make_shared("check_material_amount_client_node");
-  tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
   getInput<std::string>("criteria", criteria_);
-  getInput<std::string>("global_frame", global_frame_);
-  getInput<std::string>("scan_topic", scan_topic_);
   getInput<std::string>("image_topic", image_topic_);
   getInput<int>("ticks", ticks_);
-  getInput<double>("threshold", threshold_);
- 
-  scan_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(scan_topic_,
-  rclcpp::SystemDefaultsQoS(),
-  std::bind(&IsPileMovedCondition::lidarSensorCallback, this, std::placeholders::_1));
-
-
-   image_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(image_topic_,
-   rclcpp::SystemDefaultsQoS(),
-   std::bind(&IsPileMovedCondition::cameraSensorCallback, this, std::placeholders::_1));
-
-   material_amount_client_ =  node_->create_client<athena_exe_msgs::srv::GetMaterialAmount>("get_material_amount");
+  getInput<double>("desired_amount", desired_amount_);
+  material_amount_client_ =  node_->create_client<athena_exe_msgs::srv::GetMaterialAmount>("get_material_amount");
 }
 
 BT::NodeStatus IsPileMovedCondition::tick()
 {
   current_tick_ += 1;
-  RCLCPP_INFO(node_->get_logger(), "Checking material amount using %s data", criteria_.c_str());
+  RCLCPP_INFO(node_->get_logger(), "Moving material using %s criteria", criteria_.c_str());
   if(criteria_ == "Amount"){
     std::string material, location;
     config().blackboard->get<std::string>("material_loaded", material);
     config().blackboard->get<std::string>("dump_position", location);
+    //Get the info from the simulator
     auto request = std::make_shared<athena_exe_msgs::srv::GetMaterialAmount::Request>();
     request->pile_id = material;
     request->pile_location = location;
 
     auto result = material_amount_client_->async_send_request(request);
-      if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
+    if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
     {
-      double current_amount = result.get()->amount;
-      if(current_amount > threshold_){
-        RCLCPP_INFO(node_->get_logger(), "Progress Material %s moving: %f... %f", material.c_str(), current_amount, threshold_);
+    double current_amount = result.get()->amount;
+      if(current_amount < desired_amount_){
+        RCLCPP_INFO(node_->get_logger(), "Progress Material %s moving: %f... %f", material.c_str(), current_amount, desired_amount_);
         return BT::NodeStatus::FAILURE;
       }
       RCLCPP_INFO(node_->get_logger(), "Material %s has been moved!", material.c_str());
@@ -111,58 +99,20 @@ BT::NodeStatus IsPileMovedCondition::tick()
       RCLCPP_ERROR(node_->get_logger(), "Failed to get material %s amount",material.c_str());
     }
   }
-  
-  else if(criteria_ == "LidarScan"){
-    RCLCPP_INFO(node_->get_logger(),"Using lidar for checking the pile" );
-    tf2::Transform tf_transform;
-    getTransform(
-        data_->header.frame_id, global_frame_,
-        tf2::durationFromSec(0.5), tf_buffer_, tf_transform);
-
-    sensor_msgs::PointCloud2ConstIterator<float> iter_x(*data_, "x");
-    sensor_msgs::PointCloud2ConstIterator<float> iter_y(*data_, "y");
-    sensor_msgs::PointCloud2ConstIterator<float> iter_z(*data_, "z");
-      
-    for (; iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
-      // Transform point coordinates from source frame -> to base frame
-      tf2::Vector3 p_v3_s(*iter_x, *iter_y, *iter_z);
-      tf2::Vector3 p_v3_b = tf_transform * p_v3_s;
-      if (p_v3_b.z() >= threshold_ ) {
-        RCLCPP_INFO(node_->get_logger(), "Z value exceeds threshold: %f", *iter_z);
-        return BT::NodeStatus::FAILURE;
-        }
-    }
-    return BT::NodeStatus::SUCCESS;
-  }else if(criteria_ == "Camera"){
-    RCLCPP_INFO(node_->get_logger(),"Using lidar for checking the pile" );
-    tf2::Transform tf_transform;
-    getTransform(
-        data_->header.frame_id, global_frame_,
-        tf2::durationFromSec(0.5), tf_buffer_, tf_transform);
-
-    sensor_msgs::PointCloud2ConstIterator<float> iter_x(*data_, "x");
-    sensor_msgs::PointCloud2ConstIterator<float> iter_y(*data_, "y");
-    sensor_msgs::PointCloud2ConstIterator<float> iter_z(*data_, "z");
-      
-    for (; iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
-      // Transform point coordinates from source frame -> to base frame
-      tf2::Vector3 p_v3_s(*iter_x, *iter_y, *iter_z);
-      tf2::Vector3 p_v3_b = tf_transform * p_v3_s;
-      if (p_v3_b.z() >= threshold_ ) {
-        RCLCPP_INFO(node_->get_logger(), "Z value exceeds threshold: %f", *iter_z);
-        return BT::NodeStatus::FAILURE;
-        }
-    }
+  else if(criteria_ == "Camera"){
+    RCLCPP_INFO(node_->get_logger(),"Using camera for checking the pile. Making the call to the VLM model..." );
+    
     return BT::NodeStatus::SUCCESS;
 
   }
   else if(criteria_ == "NumberCycles"){
+        //FIXME Add the function to estimate automatically the number of load cycles
         RCLCPP_INFO(node_->get_logger(),"Using estimated number of cycles for checking the pile...");
         if(current_tick_ < ticks_){
           RCLCPP_INFO(node_->get_logger(),"Cycle %d/%d... Moving Pile", current_tick_, ticks_);
             return BT::NodeStatus::FAILURE;
         }
-        RCLCPP_INFO(node_->get_logger(),"Cycle %d/%d... Move Piled completed", current_tick_, ticks_);
+        RCLCPP_INFO(node_->get_logger(),"Cycle %d/%d... Move Pile completed", current_tick_, ticks_);
         current_tick_ = 0;
         return BT::NodeStatus::SUCCESS;
   }
@@ -171,16 +121,6 @@ BT::NodeStatus IsPileMovedCondition::tick()
      BT::NodeStatus::IDLE;
   }   
 }
-
-  void IsPileMovedCondition::lidarSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr data)
-  {
-    data_ = data;
-  }
-
-  void IsPileMovedCondition::cameraSensorCallback(const sensor_msgs::msg::PointCloud2::SharedPtr data)
-  {
-    depth_image_ = data;
-  }
 
 
 }// namespace
