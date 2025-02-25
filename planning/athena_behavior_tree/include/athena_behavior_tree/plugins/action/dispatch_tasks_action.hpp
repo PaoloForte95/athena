@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__COMPUTE_PLAN_ACTION_HPP_
+#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__DISPATCH_TASKS_ACTION_HPP_
 #define ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__DISPATCH_TASKS_ACTION_HPP_
 
 #include <string>

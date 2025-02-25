@@ -6,14 +6,6 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
-  <!-- <ChangedPrompt prompt="{prompt}">
-  <ComputePDDLProblem name="ComputePDDLProblem" problem_file="{problem_file}" objects_list="{objects_list}" instruction="{instruction}" prompt="{prompt}" />
-  </ChangedPrompt>
-  <EstimateObjectsPoses name="EstimateObjectsPoses" object_poses="{object_poses}" objects_list="{objects_list}"/>
-  <RecoveryNode number_of_retries="6" name="NavigateRecovery">
-  <ComputePlan name="ComputePlanAction" planner="LPG" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
-  <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" updated_prompt="{prompt}"/>
-  </RecoveryNode> -->
   <ComputePlan name="ComputePlanAction" planner="LPG" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
   <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
   <RateController hz="3.0">
@@ -26,15 +18,5 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
    </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>
-
-<!-- 
-   <BehaviorTree ID="Execution">
-         <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
-  <RateController hz="3.0">
-  <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
-  </RateController>
-  <SendAction name="SendAction" robot_id="1" service_name="action_executor" />
-   </ExecutePlanNode>
-    </BehaviorTree> -->
 
 </root>

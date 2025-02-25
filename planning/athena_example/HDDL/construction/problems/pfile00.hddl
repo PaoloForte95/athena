@@ -3,13 +3,13 @@
 	(:domain  domain_htn)
 	(:objects
 		mat_1 - material
-		home1 wp1 wp2 wp3 wp4 - location
+		home1 wp1 wp2 - location
 		wheel_loader_1 - vehicle
 	)
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_pile mat_1 wp4))
+		 (task0 (move_pile mat_1 wp2))
 		)
 		:ordering (and
 		)
@@ -18,8 +18,6 @@
 
 		(free wp1)
 		(free wp2)
-		(free wp3)
-		(free wp4)
 		(at wheel_loader_1 home1)
 		(at mat_1 wp1)
 		(can_load wheel_loader_1)
