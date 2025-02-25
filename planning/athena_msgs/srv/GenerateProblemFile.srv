@@ -1,0 +1,8 @@
+# Get the pose of an object
+
+std_msgs/String prompt
+std_msgs/String instruction
+
+---
+# Response
+std_msgs/String ouput_file

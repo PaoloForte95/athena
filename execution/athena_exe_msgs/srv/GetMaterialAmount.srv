@@ -1,4 +1,0 @@
-string pile_id
-string pile_location
----
-float32 amount

@@ -16,11 +16,8 @@ find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME} 
    #Msgs
-
    #Services
-   "srv/GetMaterialAmount.srv"
    #Actions
-   "action/MoveJoint.action"
    "action/MoveToPose.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs
 )

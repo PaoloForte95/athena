@@ -1,0 +1,9 @@
+# Check the objects list and get their position
+
+std_msgs/String problem_file
+
+---
+# Response
+std_msgs/String[] objects_names
+std_msgs/Int64[] objects_counts
+geometry_msgs/Pose[] objects_positions
