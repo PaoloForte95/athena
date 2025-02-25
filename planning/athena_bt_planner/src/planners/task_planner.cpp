@@ -162,18 +162,29 @@ TaskPlanner::onPreempt(ActionT::Goal::ConstSharedPtr goal)
 void
 TaskPlanner::initializePlanningProblem(ActionT::Goal::ConstSharedPtr goal)
 {
-  RCLCPP_INFO(
-    logger_, "Begin task planning for domain file (%s) and problem file (%s)",
-    goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
 
   // Reset state for new action feedback
   start_time_ = clock_->now();
   auto blackboard = bt_action_server_->getBlackboard();
   blackboard->set<int>("number_recoveries", 0);  // NOLINT
 
-  // Update the goal pose on the blackboard
-  blackboard->set<std::string>(domain_file_blackboard_id_, goal->planning_problem.planning_domain);
-  blackboard->set<std::string>(problem_file_blackboard_id_, goal->planning_problem.planning_problem);
+  if(goal->planning_problem.planning_problem.empty()){
+    RCLCPP_INFO(
+    logger_, "Begin task planning for domain file (%s) with problem file generation",
+    goal->planning_problem.planning_domain.c_str());
+    // Update the goal pose on the blackboard
+    blackboard->set<std::string>(domain_file_blackboard_id_, goal->planning_problem.planning_domain);
+  }
+  else{
+      RCLCPP_INFO(
+    logger_, "Begin task planning for domain file (%s) and problem file (%s)",
+    goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
+    // Update the goal pose on the blackboard
+    blackboard->set<std::string>(domain_file_blackboard_id_, goal->planning_problem.planning_domain);
+    blackboard->set<std::string>(problem_file_blackboard_id_, goal->planning_problem.planning_problem);
+
+  }
+
 
 }
 
