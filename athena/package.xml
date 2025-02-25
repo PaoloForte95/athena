@@ -18,6 +18,7 @@
   <exec_depend>athena_planner</exec_depend>
   <exec_depend>athena_protobuf</exec_depend>
   <exec_depend>athena_util</exec_depend>
+  <exec_depend>athena_vlm</exec_depend>
   <exec_depend>athena_bt_executor</exec_depend>
   <exec_depend>athena_exe_behavior_tree</exec_depend>
   <exec_depend>athena_exe_launch</exec_depend>
