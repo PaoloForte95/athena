@@ -36,6 +36,7 @@ find_package(athena_util REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(athena_exe_msgs REQUIRED)
+find_package(material_handler_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(athena_behavior_tree REQUIRED)
 find_package(nav2_costmap_2d REQUIRED)
@@ -52,6 +53,7 @@ set(dependencies
   rclcpp_lifecycle
   athena_msgs
   athena_exe_msgs
+  material_handler_msgs
   geometry_msgs
   sensor_msgs
   nav2_msgs

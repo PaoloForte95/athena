@@ -30,7 +30,7 @@ SendLoadAction::SendLoadAction(
     getInput("global_frame", global_frame_);
     node_ = rclcpp::Node::make_shared("send_load_client_node");
     auto service_name = node_->get_namespace() + service_name_;
-    client_ptr_ = rclcpp_action::create_client<athena_exe_msgs::action::MoveJoint>(node_, service_name);
+    client_ptr_ = rclcpp_action::create_client<material_handler_msgs::action::LoadMaterial>(node_, service_name);
 }
 
 inline BT::NodeStatus SendLoadAction::tick()
@@ -83,16 +83,15 @@ void SendLoadAction::sendLoad(Actions actions)
           RCLCPP_ERROR( node_->get_logger(), "load action server is not available."); 
           return;
       }
-      auto goal_msg = athena_exe_msgs::action::MoveJoint::Goal();
-      goal_msg.operation = 1;
+      auto goal_msg = material_handler_msgs::action::LoadMaterial::Goal();
       std::string location;
       config().blackboard->get<std::string>("load_position", location);
       goal_msg.location = location;
-      goal_msg.material_id = load_action.material;
+      goal_msg.name = load_action.material;
       std::string mat = "mat" + std::to_string(int(load_action.material));
       config().blackboard->set<std::string>("material_loaded", mat);
       RCLCPP_INFO(node_->get_logger(), "Sending load");
-      auto send_goal_options = rclcpp_action::Client<athena_exe_msgs::action::MoveJoint>::SendGoalOptions();
+      auto send_goal_options = rclcpp_action::Client<material_handler_msgs::action::LoadMaterial>::SendGoalOptions();
       send_goal_options.goal_response_callback =std::bind(&SendLoadAction::goal_response_callback, this, std::placeholders::_1);
       send_goal_options.result_callback = std::bind(&SendLoadAction::result_callback, this,std::placeholders::_1);
       auto future_goal_handle = client_ptr_->async_send_goal(goal_msg, send_goal_options);
@@ -106,7 +105,7 @@ void SendLoadAction::sendLoad(Actions actions)
       auto future_result = client_ptr_->async_get_result(send_load_handler_);
       RCLCPP_INFO(node_->get_logger(), "Executing loading for robot %d...!", robotID);
       rclcpp::spin_until_future_complete(node_, future_result);
-      rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::MoveJoint>::WrappedResult wrapped_result = future_result.get();
+      rclcpp_action::ClientGoalHandle<material_handler_msgs::action::LoadMaterial>::WrappedResult wrapped_result = future_result.get();
     }
 
 }
@@ -122,7 +121,7 @@ void SendLoadAction::sendLoad(Actions actions)
   }
 
 
-  void SendLoadAction::feedback_callback(GoalHandleSendLoad::SharedPtr,const std::shared_ptr<const athena_exe_msgs::action::MoveJoint::Feedback> feedback)
+  void SendLoadAction::feedback_callback(GoalHandleSendLoad::SharedPtr,const std::shared_ptr<const material_handler_msgs::action::LoadMaterial::Feedback> feedback)
   {
     RCLCPP_INFO(node_->get_logger(), "Executing Loading... ");
   }

@@ -69,7 +69,7 @@ IsPileMovedCondition::IsPileMovedCondition(
   getInput<std::string>("image_topic", image_topic_);
   getInput<int>("ticks", ticks_);
   getInput<double>("desired_amount", desired_amount_);
-  material_amount_client_ =  node_->create_client<athena_exe_msgs::srv::GetMaterialAmount>("get_material_amount");
+  material_amount_client_ =  node_->create_client<material_handler_msgs::srv::GetMaterialAmount>("get_material_amount");
 }
 
 BT::NodeStatus IsPileMovedCondition::tick()
@@ -81,7 +81,7 @@ BT::NodeStatus IsPileMovedCondition::tick()
     config().blackboard->get<std::string>("material_loaded", material);
     config().blackboard->get<std::string>("dump_position", location);
     //Get the info from the simulator
-    auto request = std::make_shared<athena_exe_msgs::srv::GetMaterialAmount::Request>();
+    auto request = std::make_shared<material_handler_msgs::srv::GetMaterialAmount::Request>();
     request->pile_id = material;
     request->pile_location = location;
 

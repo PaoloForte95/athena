@@ -26,7 +26,7 @@
 #include "sensor_msgs/msg/image.hpp"
 #include "tf2/time.h"
 #include "tf2_ros/buffer.h"
-#include "athena_exe_msgs/srv/get_material_amount.hpp"
+#include "material_handler_msgs/srv/get_material_amount.hpp"
 
 namespace athena_exe_behavior_tree
 {
@@ -79,7 +79,7 @@ private:
   int ticks_;
   int current_tick_;
   double desired_amount_;
-  rclcpp::Client<athena_exe_msgs::srv::GetMaterialAmount>::SharedPtr material_amount_client_;
+  rclcpp::Client<material_handler_msgs::srv::GetMaterialAmount>::SharedPtr material_amount_client_;
 };
 
 }  // namespace 

@@ -18,7 +18,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "athena_exe_msgs/action/move_joint.hpp"
+#include "material_handler_msgs/action/load_material.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
 
@@ -78,12 +78,10 @@ public:
 
 protected:
   typedef std::vector<athena_msgs::msg::Action> Actions;
-  typedef rclcpp_action::Client<athena_exe_msgs::action::MoveJoint>::SharedPtr Client;
-  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<athena_exe_msgs::action::MoveJoint>;
+  typedef rclcpp_action::Client<material_handler_msgs::action::LoadMaterial>::SharedPtr Client;
+  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<material_handler_msgs::action::LoadMaterial>;
   void sendLoad(Actions actions);
   Actions getLoadActions();
-
-
 
 private:
   std::string service_name_, global_frame_;
@@ -95,11 +93,9 @@ private:
 
    void goal_response_callback(const GoalHandleSendLoad::SharedPtr & goal_handle);
 
-   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const athena_exe_msgs::action::MoveJoint::Feedback> feedback);
+   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const material_handler_msgs::action::LoadMaterial::Feedback> feedback);
 
    void result_callback(const GoalHandleSendLoad::WrappedResult & result);
-
-    
 
 }; //End Class
 
