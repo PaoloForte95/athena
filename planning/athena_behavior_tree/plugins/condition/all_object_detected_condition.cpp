@@ -1,0 +1,58 @@
+#include <string>
+#include <memory>
+#include <yaml-cpp/yaml.h>
+
+#include "athena_behavior_tree/plugins/condition/all_object_detected_condition.hpp"
+namespace athena_behavior_tree
+{
+
+AllObjectDetectedCondition::AllObjectDetectedCondition(
+  const std::string & condition_name,
+  const BT::NodeConfiguration & conf)
+: BT::ConditionNode(condition_name, conf)
+{
+    node_ = rclcpp::Node::make_shared("all_object_detected_node");   
+}
+
+BT::NodeStatus AllObjectDetectedCondition::tick()
+{
+  
+  if(checkListObjects()){
+    return BT::NodeStatus::SUCCESS;
+  }
+  return BT::NodeStatus::FAILURE;
+
+  
+}
+
+bool AllObjectDetectedCondition::checkListObjects(){
+    bool list_is_correct = true;
+
+    YAML::Node config = YAML::LoadFile("/home/pofe/cuda_shared/dev_ws/object_tally.yaml");
+    RCLCPP_DEBUG(node_->get_logger(), "Checking list of objects ...");
+    for (const auto& node : config) {
+        std::string object_name = node.first.as<std::string>();  // Get object name (e.g., "mug")
+        YAML::Node obj = node.second;  // Access the object's data
+
+        auto val1 = obj["LLM"].as<int>();
+        auto val2 = obj["SAM"].as<int>();
+
+        if (val1 != val2){
+            bool list_is_correct = false;
+             RCLCPP_ERROR(node_->get_logger(), "Object mismatch!");
+            break;
+        }
+    }
+    RCLCPP_DEBUG(node_->get_logger(), "All objects detected correctly!");
+
+    return list_is_correct;
+}
+
+
+}  // namespace nav2_behavior_tree
+
+#include "behaviortree_cpp/bt_factory.h"
+BT_REGISTER_NODES(factory)
+{
+  factory.registerNodeType<athena_behavior_tree::AllObjectDetectedCondition>("AllObjectDetected");
+}

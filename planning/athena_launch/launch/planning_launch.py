@@ -38,6 +38,7 @@ def generate_launch_description():
     autostart = LaunchConfiguration('autostart')
     use_task_planner = LaunchConfiguration('use_task_planner')
     use_respawn = LaunchConfiguration('use_respawn')
+    generate_planning_problem = LaunchConfiguration('generate_planning_problem')
 
     lifecycle_nodes = ['bt_planner','task_planner_server', 'state_updater_server']
 
@@ -103,6 +104,10 @@ def generate_launch_description():
     declare_use_respawn_cmd = DeclareLaunchArgument(
         'use_respawn', default_value='False',
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
+    
+    declare_generate_planning_problem_cmd = DeclareLaunchArgument(
+        'generate_planning_problem', default_value='True',
+        description='Whether to generated the planning problem using VLM.')
 
     load_nodes = GroupAction(
         actions=[
@@ -115,6 +120,18 @@ def generate_launch_description():
                 package='athena_bt_planner',
                 executable='bt_planner',
                 name='bt_planner',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings),
+                
+        Node(
+                condition=IfCondition(generate_planning_problem),
+                package='athena_vlm',
+                executable='vlm_api',
+                name='vlm_api',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
@@ -175,6 +192,7 @@ def generate_launch_description():
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_use_task_planner_cmd)
     ld.add_action(declare_use_respawn_cmd)
+    ld.add_action(declare_generate_planning_problem_cmd)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)
 

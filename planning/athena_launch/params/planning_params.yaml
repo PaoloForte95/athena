@@ -9,7 +9,8 @@ bt_planner:
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
     #default_plan_bt_xml: 'planning_w_dispatching.xml'
-    default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
+    #default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
+    default_plan_bt_xml: 'plan_computation_w_planning_and_dispatching.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -21,6 +22,12 @@ bt_planner:
     - athena_dispatch_tasks_action_bt_node
     - athena_send_action_action_bt_node
     - athena_update_state_action_bt_node
+    - athena_generate_problem_file_action_bt_node
+    - athena_update_prompt_action_bt_node
+    - athena_detect_objects_action_bt_node
+    - athena_updated_prompt_controller_bt_node
+    - athena_pipeline_sequence_bt_node
+    - athena_all_object_detected_condition_node
 
 task_planner_server:
  ros__parameters:

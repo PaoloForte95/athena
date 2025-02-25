@@ -11,16 +11,11 @@
             <input_port name="planner">The PDDL planner to use</input_port>
     </Action>
 
-    <Action ID="ComputePDDLProblem">
+    <Action ID="GenerateProblemFile">
             <output_port name="problem_file">The computed execution plan</output_port>
-            <output_port name="objects_list">The computed list of objects</output_port>
             <input_port name="instruction">Instruction</input_port>
+            <input_port name="format">The format of the file to generate</input_port>
             <input_port name="prompt">Prompt</input_port>
-    </Action>
-
-    <Action ID="EstimateObjectsPoses">
-            <output_port name="object_poses">The estimated pose of the objects</output_port>
-            <input_port name="objects_list">List of object in the scene</input_port>
     </Action>
 
     <Action ID="DispatchTasks">
@@ -56,9 +51,15 @@
             <output_port name="current_state">The updated state</output_port>
     </Action>
 
+     <Action ID="DetectObjects">
+            <input_port name="image_path">The path to the saved image</input_port>
+            <input_port name="output_objects">The location to the saved depth image</input_port>
+            <input_port name="problem_instance">The path to the generated PDDL problem instance image</input_port>
+    </Action>
+
     <!-- ############################### CONDITION NODES ############################## -->
-     <Condition ID="IsAction">
-      <input_port name="action_name">The name of the action</input_port>
+
+    <Condition ID="AllObjectDetected">
     </Condition>
 
     <!-- ############################### CONTROL NODES ################################ -->
@@ -70,14 +71,14 @@
       <input_port name="plan_length">Length of the execution plan</input_port>
     </Control>
 
+    <Control ID="PipelineSequence"/>
     <!-- ############################### DECORATOR NODES ############################## -->
 
     <Decorator ID="RateController">
       <input_port name="hz">Rate</input_port>
     </Decorator>
 
-    <Decorator ID="ChangedPrompt">
-      <input_port name="prompt">The prompt to VLM</input_port>
+    <Decorator ID="UpdatedPromptController">
     </Decorator>
 
     <Decorator ID="SelectedRobotController"> 

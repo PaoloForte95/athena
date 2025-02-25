@@ -35,7 +35,7 @@ find_package(athena_util REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
-
+find_package(yaml-cpp REQUIRED)
 
 include_directories(
   include
@@ -60,6 +60,7 @@ set(dependencies
   std_srvs
   athena_util
   visualization_msgs
+  yaml-cpp
 )
 
 add_library(${library_name} SHARED
@@ -89,6 +90,25 @@ list(APPEND plugin_libs athena_send_action_action_bt_node)
 add_library(athena_update_state_action_bt_node SHARED plugins/action/update_state_action.cpp)
 list(APPEND plugin_libs athena_update_state_action_bt_node)
 
+add_library(athena_detect_objects_action_bt_node SHARED plugins/action/detect_objects_action.cpp)
+list(APPEND plugin_libs athena_detect_objects_action_bt_node)
+
+
+
+add_library(athena_generate_problem_file_action_bt_node SHARED plugins/action/generate_problem_file_action.cpp)
+list(APPEND plugin_libs athena_generate_problem_file_action_bt_node)
+
+add_library(athena_update_prompt_action_bt_node SHARED plugins/action/update_prompt_action.cpp)
+list(APPEND plugin_libs athena_update_prompt_action_bt_node)
+
+#Condition
+
+add_library(athena_all_object_detected_condition_node SHARED plugins/condition/all_object_detected_condition.cpp)
+list(APPEND plugin_libs athena_all_object_detected_condition_node)
+target_link_libraries(athena_all_object_detected_condition_node yaml-cpp)
+
+
+
 #Control
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs athena_execute_plan_node_bt_node)
@@ -96,12 +116,19 @@ list(APPEND plugin_libs athena_execute_plan_node_bt_node)
 add_library(athena_recovery_node_bt_node SHARED plugins/control/recovery_node.cpp)
 list(APPEND plugin_libs athena_recovery_node_bt_node)
 
+
+add_library(athena_pipeline_sequence_bt_node SHARED plugins/control/pipeline_sequence.cpp)
+list(APPEND plugin_libs athena_pipeline_sequence_bt_node)
+
 #Decorator
 add_library(athena_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
 list(APPEND plugin_libs athena_selected_robot_controller_bt_node)
 
 add_library(athena_rate_controller_bt_node SHARED plugins/decorator/rate_controller.cpp)
 list(APPEND plugin_libs athena_rate_controller_bt_node)
+
+add_library(athena_updated_prompt_controller_bt_node SHARED plugins/decorator/updated_prompt_controller.cpp)
+list(APPEND plugin_libs athena_updated_prompt_controller_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
