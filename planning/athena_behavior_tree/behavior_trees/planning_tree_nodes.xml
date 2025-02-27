@@ -42,6 +42,7 @@
 
      <Action ID="UpdatePrompt">
             <input_port name="previous_prompt">The previous prompt</input_port>
+            <input_port name="failure_type">The failure type</input_port>
             <output_port name="updated_prompt">The updated Prompt</output_port>
     </Action>
 

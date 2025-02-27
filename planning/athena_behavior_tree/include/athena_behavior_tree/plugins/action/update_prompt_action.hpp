@@ -59,6 +59,7 @@ public:
         return 
         {   
             BT::InputPort<std::string>("previous_prompt"," ",  "The old prompt"), 
+            BT::InputPort<std::string>("failure_type"," ",  "The type of failure"), 
             BT::OutputPort<std::string>("updated_prompt", "The new prompt"), 
         };
     }
@@ -70,6 +71,7 @@ private:
     std::string generateNewPrompt();
 
     std::string previous_prompt_;
+    std::string failure_type_;
 
 
 

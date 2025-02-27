@@ -16,21 +16,19 @@ AllObjectDetectedCondition::AllObjectDetectedCondition(
 
 BT::NodeStatus AllObjectDetectedCondition::tick()
 {
-  
   if(checkListObjects()){
     return BT::NodeStatus::SUCCESS;
   }
   return BT::NodeStatus::FAILURE;
-
-  
 }
 
 bool AllObjectDetectedCondition::checkListObjects(){
     bool list_is_correct = true;
 
-    YAML::Node config = YAML::LoadFile("/home/pofe/cuda_shared/dev_ws/object_tally.yaml");
-    RCLCPP_DEBUG(node_->get_logger(), "Checking list of objects ...");
-    for (const auto& node : config) {
+    YAML::Node obj_file = YAML::LoadFile("/home/pofe/cuda_shared/dev_ws/object_tally.yaml");
+    RCLCPP_DEBUG(node_->get_logger(), "Checking list of objects...");
+    std::map<std::string,int> objects_mismatch;
+    for (const auto& node : obj_file) {
         std::string object_name = node.first.as<std::string>();  // Get object name (e.g., "mug")
         YAML::Node obj = node.second;  // Access the object's data
 
@@ -39,10 +37,11 @@ bool AllObjectDetectedCondition::checkListObjects(){
 
         if (val1 != val2){
             bool list_is_correct = false;
-             RCLCPP_ERROR(node_->get_logger(), "Object mismatch!");
-            break;
+            objects_mismatch.insert(std::pair<std::string, int>(object_name, val2));
+            RCLCPP_ERROR(node_->get_logger(), "Object %s mismatch! LLM: %d  SAM: %d!", object_name, val1, val2);           
         }
     }
+    config().blackboard->set<std::map<std::string,int>>("objects_mismatch", objects_mismatch);
     RCLCPP_DEBUG(node_->get_logger(), "All objects detected correctly!");
 
     return list_is_correct;

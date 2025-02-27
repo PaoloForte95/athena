@@ -18,12 +18,12 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
     <DetectObjects name="DetectObject" problem_instance="{problem_file}" />
     <AllObjectDetected />
     </Sequence>
-    <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" updated_prompt="{prompt}"/>
+    <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" failure_type="ObjectDetection" updated_prompt="{prompt}"/>
     </RecoveryNode> 
   </UpdatedPromptController>
   <RecoveryNode number_of_retries="6" name="NavigateRecovery">
   <ComputePlan name="ComputePlanAction" planner="LPG" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
-  <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" updated_prompt="{prompt}"/>
+  <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" failure_type="Planning" updated_prompt="{prompt}"/>
   </RecoveryNode> 
  </PipelineSequence>
     <!-- <SubTree ID="Execution"/> -->
@@ -36,21 +36,17 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
    <UpdateState name="UpdateState" state_updater="SimpleStateUpdater" previous_state="{state}" current_state="{state}"/>
    </Sequence>  
    </ExecutePlanNode>
-
   </Sequence> 
-  <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" updated_prompt="{prompt}"/>
+  <UpdatePrompt name="UpdatePrompt" previous_prompt="{prompt}" failure_type="Execution" updated_prompt="{prompt}"/>
   </RecoveryNode>
-
 </BehaviorTree>
-
-
    <BehaviorTree ID="Execution">
-         <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
-  <RateController hz="3.0">
-  <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
-  </RateController>
-  <SendAction name="SendAction" robot_id="1" service_name="action_executor" />
+    <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
+      <RateController hz="3.0">
+    <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
+    </RateController>
+    <SendAction name="SendAction" robot_id="1" service_name="action_executor" />
    </ExecutePlanNode>
-    </BehaviorTree>
+  </BehaviorTree>
 
 </root>
