@@ -1,10 +1,6 @@
 # Athena
 
-<p align="center">
-  <img height="300" src="doc/logo_inv.png" />
-</p>
-
-Athena is planning framework based on behavior trees. Its main features are:
+Athena is a planning framework based on behavior trees. Its main features are:
 
 * Compute execution plan for problem defined with PDDL 3.1 and HDDL 1.0.
 * Compute total ordered, partial ordered, and concurrent plans.
