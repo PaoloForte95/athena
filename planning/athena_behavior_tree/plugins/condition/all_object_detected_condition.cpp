@@ -36,9 +36,9 @@ bool AllObjectDetectedCondition::checkListObjects(){
         auto val2 = obj["SAM"].as<int>();
 
         if (val1 != val2){
-            bool list_is_correct = false;
+            list_is_correct = false;
             objects_mismatch.insert(std::pair<std::string, int>(object_name, val2));
-            RCLCPP_ERROR(node_->get_logger(), "Object %s mismatch! LLM: %d  SAM: %d!", object_name, val1, val2);           
+            RCLCPP_ERROR(node_->get_logger(), "Object %s mismatch! LLM: %d  SAM: %d!", object_name.c_str(), val1, val2);           
         }
     }
     config().blackboard->set<std::map<std::string,int>>("objects_mismatch", objects_mismatch);
