@@ -64,7 +64,7 @@ IsPileMovedCondition::IsPileMovedCondition(
   const BT::NodeConfiguration & conf)
 : BT::ConditionNode(condition_name, conf), current_tick_(0)
 {
-  node_ = rclcpp::Node::make_shared("check_material_amount_client_node");
+  node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
   getInput<std::string>("criteria", criteria_);
   getInput<std::string>("image_topic", image_topic_);
   getInput<int>("ticks", ticks_);

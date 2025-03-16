@@ -41,7 +41,8 @@ def generate_launch_description():
     lifecycle_nodes = ['bt_executor']
     
     remappings = [('/tf', 'tf'),
-                  ('/tf_static', 'tf_static')]
+                  ('/tf_static', 'tf_static'),
+                   ('get_material_amount', '/get_material_amount')]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
