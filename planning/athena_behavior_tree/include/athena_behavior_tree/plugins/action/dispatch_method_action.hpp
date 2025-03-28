@@ -76,7 +76,7 @@ private:
   IDs completed_methods_;
   Methods plan_methods_;
   athena_msgs::msg::Plan execution_plan_;
-  std::map<int, Methods> robots_methods;
+  std::map<std::string, Methods> robots_methods;
   int robots;
   bool first_time_;
 

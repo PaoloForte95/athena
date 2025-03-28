@@ -77,7 +77,7 @@ void SendLoadAction::sendLoad(Actions actions)
     using namespace std::placeholders;
 
     for(athena_msgs::msg::Action load_action: actions){
-      int robotID = load_action.robotid;
+      std::string robot = load_action.robot;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
       if (!is_action_server_ready) { 
           RCLCPP_ERROR( node_->get_logger(), "load action server is not available."); 
@@ -88,7 +88,9 @@ void SendLoadAction::sendLoad(Actions actions)
       config().blackboard->get<std::string>("load_position", location);
       goal_msg.location = location;
       goal_msg.name = load_action.material;
-      std::string mat = "mat" + std::to_string(int(load_action.material));
+      std::string mat = load_action.material;
+      goal_msg.name = mat;
+      RCLCPP_INFO( node_->get_logger(), "Loading material %s" , mat.c_str()); 
       config().blackboard->set<std::string>("material_loaded", mat);
       RCLCPP_INFO(node_->get_logger(), "Sending load");
       auto send_goal_options = rclcpp_action::Client<material_handler_msgs::action::LoadMaterial>::SendGoalOptions();
@@ -103,7 +105,7 @@ void SendLoadAction::sendLoad(Actions actions)
       send_load_handler_ = future_goal_handle.get();
 
       auto future_result = client_ptr_->async_get_result(send_load_handler_);
-      RCLCPP_INFO(node_->get_logger(), "Executing loading for robot %d...!", robotID);
+      RCLCPP_INFO(node_->get_logger(), "Executing loading for robot %d...!", robot);
       rclcpp::spin_until_future_complete(node_, future_result);
       rclcpp_action::ClientGoalHandle<material_handler_msgs::action::LoadMaterial>::WrappedResult wrapped_result = future_result.get();
     }

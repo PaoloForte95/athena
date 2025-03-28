@@ -59,10 +59,10 @@ inline BT::NodeStatus DispatchTasksAction::tick()
 
 std::vector<athena_msgs::msg::Action> DispatchTasksAction::readPlan(){
     Actions actions;
-    IDs robotIDs;
+     std::vector<std::string> robotIDs;
     for(athena_msgs::msg::Action action : execution_plan_.actions){
         int level = 1;
-        int robotID = action.robotid;
+        std::string robotID = action.robot;
         auto itr = std::find(robotIDs.begin(), robotIDs.end(), robotID);
         if (itr == robotIDs.end()){
             robotIDs.push_back(robotID);
@@ -77,7 +77,7 @@ std::vector<athena_msgs::msg::Action> DispatchTasksAction::readPlan(){
         }
         action_levels.insert(std::pair<int, int>( action.action_id, level));
     }
-    config().blackboard->set<IDs>("robot_ids", robotIDs);
+    config().blackboard->set< std::vector<std::string>>("robot_ids", robotIDs);
     
     return actions;
 }

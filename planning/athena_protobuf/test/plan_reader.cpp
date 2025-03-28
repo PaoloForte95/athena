@@ -38,7 +38,7 @@ TEST(PlanReaderTest, plan_reader)
 
   for (athena_msgs::msg::Action action: actions){
     cout << action.name << endl;
-    cout << action.robotid << endl;
+    cout << action.robot << endl;
   }
 }
 

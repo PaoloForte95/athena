@@ -376,9 +376,9 @@ class ProtoAction PROTOBUF_FINAL :
     kPreconditionsFieldNumber = 7,
     kEffectsFieldNumber = 8,
     kNameFieldNumber = 1,
-    kIdFieldNumber = 2,
-    kRobotIDFieldNumber = 3,
+    kRobotFieldNumber = 3,
     kMaterialFieldNumber = 5,
+    kIdFieldNumber = 2,
   };
   // repeated string waypoints = 4;
   int waypoints_size() const;
@@ -499,6 +499,56 @@ class ProtoAction PROTOBUF_FINAL :
   std::string* _internal_mutable_name();
   public:
 
+  // string robot = 3;
+  void clear_robot();
+  const std::string& robot() const;
+  void set_robot(const std::string& value);
+  void set_robot(std::string&& value);
+  void set_robot(const char* value);
+  void set_robot(const char* value, size_t size);
+  std::string* mutable_robot();
+  std::string* release_robot();
+  void set_allocated_robot(std::string* robot);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_robot();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_robot(
+      std::string* robot);
+  private:
+  const std::string& _internal_robot() const;
+  void _internal_set_robot(const std::string& value);
+  std::string* _internal_mutable_robot();
+  public:
+
+  // string material = 5;
+  void clear_material();
+  const std::string& material() const;
+  void set_material(const std::string& value);
+  void set_material(std::string&& value);
+  void set_material(const char* value);
+  void set_material(const char* value, size_t size);
+  std::string* mutable_material();
+  std::string* release_material();
+  void set_allocated_material(std::string* material);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_material();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_material(
+      std::string* material);
+  private:
+  const std::string& _internal_material() const;
+  void _internal_set_material(const std::string& value);
+  std::string* _internal_mutable_material();
+  public:
+
   // int32 id = 2;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::int32 id() const;
@@ -506,24 +556,6 @@ class ProtoAction PROTOBUF_FINAL :
   private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_id() const;
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // int32 robotID = 3;
-  void clear_robotid();
-  ::PROTOBUF_NAMESPACE_ID::int32 robotid() const;
-  void set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_robotid() const;
-  void _internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // int32 material = 5;
-  void clear_material();
-  ::PROTOBUF_NAMESPACE_ID::int32 material() const;
-  void set_material(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_material() const;
-  void _internal_set_material(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:athena.ProtoAction)
@@ -539,9 +571,9 @@ class ProtoAction PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> preconditions_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> effects_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr robot_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr material_;
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 robotid_;
-  ::PROTOBUF_NAMESPACE_ID::int32 material_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
 };
@@ -663,8 +695,8 @@ class ProtoMethod PROTOBUF_FINAL :
     kParentsFieldNumber = 4,
     kActionsIdsFieldNumber = 5,
     kNameFieldNumber = 1,
+    kRobotFieldNumber = 3,
     kIdFieldNumber = 2,
-    kRobotidFieldNumber = 3,
   };
   // repeated int32 parents = 4;
   int parents_size() const;
@@ -735,6 +767,31 @@ class ProtoMethod PROTOBUF_FINAL :
   std::string* _internal_mutable_name();
   public:
 
+  // string robot = 3;
+  void clear_robot();
+  const std::string& robot() const;
+  void set_robot(const std::string& value);
+  void set_robot(std::string&& value);
+  void set_robot(const char* value);
+  void set_robot(const char* value, size_t size);
+  std::string* mutable_robot();
+  std::string* release_robot();
+  void set_allocated_robot(std::string* robot);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_robot();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_robot(
+      std::string* robot);
+  private:
+  const std::string& _internal_robot() const;
+  void _internal_set_robot(const std::string& value);
+  std::string* _internal_mutable_robot();
+  public:
+
   // int32 id = 2;
   void clear_id();
   ::PROTOBUF_NAMESPACE_ID::int32 id() const;
@@ -742,15 +799,6 @@ class ProtoMethod PROTOBUF_FINAL :
   private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_id() const;
   void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // int32 robotid = 3;
-  void clear_robotid();
-  ::PROTOBUF_NAMESPACE_ID::int32 robotid() const;
-  void set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_robotid() const;
-  void _internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:athena.ProtoMethod)
@@ -765,8 +813,8 @@ class ProtoMethod PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > actions_ids_;
   mutable std::atomic<int> _actions_ids_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr robot_;
   ::PROTOBUF_NAMESPACE_ID::int32 id_;
-  ::PROTOBUF_NAMESPACE_ID::int32 robotid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_executionplan_2eproto;
 };
@@ -1214,24 +1262,85 @@ inline void ProtoAction::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:athena.ProtoAction.id)
 }
 
-// int32 robotID = 3;
-inline void ProtoAction::clear_robotid() {
-  robotid_ = 0;
+// string robot = 3;
+inline void ProtoAction::clear_robot() {
+  robot_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_robotid() const {
-  return robotid_;
+inline const std::string& ProtoAction::robot() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.robot)
+  return _internal_robot();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::robotid() const {
-  // @@protoc_insertion_point(field_get:athena.ProtoAction.robotID)
-  return _internal_robotid();
+inline void ProtoAction::set_robot(const std::string& value) {
+  _internal_set_robot(value);
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.robot)
 }
-inline void ProtoAction::_internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline std::string* ProtoAction::mutable_robot() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.robot)
+  return _internal_mutable_robot();
+}
+inline const std::string& ProtoAction::_internal_robot() const {
+  return robot_.Get();
+}
+inline void ProtoAction::_internal_set_robot(const std::string& value) {
   
-  robotid_ = value;
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void ProtoAction::set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_robotid(value);
-  // @@protoc_insertion_point(field_set:athena.ProtoAction.robotID)
+inline void ProtoAction::set_robot(std::string&& value) {
+  
+  robot_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoAction.robot)
+}
+inline void ProtoAction::set_robot(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.robot)
+}
+inline void ProtoAction::set_robot(const char* value,
+    size_t size) {
+  
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.robot)
+}
+inline std::string* ProtoAction::_internal_mutable_robot() {
+  
+  return robot_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ProtoAction::release_robot() {
+  // @@protoc_insertion_point(field_release:athena.ProtoAction.robot)
+  return robot_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ProtoAction::set_allocated_robot(std::string* robot) {
+  if (robot != nullptr) {
+    
+  } else {
+    
+  }
+  robot_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), robot,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoAction.robot)
+}
+inline std::string* ProtoAction::unsafe_arena_release_robot() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoAction.robot)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return robot_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ProtoAction::unsafe_arena_set_allocated_robot(
+    std::string* robot) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (robot != nullptr) {
+    
+  } else {
+    
+  }
+  robot_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      robot, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoAction.robot)
 }
 
 // repeated string waypoints = 4;
@@ -1308,24 +1417,85 @@ ProtoAction::mutable_waypoints() {
   return &waypoints_;
 }
 
-// int32 material = 5;
+// string material = 5;
 inline void ProtoAction::clear_material() {
-  material_ = 0;
+  material_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::_internal_material() const {
-  return material_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoAction::material() const {
+inline const std::string& ProtoAction::material() const {
   // @@protoc_insertion_point(field_get:athena.ProtoAction.material)
   return _internal_material();
 }
-inline void ProtoAction::_internal_set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  
-  material_ = value;
-}
-inline void ProtoAction::set_material(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline void ProtoAction::set_material(const std::string& value) {
   _internal_set_material(value);
   // @@protoc_insertion_point(field_set:athena.ProtoAction.material)
+}
+inline std::string* ProtoAction::mutable_material() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.material)
+  return _internal_mutable_material();
+}
+inline const std::string& ProtoAction::_internal_material() const {
+  return material_.Get();
+}
+inline void ProtoAction::_internal_set_material(const std::string& value) {
+  
+  material_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ProtoAction::set_material(std::string&& value) {
+  
+  material_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoAction.material)
+}
+inline void ProtoAction::set_material(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  material_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:athena.ProtoAction.material)
+}
+inline void ProtoAction::set_material(const char* value,
+    size_t size) {
+  
+  material_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoAction.material)
+}
+inline std::string* ProtoAction::_internal_mutable_material() {
+  
+  return material_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ProtoAction::release_material() {
+  // @@protoc_insertion_point(field_release:athena.ProtoAction.material)
+  return material_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ProtoAction::set_allocated_material(std::string* material) {
+  if (material != nullptr) {
+    
+  } else {
+    
+  }
+  material_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), material,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoAction.material)
+}
+inline std::string* ProtoAction::unsafe_arena_release_material() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoAction.material)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return material_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ProtoAction::unsafe_arena_set_allocated_material(
+    std::string* material) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (material != nullptr) {
+    
+  } else {
+    
+  }
+  material_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      material, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoAction.material)
 }
 
 // repeated int32 parents = 6;
@@ -1628,24 +1798,85 @@ inline void ProtoMethod::set_id(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:athena.ProtoMethod.id)
 }
 
-// int32 robotid = 3;
-inline void ProtoMethod::clear_robotid() {
-  robotid_ = 0;
+// string robot = 3;
+inline void ProtoMethod::clear_robot() {
+  robot_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::_internal_robotid() const {
-  return robotid_;
+inline const std::string& ProtoMethod::robot() const {
+  // @@protoc_insertion_point(field_get:athena.ProtoMethod.robot)
+  return _internal_robot();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 ProtoMethod::robotid() const {
-  // @@protoc_insertion_point(field_get:athena.ProtoMethod.robotid)
-  return _internal_robotid();
+inline void ProtoMethod::set_robot(const std::string& value) {
+  _internal_set_robot(value);
+  // @@protoc_insertion_point(field_set:athena.ProtoMethod.robot)
 }
-inline void ProtoMethod::_internal_set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline std::string* ProtoMethod::mutable_robot() {
+  // @@protoc_insertion_point(field_mutable:athena.ProtoMethod.robot)
+  return _internal_mutable_robot();
+}
+inline const std::string& ProtoMethod::_internal_robot() const {
+  return robot_.Get();
+}
+inline void ProtoMethod::_internal_set_robot(const std::string& value) {
   
-  robotid_ = value;
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
 }
-inline void ProtoMethod::set_robotid(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_robotid(value);
-  // @@protoc_insertion_point(field_set:athena.ProtoMethod.robotid)
+inline void ProtoMethod::set_robot(std::string&& value) {
+  
+  robot_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:athena.ProtoMethod.robot)
+}
+inline void ProtoMethod::set_robot(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:athena.ProtoMethod.robot)
+}
+inline void ProtoMethod::set_robot(const char* value,
+    size_t size) {
+  
+  robot_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:athena.ProtoMethod.robot)
+}
+inline std::string* ProtoMethod::_internal_mutable_robot() {
+  
+  return robot_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ProtoMethod::release_robot() {
+  // @@protoc_insertion_point(field_release:athena.ProtoMethod.robot)
+  return robot_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ProtoMethod::set_allocated_robot(std::string* robot) {
+  if (robot != nullptr) {
+    
+  } else {
+    
+  }
+  robot_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), robot,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoMethod.robot)
+}
+inline std::string* ProtoMethod::unsafe_arena_release_robot() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:athena.ProtoMethod.robot)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return robot_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ProtoMethod::unsafe_arena_set_allocated_robot(
+    std::string* robot) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (robot != nullptr) {
+    
+  } else {
+    
+  }
+  robot_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      robot, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:athena.ProtoMethod.robot)
 }
 
 // repeated int32 parents = 4;

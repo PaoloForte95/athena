@@ -23,7 +23,7 @@
 #include "nav2_msgs/action/navigate_to_pose.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
-
+#include <location_msgs/srv/get_waypoint_list.hpp>
 namespace athena_exe_behavior_tree
 {
 
@@ -81,8 +81,7 @@ public:
     return 
       {
         BT::InputPort<std::string>("service_name", "The name of the service"), 
-        BT::InputPort<std::string>("global_frame", "map","Global frame"),
-        BT::InputPort<std::string>("waypoints_filename", std::string("waypoints.txt"), "The file that contains the set of waypoints"),
+        BT::InputPort<std::string>("global_frame", "map","Global frame")
       };
   }
 
@@ -101,7 +100,8 @@ protected:
 
 
 private:
-  std::string service_name_, global_frame_, waypoints_filename_;
+  std::string service_name_, global_frame_;
+  rclcpp::Client<location_msgs::srv::GetWaypointList>::SharedPtr waypoint_client_;
   Client client_ptr_;
   GoalHandleSendMovePtr send_move_handler_;
   rclcpp::Node::SharedPtr node_;
@@ -120,8 +120,6 @@ private:
    
    void getGoalLocation(std::string goal_waypoint);
    
-   void parseWaypoints();
-
    void setGoalOption();
 
     Eigen::Quaterniond rpyToQuaternion(double roll, double pitch, double yaw) {

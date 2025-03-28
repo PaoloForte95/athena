@@ -9,8 +9,8 @@ bt_planner:
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
     #default_plan_bt_xml: 'planning_w_dispatching.xml'
-    #default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
-    default_plan_bt_xml: 'plan_computation_w_planning_and_dispatching.xml'
+    default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
+    #default_plan_bt_xml: 'plan_computation_w_planning_and_dispatching.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node

@@ -88,15 +88,13 @@ class TaskPlanner{
 
 			for (SymbolicSymbol input : inputs){
 				if(!Collections.disjoint(input.getType(),machines)){
-					int robotID = Integer.parseInt(input.getVariable().replaceAll("[^0-9]", ""));
-					action.setRobotID(robotID);			
+					action.setRobot(input.getVariable());			
 				}
 				else if (!Collections.disjoint(input.getType(),locations)){
 					action.addWaypoints(input.getVariable());			
 				}
 				else if(!Collections.disjoint(input.getType(),materials)){
-					int materialID = Integer.parseInt(input.getVariable().replaceAll("[^0-9]", ""));
-					action.setMaterial(materialID);			
+					action.setMaterial(input.getVariable());			
 				}
 				
 			}
@@ -118,8 +116,8 @@ class TaskPlanner{
 				m.addActionsIds(ID);
 				for(ProtoAction protoAct: planPr.getActionList()){
 					if(protoAct.getId() == ID){
-						int robotID = protoAct.getRobotID();
-						m.setRobotid(robotID);
+						String robot = protoAct.getRobot();
+						m.setRobot(robot);
 						break;
 					}
 					

@@ -2,24 +2,24 @@
 	(problem pfile01)
 	(:domain  domain_htn)
 	(:objects
-		mat_1 - material
-		home1 wp1 wp2 - location
-		wheel_loader_1 - vehicle
+		mat1 - material
+		home1 load1 dump1 - location
+		robot1 - vehicle
 	)
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_pile mat_1 wp2))
+		 (task0 (move_pile mat1 dump1))
 		)
 		:ordering (and
 		)
 	)
 	(:init
 
-		(free wp1)
-		(free wp2)
-		(at wheel_loader_1 home1)
-		(at mat_1 wp1)
-		(can_load wheel_loader_1)
+		(free load1)
+		(free dump1)
+		(at robot1 home1)
+		(at mat1 load1)
+		(can_load robot1)
 	)
 )

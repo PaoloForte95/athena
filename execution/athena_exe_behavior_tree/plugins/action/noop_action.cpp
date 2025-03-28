@@ -35,12 +35,12 @@ inline BT::NodeStatus NoopAction::tick()
 { 
     setStatus(BT::NodeStatus::RUNNING);
     if(clients_ptr_.empty()){
-      IDs robotIDs;
-      config().blackboard->get<IDs>("robot_ids", robotIDs);
-      for(int robotID : robotIDs){
-        std::string service_name = "/robot"+std::to_string(robotID) + service_name_;
+      std::vector<std::string> robotIDs;
+      config().blackboard->get<std::vector<std::string>>("robot_ids", robotIDs);
+      for(std::string robotID : robotIDs){
+        std::string service_name = robotID + "/" + service_name_;
         auto client_ptr = rclcpp_action::create_client<nav2_msgs::action::Wait>(node_, service_name);
-        clients_ptr_.insert(std::pair<int, Client>(robotID, client_ptr));
+        clients_ptr_.insert(std::pair<std::string, Client>(robotID, client_ptr));
       }
     }
 
@@ -84,9 +84,9 @@ void NoopAction::sendNoop(Actions actions)
     using namespace std::placeholders;
      
     for(athena_msgs::msg::Action noop_action: actions){
-        int robotID = noop_action.robotid;
+        std::string robot = noop_action.robot;
 
-        auto client_ptr = clients_ptr_.find(robotID)->second;
+        auto client_ptr = clients_ptr_.find(robot)->second;
         
         client_ptr->wait_for_action_server(std::chrono::seconds(5));
        

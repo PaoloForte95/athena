@@ -63,7 +63,7 @@ private:
   BT::NodeStatus tick() override;
 
   rclcpp::Node::SharedPtr node_;
-  int robot_id_;
+  std::string robot_;
   bool first_time_;
 };
 

@@ -20,6 +20,21 @@
 typedef std::vector<athena_msgs::msg::Action> Actions;
 typedef std::vector<int> IDs;
 
+Eigen::Vector3d quaternionToEulerAngles(const Eigen::Quaterniond& q) {
+    // Roll (x-axis rotation)
+    double roll = atan2(2.0 * (q.w() * q.x() + q.y() * q.z()), 1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y()));
+
+    // Pitch (y-axis rotation)
+    double pitch = asin(2.0 * (q.w() * q.y() - q.z() * q.x()));
+
+    // Yaw (z-axis rotation)
+    double yaw = atan2(2.0 * (q.w() * q.z() + q.x() * q.y()), 1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+
+    return Eigen::Vector3d(roll, pitch, yaw);
+}
+
+
+
 namespace athena_exe_behavior_tree
 {
 template<typename MoveT>
@@ -30,66 +45,54 @@ SendMoveAction<MoveT>::SendMoveAction(
 {
     getInput("service_name", service_name_);
     getInput("global_frame", global_frame_);
-    getInput("waypoints_filename", waypoints_filename_);
     node_ = rclcpp::Node::make_shared("send_move_client_node");
     RCLCPP_ERROR(node_->get_logger(),"namespace %s", node_->get_namespace());
     auto service_name = node_->get_namespace() + service_name_;
     client_ptr_ = rclcpp_action::create_client<MoveT>(node_, service_name);
-    parseWaypoints();
-}
-
-
-template<typename MoveT>
-void SendMoveAction<MoveT>::parseWaypoints(){
-    std::string file_path = ament_index_cpp::get_package_share_directory("athena_exe_launch") + "/waypoints/" + waypoints_filename_;
-    std::ifstream file(file_path);
-    if (!file.is_open()) {
-      RCLCPP_ERROR(node_->get_logger(),"Could not open file %s", file_path.c_str() );
-      return ;
+    waypoint_client_ = node_->create_client<location_msgs::srv::GetWaypointList>("/get_waypoint_list");
+    if(waypoint_client_->wait_for_service(std::chrono::seconds(1))){
+          auto request = std::make_shared<location_msgs::srv::GetWaypointList::Request>();
+    auto result = waypoint_client_->async_send_request(request);
+    std::vector<location_msgs::msg::Waypoint> wps;
+    // Wait for the result.
+    if (rclcpp::spin_until_future_complete(node_, result) ==
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Got waypoint list!");
+      wps = result.get()->list;
+    } else {
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to get waypoint list");
     }
-    RCLCPP_INFO(node_->get_logger(),"Loading waypoints from file %s", file_path.c_str());
-    std::string line;
-    // Parse each line for waypoints in the format "name: (x, y, theta)"
-    while (std::getline(file, line)) {
-      std::string name, point;
-      std::string delimiter = ":";
-      name = line.substr(0,line.find(delimiter));
-      name.erase(std::remove_if(name.begin(), name.end(), ::isspace), name.end());
-      point = line.substr(line.find(delimiter)+1);
-      point.erase(std::remove_if(point.begin(), point.end(), [](char c) {
-        return c == '(' || c == ')' || std::isspace(c);
-      }), point.end());
 
-      double components[3];
-      size_t pos = 0;
-      for (int i = 0; i < 3; ++i) {
-        // Find the position of the comma from the current 'pos'
-        size_t commaPos = point.find(',', pos);
-
-        if (commaPos != std::string::npos) {
-            std::string value = point.substr(pos, commaPos - pos);
-            components[i] = std::stod(value);
-            pos = commaPos + 1; // Move 'pos' to the character after the comma
-        } else {
-            // For the last component (theta), use the remaining string
-            std::string value = point.substr(pos);
-            components[i] = std::stod(value);
-        }
-    }
+    for (auto wp : wps){
+      auto quat_w = wp.pose.orientation.w;
+      auto quat_x = wp.pose.orientation.x;
+      auto quat_y = wp.pose.orientation.y;
+      auto quat_z = wp.pose.orientation.z;
+      Eigen::Quaternion q(quat_w, quat_x,quat_y,quat_z);
+    
+      auto euler = quaternionToEulerAngles(q);
       Waypoint waypoint;
-      waypoint.x = components[0];
-      waypoint.y = components[1];
-      waypoint.theta = components[2];
-      waypoints_.insert(std::make_pair(name, waypoint));
-      //Save the waypoints in the blackboard so that can be used by other nodes as well
-      config().blackboard->set<Waypoint>(name, waypoint);
-      RCLCPP_INFO(node_->get_logger(),"Loading waypoint %s: (%f, %f, %f)", name.c_str(), 
-                  components[0], components[1],components[2]);   
+      waypoint.x = wp.pose.position.x;
+      waypoint.y = wp.pose.position.y;
+      waypoint.theta = euler[2];
+      waypoints_.insert(std::make_pair(wp.name, waypoint));
+      RCLCPP_INFO(node_->get_logger(),"Loading waypoint %s: (%f, %f, %f)", wp.name.c_str(), 
+                  waypoint.x, waypoint.y,waypoint.theta);   
     }
-    // Close the input file
-    file.close();
+    }
+    else{
+      Waypoint waypoint;
+      waypoint.x = 0.;
+      waypoint.y = 0.;
+      waypoint.theta = 0.;
+      waypoints_.insert(std::make_pair("dummy_waypoint", waypoint));
+      RCLCPP_INFO(node_->get_logger(),"Loaded dummy waypoint");   
 
+    }
 }
+
+
 
 template<typename MoveT>
 inline BT::NodeStatus SendMoveAction<MoveT>::tick()
@@ -139,7 +142,7 @@ void SendMoveAction<MoveT>::sendMove(Actions actions)
     using namespace std::placeholders;
      
     for(athena_msgs::msg::Action move_action: actions){
-      int robotID = move_action.robotid;
+      std::string robot = move_action.robot;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
       auto wp = move_action.waypoints[move_action.waypoints.size()-1];
       getGoalLocation(wp);

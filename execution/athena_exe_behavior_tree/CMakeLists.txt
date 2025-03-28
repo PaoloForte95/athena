@@ -40,6 +40,7 @@ find_package(material_handler_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(athena_behavior_tree REQUIRED)
 find_package(nav2_costmap_2d REQUIRED)
+find_package(location_msgs REQUIRED)
 
 include_directories(
   include
@@ -68,6 +69,7 @@ set(dependencies
   visualization_msgs
   athena_behavior_tree
   nav2_costmap_2d
+  location_msgs
 )
 
 #Actions

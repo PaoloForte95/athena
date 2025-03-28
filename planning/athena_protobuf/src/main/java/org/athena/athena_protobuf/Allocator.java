@@ -26,10 +26,10 @@ public class Allocator {
 
     public int[][] optimize(List<ProtoAction> actions, List<ProtoMethod> methods){
         Loader.loadNativeLibraries();
-        List<Integer> machines = new ArrayList<>();
+        List<String> machines = new ArrayList<>();
         for (ProtoAction act: actions){
-            if(!machines.contains(act.getRobotID())){
-                machines.add(act.getRobotID());
+            if(!machines.contains(act.getRobot())){
+                machines.add(act.getRobot());
             }
        
         }
@@ -38,7 +38,7 @@ public class Allocator {
         CpModel model = new CpModel();
 
         Literal[][] variables = new Literal[machines.size()][methods.size()];
-        for(int machine: machines){
+        for(String machine: machines){
             int i = machines.indexOf(machine);
             for(ProtoMethod method : methods){
                 int j = methods.indexOf(method);
@@ -49,17 +49,17 @@ public class Allocator {
         for(ProtoMethod method : methods){
             int j = methods.indexOf(method);
             List<Literal> cm = new ArrayList<>();
-            for(int machine: machines){
+            for(String machine: machines){
                 int i = machines.indexOf(machine);
                 cm.add(variables[i][j]);
             }
             model.addExactlyOne(cm);
         }
         //Evaluate costs
-        HashMap<Integer, Double> capacities = new HashMap<Integer, Double>();
+        HashMap<String, Double> capacities = new HashMap<String, Double>();
         HashMap<Integer, Double> amounts = new HashMap<Integer, Double>();
         
-        for(int machine : machines){
+        for(String machine : machines){
             capacities.put(machine, 10.0);
         }
 
@@ -67,13 +67,13 @@ public class Allocator {
         amounts.put(2,10.0);
         amounts.put(3,20.0);
 
-        HashMap<Integer, Integer> piles = new HashMap<Integer, Integer>();
+        HashMap<Integer, String> piles = new HashMap<Integer, String>();
         for(ProtoMethod method : methods){
             for(ProtoAction act: actions){
                 if (method.getActionsIdsList().contains(act.getId())){
-                    int matID = act.getMaterial();
-                    piles.put(method.getId(), matID);
-                    if(matID >0){
+                    String mat = act.getMaterial();
+                    piles.put(method.getId(), mat);
+                    if(mat != ""){
                         break;
                     }
                 }
@@ -83,11 +83,11 @@ public class Allocator {
         //Initialize cost
         double [][] costs = new double [ machines.size()][methods.size()];	
         for (int i = 0; i < costs.length; i++) {
-            int ID = machines.get((i));
+            String robot = machines.get((i));
             for (int j = 0; j < costs[0].length; j++) {
                 int taskID = methods.get((j)).getId();
                 double amount = amounts.get(piles.get(taskID));
-                costs[i][j] = estimateCycles(amount, capacities.get(ID));
+                costs[i][j] = estimateCycles(amount, capacities.get(robot));
             }
         }
         int [][] current = new int [ machines.size()][methods.size()];	
@@ -100,12 +100,12 @@ public class Allocator {
 
             private int solutionCount = 0;
             private double optimal_cost = 1000000;
-            private final List<Integer> machines;
+            private final List<String> machines;
             private final List<ProtoMethod> methods;
             private final Literal[][] variables;
             
             public SolutionPrinterWithLimit(
-                List<Integer> machines, List<ProtoMethod> methods, Literal[][] variables) {
+                List<String> machines, List<ProtoMethod> methods, Literal[][] variables) {
                 solutionCount = 0;
                 this.machines = machines;
                 this.methods = methods;
@@ -119,7 +119,7 @@ public class Allocator {
                
                 for (int i = 0; i < machines.size(); i++) {
                      double single_cost = 0;
-                    int robotID = machines.get((i));
+                    String robot = machines.get((i));
                     for (int j = 0; j < methods.size(); j++) {
                         int taskID = methods.get((j)).getId();
                         current[i][j] = booleanValue(variables[i][j]) ? 1 : 0;  
@@ -130,7 +130,7 @@ public class Allocator {
                                     single_cost += costs[i][k];
                                 }
                             }
-                            System.out.println("Single cost(" + robotID + ", "  + taskID + "):" + single_cost);
+                            System.out.println("Single cost(" + robot + ", "  + taskID + "):" + single_cost);
                             
                         }
                     }
@@ -138,11 +138,11 @@ public class Allocator {
                     current_cost = Math.max(current_cost,single_cost);
                 }
                 for(int i=0; i< current.length;i ++) {
-                        int robotID = machines.get((i));
+                        String robot = machines.get((i));
                         for(int j = 0 ; j <current[0].length; j++) {
                             int taskID = methods.get((j)).getId();
                                 if (current[i][j] == 1) {
-                                    System.out.println("Robot " + robotID +" is assigned to Task "+ taskID );
+                                    System.out.println("Robot " + robot +" is assigned to Task "+ taskID );
                                 }	
                         }
                  }
@@ -166,11 +166,11 @@ public class Allocator {
         System.out.println("----------------------------------");
         System.out.println("Optimal Assignment" );
         for (int i = 0; i < optimal.length; i++) {
-			int robotID = machines.get((i));
+			String robot = machines.get((i));
 			for (int j = 0; j < optimal[0].length; j++) {
 				int taskID = methods.get((j)).getId();
 					if (optimal[i][j] == 1) {
-						System.out.println("Robot " + robotID +" is assigned to Task "+ taskID );
+						System.out.println("Robot " + robot +" is assigned to Task "+ taskID );
 					}	
 			} 
 		}

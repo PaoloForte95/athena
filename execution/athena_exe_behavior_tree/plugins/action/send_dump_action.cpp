@@ -73,14 +73,16 @@ void SendDumpAction::sendDump(Actions actions)
     using namespace std::placeholders;
 
     for(athena_msgs::msg::Action dump_action: actions){
-      int robotID = dump_action.robotid;
+      std::string robot = dump_action.robot;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
       if (!is_action_server_ready) { 
           RCLCPP_ERROR( node_->get_logger(), "dump action server is not available."); 
           return ;
       }
       auto goal_msg = material_handler_msgs::action::DumpMaterial::Goal();
-      goal_msg.name = dump_action.material;
+      std::string mat = dump_action.material;
+      goal_msg.name = mat;
+      //goal_msg.name = dump_action.material;
       std::string location;
       config().blackboard->get<std::string>("dump_position", location);
       goal_msg.location = location;
@@ -98,7 +100,7 @@ void SendDumpAction::sendDump(Actions actions)
       send_dump_handler_ = future_goal_handle.get();
 
       auto future_result = client_ptr_->async_get_result(send_dump_handler_);
-      RCLCPP_INFO(node_->get_logger(), "Executing dumping for robot %d...!", robotID);
+      RCLCPP_INFO(node_->get_logger(), "Executing dumping for robot %s...!", robot.c_str());
       rclcpp::spin_until_future_complete(node_, future_result);
       rclcpp_action::ClientGoalHandle<material_handler_msgs::action::DumpMaterial>::WrappedResult wrapped_result = future_result.get();
     }

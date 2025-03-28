@@ -90,7 +90,7 @@ protected:
 private:
   std::string service_name_;
   int waiting_time_;
-  std::map<int, Client> clients_ptr_;
+  std::map<std::string, Client> clients_ptr_;
   GoalHandleSendWait::SharedPtr send_noop_handler_;
   rclcpp::Node::SharedPtr node_;
   ActionStatus action_status_;

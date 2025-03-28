@@ -26,10 +26,10 @@ SendActionAction::SendActionAction(
 : ActionNodeBase(action_name, conf)
 {
     getInput("service_name", service_name_);
-    getInput("robot_id", robot_id_);
+    getInput("robot", robot_);
     node_ = rclcpp::Node::make_shared("send_action_client_node");
 
-    std::string service_name = "/robot"+std::to_string(robot_id_) + "/" +  service_name_;
+    std::string service_name = robot_ + "/" +  service_name_;
     client_ = rclcpp_action::create_client<athena_msgs::action::ExecuteAction>(node_, service_name);
 }
 
@@ -44,7 +44,7 @@ inline BT::NodeStatus SendActionAction::tick()
       return BT::NodeStatus::SUCCESS;
     }
     for (auto action: actions){
-        if(action.robotid == robot_id_){
+        if(action.robot == robot_){
             action_ = action;
             SendAction(action);
             break;
@@ -62,7 +62,7 @@ inline BT::NodeStatus SendActionAction::tick()
         completed_actions.push_back(completed_action.action_id);
       }
       config().blackboard->set<IDs>("completed_actions", completed_actions);
-      config().blackboard->set<std::string>("robot_" + std::to_string(robot_id_) + "_state", "free");
+      config().blackboard->set<std::string>(robot_ + "_state", "free");
    
 
       return BT::NodeStatus::SUCCESS;
@@ -79,7 +79,7 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
     using namespace std::placeholders;
 
 
-    int robotID = action.robotid;
+    std::string robot = action.robot;
     auto is_action_server_ready = client_->wait_for_action_server(std::chrono::seconds(5));
     if (!is_action_server_ready) { 
         RCLCPP_ERROR( node_->get_logger(), "send action server is not available."); 
@@ -91,7 +91,7 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
 
 
     //RCLCPP_INFO(node_->get_logger(), "Sending method %s with ID %d", action_.name, action_.id);
-    RCLCPP_INFO(node_->get_logger(), "Robot %d is executing action %s with ID %d...", robotID, action_.name.c_str(), action_.action_id);
+    RCLCPP_INFO(node_->get_logger(), "Robot %d is executing action %s with ID %d...", robot, action_.name.c_str(), action_.action_id);
     auto send_goal_options = rclcpp_action::Client<athena_msgs::action::ExecuteAction>::SendGoalOptions();
     send_goal_options.goal_response_callback =std::bind(&SendActionAction::goal_response_callback, this, std::placeholders::_1);
     send_goal_options.result_callback = std::bind(&SendActionAction::result_callback, this,std::placeholders::_1);

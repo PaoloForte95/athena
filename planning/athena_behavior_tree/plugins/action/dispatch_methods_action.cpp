@@ -37,24 +37,36 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
     setStatus(BT::NodeStatus::RUNNING);
     //Get the computed execution plan
     getInput("execution_plan", execution_plan_);
+    auto all_methods = execution_plan_.methods;
     //Get the completed methods
     getInput("completed_methods", completed_methods_);
     if(first_time_){
         readPlan();
     }
     bool plan_completed = true;
-    for(const auto& pair : robots_methods){
-        if(!pair.second.empty()){
+    for(auto comp_method : all_methods){     
+        if(completed_methods_.size() == all_methods.size()){
+            break;
+        }
+        auto itr = std::find(completed_methods_.begin(), completed_methods_.end(), int(comp_method.id));
+        if (itr == completed_methods_.end()){
             plan_completed = false;
             break;
         }
     }
-    IDs robotIDs;
-    config().blackboard->get<IDs>("robot_ids", robotIDs);
+    // for(const auto& pair : robots_methods){
+    //     RCLCPP_INFO(node_->get_logger(), "robot/method: %s %d" , pair.first.c_str(), pair.second[0].id);
+    //     if(!pair.second.empty()){
+    //         plan_completed = false;
+    //         break;
+    //     }
+    // }
+    std::vector<std::string> robotIDs;
+    config().blackboard->get<std::vector<std::string>>("robot_ids", robotIDs);
 
-    for(int id: robotIDs){
+    for(std::string robot: robotIDs){
         std::string robot_state;
-        config().blackboard->get<std::string>("robot_" + std::to_string(id) + "_state", robot_state);
+        config().blackboard->get<std::string>(robot + "_state", robot_state);
          if(robot_state == "busy"){
             plan_completed = false;
             break;
@@ -75,36 +87,36 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
 
 void DispatchMethodsAction::readPlan(){
     Methods methods;
-    IDs robotIDs;
+    std::vector<std::string> robotIDs;
     //Gettind IDs from actions
     for(athena_msgs::msg::Action action : execution_plan_.actions){
-        int robotID = action.robotid;
-        auto itr = std::find(robotIDs.begin(), robotIDs.end(), robotID);
+        std::string robot = action.robot;
+        auto itr = std::find(robotIDs.begin(), robotIDs.end(), robot);
         if (itr == robotIDs.end()){
-            robotIDs.push_back(robotID);
-            auto robot_state = "robot_" + std::to_string(robotID) + "_state";
+            robotIDs.push_back(robot);
+            auto robot_state = robot + "_state";
             config().blackboard->set<std::string>(robot_state, "free");
         }
     }
-    config().blackboard->set<IDs>("robot_ids", robotIDs);
+    config().blackboard->set< std::vector<std::string>>("robot_ids", robotIDs);
     int level = 1;
     for(athena_msgs::msg::Method method : execution_plan_.methods){
         auto mutex = false;
         int subTask = method.substasks[0];
         for(athena_msgs::msg::Action action : execution_plan_.actions){
             if( action.action_id == subTask){
-                RCLCPP_INFO(node_->get_logger(), "Method: (%s, %d) associated to robot %d", method.name.c_str(),method.id, method.robotid);
-                auto it = robots_methods.find(action.robotid);
+                RCLCPP_INFO(node_->get_logger(), "Method: (%s, %d) associated to robot %s", method.name.c_str(),method.id, method.robot.c_str());
+                auto it = robots_methods.find(action.robot);
                 Methods set_methods;
                 if (it != robots_methods.end()){
-                    set_methods = robots_methods[action.robotid];
+                    set_methods = robots_methods[action.robot];
                     set_methods.push_back(method);
-                      robots_methods[action.robotid] = set_methods;
+                      robots_methods[action.robot] = set_methods;
                      
                 }
                 else{
                     set_methods.push_back(method);
-                    robots_methods.insert(std::pair<int, Methods>( action.robotid, set_methods));
+                    robots_methods.insert(std::pair<std::string, Methods>( action.robot, set_methods));
                 }
                 break;
             }
@@ -122,7 +134,7 @@ int DispatchMethodsAction::sendMethods(){
     for(const auto& pair : robots_methods){
         auto robot = pair.first;
         std::string robot_state;
-        config().blackboard->get<std::string>("robot_" + std::to_string(robot) + "_state", robot_state);
+        config().blackboard->get<std::string>(robot + "_state", robot_state);
         if(robot_state == "free"){
             bool method_can_be_executed = true;
             auto set_methods = robots_methods[robot];
@@ -141,7 +153,7 @@ int DispatchMethodsAction::sendMethods(){
                 concurrent_methods.push_back(curr_method);
                 robots_methods[robot].erase(robots_methods[robot].begin());
                 methods_send +=1;
-                config().blackboard->set<std::string>("robot_" + std::to_string(robot) + "_state", "busy");
+                config().blackboard->set<std::string>(robot + "_state", "busy");
 
                 for(athena_msgs::msg::Action action : execution_plan_.actions){
                     auto itr = std::find(curr_method.substasks.begin(), curr_method.substasks.end(), action.action_id);

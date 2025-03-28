@@ -12,7 +12,7 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
   <DispatchMethods name="MethodDispatcher"  execution_plan="{execution_plan}" concurrent_methods="{concurrent_methods}" completed_methods="{completed_methods}"/>
   </RateController>
   <Sequence>
-  <SendMethod name="SendMethod" robot_id="1" service_name="method_executor" />
+  <SendMethod name="SendMethod" robot="robot1" service_name="method_executor" />
   <UpdateState name="UpdateState" state_updater="SimpleStateUpdater" previous_state="{state}" current_state="{state}"/>
   </Sequence> 
  </ExecutePlanNode>

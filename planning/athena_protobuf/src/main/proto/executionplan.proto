@@ -21,9 +21,9 @@ message ProtoProblem{
 message ProtoAction {
   string name = 1;
   int32 id = 2;
-  int32 robotID = 3;
+  string robot = 3;
   repeated string waypoints = 4;
-  int32 material = 5;
+  string material = 5;
   repeated int32 parents = 6;
   repeated string preconditions = 7;
   repeated string effects = 8;
@@ -33,7 +33,7 @@ message ProtoAction {
 message ProtoMethod{
   string name = 1;
   int32 id = 2;
-  int32 robotid = 3;
+  string robot = 3;
   repeated int32 parents = 4;
   repeated int32 actions_ids = 5;
 }

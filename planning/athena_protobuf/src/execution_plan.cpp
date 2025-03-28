@@ -18,7 +18,7 @@ std::vector<athena_msgs::msg::Action> Plan::GetActions(const athena::ProtoExecut
     act.name = execution_plan.action(i).name();
     act.material = execution_plan.action(i).material();
     act.action_id = execution_plan.action(i).id();
-    act.robotid = execution_plan.action(i).robotid();
+    act.robot = execution_plan.action(i).robot();
     for (int parentID: execution_plan.action(i).parents()) {
       act.parents.push_back(parentID);
     }
@@ -42,7 +42,7 @@ std::vector<athena_msgs::msg::Method> Plan::getMethods(const athena::ProtoExecut
     athena_msgs::msg::Method method;
     method.id = execution_plan.method(i).id();
     method.name = execution_plan.method(i).name();
-    method.robotid = execution_plan.method(i).robotid();
+    method.robot = execution_plan.method(i).robot();
     for (int subtask : execution_plan.method(i).actions_ids()) {
       method.substasks.push_back(subtask);
     }

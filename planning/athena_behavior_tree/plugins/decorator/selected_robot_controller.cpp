@@ -30,7 +30,7 @@ SelectedRobotController::SelectedRobotController(
 : BT::DecoratorNode(name, conf),
   first_time_(false)
 {
-  getInput("robot_id", robot_id_);
+  getInput("robot", robot_);
   node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
 
 
@@ -48,18 +48,18 @@ inline BT::NodeStatus SelectedRobotController::tick()
   Methods methods;
   config().blackboard->get<Methods>("concurrent_methods", methods);
   for(auto method : methods){
-    int robotID = method.robotid;
+    std::string robot = method.robot;
 
     // The child gets ticked the first time through and every time the threshold
     // distance is crossed. In addition, once the child begins to run, it is
     // ticked each time 'til completion
     if ((child_node_->status() == BT::NodeStatus::RUNNING) ||
-      robotID == robot_id_)
+      robot == robot_)
     {
       if(first_time_){
           first_time_ = false;
       }else{
-        RCLCPP_INFO(node_->get_logger(), "Executing method for robot %d!", robot_id_);
+        RCLCPP_INFO(node_->get_logger(), "Executing method for robot %s!", robot_);
       }
 
       const BT::NodeStatus child_state = child_node_->executeTick();
