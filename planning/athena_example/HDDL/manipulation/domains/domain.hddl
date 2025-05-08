@@ -1,11 +1,25 @@
-(define (domain domain_htn)
+(define (domain manipulation_domain_htn)
 	(:requirements :negative-preconditions :typing :hierarchy :universal-preconditions :method-preconditions)
+
 	(:types
-		item - locatable
-		robot - locatable
 		location - object
 		locatable - object
-	)
+		;;
+		item - locatable
+		robot  - locatable
+		container - locatable	
+		;;
+		plate - container
+		basket - container
+		;;
+		food - item 
+		cutlery - item
+		tool - item
+		screwdriver - item
+		glass - item
+		mug - item
+)
+
 	(:predicates
 		(in ?arg0 - item ?arg1 - robot)
 		(at ?arg0 - locatable ?arg1 - location)
@@ -26,8 +40,13 @@
 	)
 
 	(:task place
-		:parameters (?r - robot ?l - location ?o - item)
+		:parameters (?r - robot ?o - item ?l - location ?o - item)
 	)
+
+	(:task put_on_plate
+		:parameters (?r - robot ?o - item ?l - location)
+	)
+	
 
 	(:method m_move_item_ordering_0
 		:parameters (?l1 - location ?l2 - location ?o - item ?r - robot)

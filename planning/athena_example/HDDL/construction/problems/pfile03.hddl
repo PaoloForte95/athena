@@ -2,111 +2,37 @@
 	(problem pfile01)
 	(:domain  domain_htn)
 	(:objects
-		mat_1 - material
-		mat_2 - material
-		mat_3 - material
-		home1 - location
-		home2 - location
-		wp_1 - location
-		wp_2 - location
-		wp_3 - location
-		wp_4 - location
-		wp_5 - location
-		wp_6 - location
-		wheel_loader_1 - vehicle
-		wheel_loader_2 - vehicle
+		mat1 mat2 mat3 mat4 - material
+		home1 load1 load2 load3 load4 dump1 dump2 - location
+		robot1 robot2 - vehicle
 	)
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_pile mat_1 wp_4))
-		 (task1 (move_pile mat_2 wp_5))
-		 (task2 (move_pile mat_3 wp_6))
+		 (task0 (move_pile mat1 dump1))
+                 (task1 (move_pile mat2 dump1))
+		 (task2 (move_pile mat3 dump1))
 		)
 		:ordering (and
-			;;(< task0 task1)
-			;;(< task1 task2)
+		(< task0 task1)
+		(< task1 task2)
 		)
 	)
 	(:init
 
-		(road home1 wp_1)
-		(road home1 wp_2)
-		(road home1 wp_3)
-		(road home1 wp_4)
-		(road home1 wp_5)
-		(road home1 wp_6)
-
-		(road home2 wp_1)
-		(road home2 wp_2)
-		(road home2 wp_3)
-		(road home2 wp_4)
-		(road home2 wp_5)
-		(road home2 wp_6)
-
-		(road wp_1 home1)
-		(road wp_1 home2)
-		(road wp_1 wp_2)
-		(road wp_1 wp_3)
-		(road wp_1 wp_4)
-		(road wp_1 wp_5)
-		(road wp_1 wp_6)
-
-		(road wp_2 home1)
-		(road wp_2 home2)
-		(road wp_2 wp_1)
-		(road wp_2 wp_3)
-		(road wp_2 wp_4)
-		(road wp_2 wp_5)
-		(road wp_2 wp_6)
-
-		(road wp_3 home1)
-		(road wp_3 home2)
-		(road wp_3 wp_1)
-		(road wp_3 wp_2)
-		(road wp_3 wp_4)
-		(road wp_3 wp_5)
-		(road wp_3 wp_6)
-
-		(road wp_4 home1)
-		(road wp_4 home2)
-		(road wp_4 wp_1)
-		(road wp_4 wp_2)
-		(road wp_4 wp_3)
-		(road wp_4 wp_5)
-		(road wp_4 wp_6)
-
-		(road wp_5 home1)
-		(road wp_5 home2)
-		(road wp_5 wp_1)
-		(road wp_5 wp_2)
-		(road wp_5 wp_3)
-		(road wp_5 wp_4)
-		(road wp_5 wp_6)
-
-		(road wp_6 home1)
-		(road wp_6 home2)
-		(road wp_6 wp_1)
-		(road wp_6 wp_2)
-		(road wp_6 wp_3)
-		(road wp_6 wp_4)
-		(road wp_6 wp_5)
-
-		(free wp_1)
-		(free wp_2)
-		(free wp_3)
-		(free wp_4)
-		(free wp_5)
-		(free wp_6)
-
-		(at mat_1 wp_1)
-		(at mat_2 wp_2)
-		(at mat_3 wp_3)
-
-
-		(at wheel_loader_1 home1)
-		(can_load wheel_loader_1)
-		(at wheel_loader_2 home2)
-		(can_load wheel_loader_2)
+		(free load1)
+		(free load2)
+		(free load3)
+		(free load4)
+		(free dump1)
+		(free dump2)
+		(at robot1 home1)
+		(at robot2 home1)
+		(at mat1 load1)
+		(at mat2 load2)
+		(at mat3 load3)
+		(at mat4 load4)
+		(can_load robot1)
+		(can_load robot2)
 	)
 )

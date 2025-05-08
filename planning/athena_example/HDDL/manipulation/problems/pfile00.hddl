@@ -1,33 +1,31 @@
 (define
-	(problem pfile01)
-	(:domain  domain_htn)
-	(:objects
-		red_block - item
-		green_block - item
-		book - item
-		apple - item
-		home1 - location
-		wp_1 - location
-		wp_2 - location
-		wp_3 - location
-		wp_4 - location
-		arm1 - robot
-	)
+	(problem pfile00)
+	(:domain  manipulation_domain_htn)
+	   (:objects
+        red_plate - plate
+        green_apple - food
+        blue_mug - mug
+        clear_glass - glass
+        robot1 - robot
+        home wp1s wp2s wp3s wp4s wp5s wp6s - location
+        wp1f wp2f wp3f wp4f - location
+        out_location - location 
+    )
 	(:htn
 		:parameters ()
 		:subtasks (and
-		 (task0 (move_item red_block wp_4))
-		)
-		:ordering (and
-			;;(< task1 task0)
+		 (task0 (move_item red_plate wp1f))
+		 (task1 (move_item blue_mug wp2f))
+		 (task2 (move_item clear_glass wp3f))
+		 (task3 (put_on_container green_apple red_plate))
 		)
 	)
 	(:init
-		(free wp_1)
-		(free wp_2)
-		(free wp_3)
-		(free wp_4)
-		(at red_block wp_1)
-		(at arm1 home1)
+		(at red_plate wp1s)
+        (at green_apple wp2s)
+        (at blue_mug wp3s)
+        (at clear_glass wp4s)
+        (at robot1 home)
+        (free robot1)
 	)
 )
