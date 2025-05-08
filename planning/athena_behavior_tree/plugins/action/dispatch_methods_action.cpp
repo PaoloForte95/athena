@@ -42,6 +42,7 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
     getInput("completed_methods", completed_methods_);
     if(first_time_){
         readPlan();
+        start_time_ = node_->get_clock()->now();
     }
     bool plan_completed = true;
     for(auto comp_method : all_methods){     
@@ -72,16 +73,15 @@ inline BT::NodeStatus DispatchMethodsAction::tick()
             break;
          }
     }
-      
     if(plan_completed){
         RCLCPP_INFO(node_->get_logger(), "Execution plan has been completed successfully!");
+        rclcpp::Time end_time = node_->get_clock()->now();
+        rclcpp::Duration diff = end_time - start_time_;
+        RCLCPP_INFO(node_->get_logger(), "Execution Time: %f seconds", diff.seconds());
         return BT::NodeStatus::SUCCESS;
     }
-    int exeActs = sendMethods();
-    if(exeActs > 0){
-         return BT::NodeStatus::FAILURE;
-    }
-    return BT::NodeStatus::RUNNING;
+    sendMethods();
+    return BT::NodeStatus::FAILURE;
     
 }
 
@@ -135,9 +135,16 @@ int DispatchMethodsAction::sendMethods(){
         auto robot = pair.first;
         std::string robot_state;
         config().blackboard->get<std::string>(robot + "_state", robot_state);
+        RCLCPP_INFO(node_->get_logger(), "robot %s state %s!", robot.c_str(), robot_state.c_str());
+        
         if(robot_state == "free"){
             bool method_can_be_executed = true;
             auto set_methods = robots_methods[robot];
+            RCLCPP_INFO(node_->get_logger(), "HERE 2!!!!");
+            if (set_methods.empty()){
+                continue;
+            }
+            RCLCPP_INFO(node_->get_logger(), "HERE 3!!!!");
             auto curr_method = set_methods[0];
             for(auto pm : curr_method.parents){
                 int parent_id = pm;
@@ -148,6 +155,7 @@ int DispatchMethodsAction::sendMethods(){
                     break;
                 }
             }
+             RCLCPP_INFO(node_->get_logger(), "HERE 4!!!!");
             if(method_can_be_executed){
                 RCLCPP_INFO(node_->get_logger(), "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
                 concurrent_methods.push_back(curr_method);
@@ -166,7 +174,7 @@ int DispatchMethodsAction::sendMethods(){
     }
     config().blackboard->set<Actions>("concurrent_actions", concurrent_actions);
     setOutput("concurrent_methods", concurrent_methods);
-    return methods_send;
+    return concurrent_methods.size();
     
 }
 
