@@ -88,17 +88,22 @@ private:
   std::string service_name_, global_frame_;
   GoalHandleSendLoad::SharedPtr send_load_handler_;
   rclcpp::Node::SharedPtr node_;
-  ActionStatus action_status_;
+  std::map<std::string, ActionStatus> action_status_;
   athena_msgs::msg::Method method_;
   Actions concurrent_actions_;
   std::string robot_;
-  Client client_;
+  //Client client_;
+  std::map<std::string, std::shared_future<std::shared_ptr<rclcpp_action::ClientGoalHandle<athena_msgs::action::ExecuteMethod>>>> goal_futures_;
+  std::map<std::string, std::shared_future<rclcpp_action::ClientGoalHandle<athena_msgs::action::ExecuteMethod>::WrappedResult>> result_futures_;
+  std::map<std::string, Client> clients_;
 
    void goal_response_callback(const GoalHandleSendLoad::SharedPtr & goal_handle);
 
    void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const athena_msgs::action::ExecuteMethod::Feedback> feedback);
 
-   void result_callback(const GoalHandleSendLoad::WrappedResult & result);
+   void result_callback(const GoalHandleSendLoad::WrappedResult & result, const std::string robot);
+
+   void spin_until_goals_complete();
 
     
 
