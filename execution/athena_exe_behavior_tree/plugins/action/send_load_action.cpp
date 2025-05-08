@@ -79,10 +79,11 @@ void SendLoadAction::sendLoad(Actions actions)
     for(athena_msgs::msg::Action load_action: actions){
       std::string robot = load_action.robot;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
-      if (!is_action_server_ready) { 
-          RCLCPP_ERROR( node_->get_logger(), "load action server is not available."); 
-          return;
+      while (!is_action_server_ready) { 
+        RCLCPP_ERROR( node_->get_logger(), "load action server is not available." " Is the initial pose set?"); 
+        std::this_thread::sleep_for(std::chrono::seconds(2));
       }
+
       auto goal_msg = material_handler_msgs::action::LoadMaterial::Goal();
       std::string location;
       config().blackboard->get<std::string>("load_position", location);
@@ -105,7 +106,7 @@ void SendLoadAction::sendLoad(Actions actions)
       send_load_handler_ = future_goal_handle.get();
 
       auto future_result = client_ptr_->async_get_result(send_load_handler_);
-      RCLCPP_INFO(node_->get_logger(), "Executing loading for robot %d...!", robot);
+      RCLCPP_INFO(node_->get_logger(), "Executing loading for robot %s...!", robot.c_str());
       rclcpp::spin_until_future_complete(node_, future_result);
       rclcpp_action::ClientGoalHandle<material_handler_msgs::action::LoadMaterial>::WrappedResult wrapped_result = future_result.get();
     }

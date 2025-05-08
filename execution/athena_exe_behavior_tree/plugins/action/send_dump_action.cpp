@@ -75,18 +75,19 @@ void SendDumpAction::sendDump(Actions actions)
     for(athena_msgs::msg::Action dump_action: actions){
       std::string robot = dump_action.robot;
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
-      if (!is_action_server_ready) { 
-          RCLCPP_ERROR( node_->get_logger(), "dump action server is not available."); 
-          return ;
+      while (!is_action_server_ready) { 
+        RCLCPP_ERROR( node_->get_logger(), "dump action server is not available." " Is the initial pose set?"); 
+        std::this_thread::sleep_for(std::chrono::seconds(2));
       }
       auto goal_msg = material_handler_msgs::action::DumpMaterial::Goal();
-      std::string mat = dump_action.material;
+      std::string mat;
+       config().blackboard->get<std::string>("material_loaded", mat);
       goal_msg.name = mat;
       //goal_msg.name = dump_action.material;
       std::string location;
       config().blackboard->get<std::string>("dump_position", location);
       goal_msg.location = location;
-      RCLCPP_INFO(node_->get_logger(), "Sending dump");
+      RCLCPP_INFO(node_->get_logger(), "Sending dump for material %s ", mat.c_str());
       auto send_goal_options = rclcpp_action::Client<material_handler_msgs::action::DumpMaterial>::SendGoalOptions();
       send_goal_options.goal_response_callback =std::bind(&SendDumpAction::goal_response_callback, this, std::placeholders::_1);
     

@@ -92,10 +92,10 @@ void NoopAction::sendNoop(Actions actions)
        
         auto is_action_server_ready = client_ptr->wait_for_action_server(std::chrono::seconds(5));
         
-        if (!is_action_server_ready) { 
-            RCLCPP_ERROR( node_->get_logger(), "wait action server is not available."); 
-            return ;
-        }
+        while (!is_action_server_ready) { 
+        RCLCPP_ERROR( node_->get_logger(), "wait action server is not available." " Is the initial pose set?"); 
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+      }
        
         auto goal_msg = nav2_msgs::action::Wait::Goal();
         goal_msg.time = rclcpp::Duration(waiting_time_,0);

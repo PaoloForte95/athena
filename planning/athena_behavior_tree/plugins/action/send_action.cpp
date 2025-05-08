@@ -81,9 +81,9 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
 
     std::string robot = action.robot;
     auto is_action_server_ready = client_->wait_for_action_server(std::chrono::seconds(5));
-    if (!is_action_server_ready) { 
-        RCLCPP_ERROR( node_->get_logger(), "send action server is not available."); 
-        return;
+     while (!is_action_server_ready) { 
+        RCLCPP_ERROR( node_->get_logger(), "send action action server is not available."); 
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
    
     auto goal_msg = athena_msgs::action::ExecuteAction::Goal();
