@@ -139,10 +139,11 @@ void SendTransportAction::sendMove(Actions actions)
       auto is_action_server_ready = client_ptr_->wait_for_action_server(std::chrono::seconds(5));
       auto wp2 = move_action.waypoints[move_action.waypoints.size()-1];
       auto goal_msg2 = getGoalLocation(wp2);
-      if (!is_action_server_ready) { 
-          RCLCPP_ERROR( node_->get_logger(), "navigate_to_pose action server is not available." " Is the initial pose set?"); 
-          return ;
+      while (!is_action_server_ready) { 
+        RCLCPP_ERROR( node_->get_logger(), "navigate_to_pose action server is not available." " Is the initial pose set?"); 
+        std::this_thread::sleep_for(std::chrono::seconds(2));
       }
+
       
       auto wp = move_action.waypoints[move_action.waypoints.size()-1];
       auto goal_msg = getGoalLocation(wp);

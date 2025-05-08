@@ -79,6 +79,7 @@ private:
   std::map<std::string, Methods> robots_methods;
   int robots;
   bool first_time_;
+  rclcpp::Time start_time_;
 
   /**
    * @brief Read the methods from the exection plan
