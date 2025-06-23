@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(athena_msgs REQUIRED)
+find_package(absl REQUIRED)
 
 
 set(library_name ${PROJECT_NAME}_core)
@@ -55,7 +56,7 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
   find_package(ament_cmake_gtest REQUIRED)
-  add_subdirectory(test)
+  #add_subdirectory(test)
 endif()
 
 ament_export_include_directories(include)

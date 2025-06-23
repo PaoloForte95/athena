@@ -1,14 +1,6 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.17'
-    }
-}
-
 plugins {
   id 'com.github.johnrengelman.shadow' version '8.1.0'
+  id "com.google.protobuf" version "0.9.5"
 }
 
 
@@ -31,35 +23,21 @@ application {
 
 repositories {
   mavenLocal()
+  mavenCentral()
   jcenter()
   maven { url 'https://jitpack.io' }
   maven { url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master/' }
 }
 
 
-sourceSets {
-    main {
-        proto{
-           // In addition to the default 'src/main/proto'
-           srcDir 'src/main/protobuf'
-        }
-        java {
-            srcDirs = ['src/main/java']
-            srcDirs 'build/generated/source/proto/main/java'  
-            srcDirs 'build/generated/source/proto/main/grpc'          
-        }
-   }
-}
-
-
 dependencies {
-  implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.2'
+  implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
   implementation 'com.github.FedericoPecora:meta-csp-framework:master-SNAPSHOT'
   implementation 'info.picocli:picocli:4.7.1'
 
   //implementation 'com.github.PaoloForte95:planning_oru:master-SNAPSHOT'
   implementation 'com.google.ortools:ortools-java:9.6.2534'
-  implementation 'com.google.protobuf:protobuf-java:3.21.10'
+  implementation 'com.google.protobuf:protobuf-java:4.31.1'
   
   //For interface with OMPL
   implementation 'net.java.dev.jna:jna:4.4.0'
@@ -81,6 +59,38 @@ dependencies {
   
 
 }
+
+protobuf {
+  protoc {
+     //artifact = "com.google.protobuf:protoc:3.21.12"
+     artifact = "com.google.protobuf:protoc:4.31.1"
+  }
+  
+  generateProtoTasks {
+    all().each { task ->
+      task.builtins {
+        java {}
+        cpp {}
+      }
+    } 
+  }
+}
+
+
+sourceSets {
+    main {
+        // proto{
+        //    // In addition to the default 'src/main/proto'
+        //    //srcDir 'src/main/protobuf'
+        // }
+        java {
+            //srcDirs = ['src/main/java']
+            srcDirs 'build/generated/sources/proto/main/java'            
+        }
+   }
+}
+
+
 
 // Default Output to build/libs/shadow.jar
 shadowJar {
@@ -115,31 +125,6 @@ jar {
   //}
 //}
 
-protobuf {
-  protoc {
-     //artifact = "com.google.protobuf:protoc:3.21.12"
-     artifact = "com.google.protobuf:protoc:3.12.4"
-  }
-  plugins {
-    grpc {
-      artifact = 'io.grpc:protoc-gen-grpc-java:1.35.0'
-    }
-    //cpp {}
-  }
-  
-  generateProtoTasks {
-    all().each { task ->
-      task.builtins {
-        java {}
-        cpp {}
-      }
-    }
-    all().each { task ->
-     task.plugins {
-      grpc {}
-    }
-    } 
-  }
-}
+
 
 defaultTasks 'clean', 'build'
