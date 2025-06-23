@@ -39,6 +39,7 @@ set(dependencies
   athena_util
   athena_protobuf
   Protobuf
+  cv_bridge
 )
 
 set(executable_name task_planner_server)

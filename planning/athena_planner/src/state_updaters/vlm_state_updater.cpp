@@ -14,7 +14,7 @@
 #include <regex>
 #include "athena_util/node_utils.hpp"
 #include "athena_planner/state_updaters/vlm_state_updater.hpp"
-#include "cv_bridge/cv_bridge.h"
+#include "cv_bridge/cv_bridge.hpp"
 #include "opencv2/opencv.hpp"
 
 
