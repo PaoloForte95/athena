@@ -36,9 +36,30 @@ TEST(PlanReaderTest, plan_reader)
 
   auto actions = plan.GetActions(execution_plan);
 
+  auto methods = plan.getMethods(execution_plan);
+
   for (athena_msgs::msg::Action action: actions){
-    cout << action.name << endl;
-    cout << action.robot << endl;
+    cout << "action name:" << action.name << endl;
+    cout << "id " << action.action_id << endl;
+    cout << "robot: " << action.robot << endl;
+    string wps = "[";
+    for (string waypoint: action.waypoints){
+      wps += waypoint + ", ";
+    }
+    wps += "]";
+    cout << "waypoints: " << wps << endl;
+  }
+
+  for (athena_msgs::msg::Method method: methods){
+    cout << "method name:" << method.name << endl;
+    cout << "id " << method.id << endl;
+    cout << "robot: " << method.robot << endl;
+    string subts = "[";
+    for (int subtask: method.substasks){
+      subts += to_string(subtask) + ", ";
+    }
+    subts += "]";
+    cout << "subtasks: " << subts << endl;
   }
 }
 

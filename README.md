@@ -1,67 +1,124 @@
 # Athena
 
+<p align="center">
+  <img height="300" src="doc/logo.png" />
+</p>
+
 Athena is a planning framework based on behavior trees. Its main features are:
 
 * Compute execution plan for problem defined with PDDL 3.1 and HDDL 1.0.
 * Compute total ordered, partial ordered, and concurrent plans.
-* Dispatch and execute the actions using behavior tree.
+* Plan, dispatch, and execute the actions using behavior tree.
 
 
 # Overview
-Athena is divided into two parts: planning and execution.
-The first is used to plan and compute an execution plan, while the second is used to dispatch and execute the actions/methods of the plan. Since actions are implemeneted as bt nodes, the actions execution can be customize. 
 
-For executing the actions, the usage of the atlantis framework is suggested. 
+Athena is composed of two main components: **planning** and **execution**.
 
-# Getting Started
-First, install <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>.
+The planning component is responsible for parsing the domain and problem descriptions and computing an execution plan. The execution component dispatches and executes the actions and methods contained in the plan. Since actions are implemented as behavior tree nodes, their execution logic can be customized and extended.
 
-## Installation
-To install, clone this repository and build the source code with colcon:
-```
-$ git clone https://gitsvn-nt.oru.se/pofe/athena.git
-$ cd athena
-$ colcon build --packages-up-to athena
-```
-If not installed, install java 17 by running the command:
-```
-$ sudo apt-get install openjdk-17-jdk
-```
-Download PDDL4j and build it. It is not necessary to build it in the ros2 workspace.
+---
+
+
+# Dependencies
+
+## Protobuf
+Install Protobuf from https://github.com/protocolbuffers/protobuf
+
+
+## PDDL4j
+Clone and build PDDL4J. It is not necessary to build it inside the ROS 2 workspace.
 ```
 git clone https://github.com/pellierd/pddl4j.git
 cd pddl4j
 git checkout devel
 ./gradlew build -PnoCheckStyle -PnoTest
 ```
-If you encounter any problem with the Java version, update the distributionUrl in the gradle-wrapper: 
+If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file:
 ```
 distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip
 ```
-Then, copy the generated jar lib into the folder athena_protobuf/lib.
 
-To build the task planner executable that calls the Java code to parse the planning problem and compute the execution plan:
+# Installation
+Clone the Athena repository:
 ```
-$ cd src/athena/planning/athena_protobuf/
+$ git clone https://gitsvn-nt.oru.se/pofe/athena.git
+```
+Copy the generated PDDL4J JAR file into the Athena protobuf library directory:
+```
+$ cp <path/to/pddl4j>/build/libs/pddl4j-4.0.0.jar src/athena/planning/athena_protobuf/lib/
+```
+Build the task planner executable, which invokes the Java code for parsing planning problems and computing execution plans:
+```
+$ cd src/athena/planning/athena_core/
+$ ./gradlew build
+$ cp <path/to/pddl4j>/build/libs/athena_core-0.1.0 src/athena/planning/athena_protobuf/lib/
+$ cd ../athena_protobuf/
 $ ./gradlew build
 ```
-This will create an executable .jar file into athena_planner/Planners called task_planner. This will be used to compute the plan.
+This process generates an executable JAR file named task_planner in athena_planner/Planners. This executable is used to compute execution plans.
+
+The parsing logic and the concurrent-plan generation code are located in athena_core. Any modification to this component requires rebuilding the project.
+
+Finally, build the ROS 2 workspace using colcon
+```
+$ colcon build --packages-up-to athena
+```
+# Running 
+
 
 ## Running an example
 
-1) Start a terminal and source the setup file
+1) Source the workspace:
 ```
 source install/setup.bash
 ```
-2) In the same terminal, run:
+2) Launch the planner:
 ```
-ros2 launch athena_launch planning.py
+ros2 launch athena_launch planning_launch.py
 ```
-3) Open a new terminal, source the setup file, and run: 
+3) In a new terminal, launch the executor:
 ```
-ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: src/athena/planning/athena_example/HDDL/construction/domains/domain.hddl, planning_problem: src/athena/planning/athena_example/HDDL/construction/problems/pfile00.hddl}"
+source install/setup.bash
+ros2 launch athena_exe_launch execution_launch.py
+```
+4) In a new terminal, source the workspace again and publish a planning problem:
+```
+source install/setup.bash
+ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: <path/to/pddl/planning/domain>, planning_problem: <path/to/pddl/planning/problem>}"
+```
+# Connection with VLM 
 
+## Python Virtual Environment
+
+Create a <a href="https://docs.python.org/3/library/venv.html">python virtual environment.</a>. 
+
+Activate the environment:
 ```
+source <path/to/venv/bin/activate>
+```
+Install the required dependencies:
+```
+pip install openai "numpy==1.26.4" "opencv-python==4.10.0.84" google-genai pillow
+```
+
+## Set up for api keys.
+These keys are required for automatic planning-problem generation. <br> 
+Add the following lines to your .bashrc:
+```
+export OPEN_API_KEY="your_api_key_here"
+expor GEMINI_API_KEY="your_api_key_here"
+```
+## Creating a Prompt
+Athena can automatically generate planning problem files. To enable this feature, create a prompt file and save it in the ROS 2 workspace.
+
+
 
 # Add your own planner
-The framework facilitates the easy integration of new task planners into the list of selectable planners. To add a new planner to the framework, download your planner(or create a jar file with the main function to execute it) and place it in the athena_planner/Planners folder. Then, create a plugin for the custom planner.
+Athena supports the integration of additional task planners.
+
+To add a new planner:
+
+1) Download the planner or create a JAR file with a main entry point and place it in the the athena_planner/Planners directory.
+
+2) Create a plugin definition for the new planner so it can be selected by the framework.

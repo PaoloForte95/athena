@@ -6,6 +6,7 @@
     <Action ID="ComputePlan">
             <output_port name="execution_plan">The computed execution plan</output_port>
             <output_port name="plan_length">The computed execution plan</output_port>
+            <output_port name="robots">The robots involved in the plan</output_port>
             <input_port name="domain_file">The planning domain representation file location</input_port>
             <input_port name="problem_file">The planning problem representation file location</input_port>
             <input_port name="planner">The PDDL planner to use</input_port>
@@ -32,7 +33,7 @@
 
     <Action ID="SendMethod">
             <input_port name="service_name"></input_port>
-            <input_port name="robot_id">The id of the robot to be associated with this action</input_port>
+            <input_port name="robots">The robots involved in the plan</input_port>
     </Action>
 
     <Action ID="SendAction">

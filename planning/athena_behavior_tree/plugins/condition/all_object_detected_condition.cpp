@@ -48,7 +48,7 @@ bool AllObjectDetectedCondition::checkListObjects(){
 }
 
 
-}  // namespace nav2_behavior_tree
+}  // namespace athena_behavior_tree
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)

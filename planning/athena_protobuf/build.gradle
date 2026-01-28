@@ -13,7 +13,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'application'
 
 group = 'org.athena'
-version = '0.0.1'
+version = '0.1.0'
 sourceCompatibility = '16'
 
 application {
@@ -26,16 +26,13 @@ repositories {
   mavenCentral()
   jcenter()
   maven { url 'https://jitpack.io' }
-  maven { url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master/' }
 }
 
 
 dependencies {
   implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
-  implementation 'com.github.FedericoPecora:meta-csp-framework:master-SNAPSHOT'
   implementation 'info.picocli:picocli:4.7.1'
 
-  //implementation 'com.github.PaoloForte95:planning_oru:master-SNAPSHOT'
   implementation 'com.google.ortools:ortools-java:9.6.2534'
   implementation 'com.google.protobuf:protobuf-java:4.31.1'
   
@@ -55,8 +52,7 @@ dependencies {
   
   // Add the following if you need to include jars that are not in Maven Central and that you have places in the directory "lib"
   implementation files('lib/pddl4j-4.0.0.jar')
-  implementation files('lib/planning_oru-0.1.6.jar')
-  
+  implementation files('lib/athena_core-0.1.0.jar')
 
 }
 

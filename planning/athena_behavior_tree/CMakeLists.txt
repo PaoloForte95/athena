@@ -36,6 +36,8 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 include_directories(
   include
@@ -61,6 +63,8 @@ set(dependencies
   athena_util
   visualization_msgs
   yaml-cpp
+  cv_bridge
+  OpenCV
 )
 
 add_library(${library_name} SHARED
@@ -97,6 +101,7 @@ list(APPEND plugin_libs athena_detect_objects_action_bt_node)
 
 add_library(athena_generate_problem_file_action_bt_node SHARED plugins/action/generate_problem_file_action.cpp)
 list(APPEND plugin_libs athena_generate_problem_file_action_bt_node)
+target_link_libraries(athena_generate_problem_file_action_bt_node ${OpenCV_LIBRARIES})
 
 add_library(athena_update_prompt_action_bt_node SHARED plugins/action/update_prompt_action.cpp)
 list(APPEND plugin_libs athena_update_prompt_action_bt_node)
@@ -106,6 +111,9 @@ list(APPEND plugin_libs athena_update_prompt_action_bt_node)
 add_library(athena_all_object_detected_condition_node SHARED plugins/condition/all_object_detected_condition.cpp)
 list(APPEND plugin_libs athena_all_object_detected_condition_node)
 target_link_libraries(athena_all_object_detected_condition_node yaml-cpp)
+
+add_library(athena_check_problem_file_condition_node SHARED plugins/condition/check_problem_file_condition.cpp)
+list(APPEND plugin_libs athena_check_problem_file_condition_node)
 
 
 
