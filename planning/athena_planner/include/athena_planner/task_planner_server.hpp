@@ -36,7 +36,6 @@
 #include "athena_core/planner.hpp"
 #include "athena_msgs/msg/plan.hpp"
 
-
 namespace athena_planner
 {
 /**
@@ -172,6 +171,7 @@ protected:
   std::vector<std::string> planner_ids_;
   std::vector<std::string> planner_types_;
   std::string planner_ids_concat_;
+  std::string robot_definition_, location_definition_, proto_filename_, plan_filename_, property_filename_;
 
   // Clock
   rclcpp::Clock steady_clock_{RCL_STEADY_TIME};
@@ -182,6 +182,11 @@ protected:
 
 
   double planner_frequency_;
+
+  private: 
+
+      void writePropertiesFile();
+  
 };
 
 }  

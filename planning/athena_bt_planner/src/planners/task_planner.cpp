@@ -170,7 +170,7 @@ TaskPlanner::initializePlanningProblem(ActionT::Goal::ConstSharedPtr goal)
 
   if(goal->planning_problem.planning_problem.empty()){
     RCLCPP_INFO(
-    logger_, "Begin task planning for domain file (%s) with problem file generation",
+    logger_, "Begin task planning for domain file (%s) with problem file generation!",
     goal->planning_problem.planning_domain.c_str());
     // Update the goal pose on the blackboard
     blackboard->set<std::string>(domain_file_blackboard_id_, goal->planning_problem.planning_domain);

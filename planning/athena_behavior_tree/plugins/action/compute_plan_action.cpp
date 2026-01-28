@@ -33,15 +33,22 @@ void ComputePlanAction::on_tick()
   getInput("domain_file", goal_.planning_problem.planning_domain);
   getInput("problem_file", goal_.planning_problem.planning_problem);
   getInput("planner", goal_.planner);
-  
 }
 
 
 BT::NodeStatus ComputePlanAction::on_success()
 {
   setOutput("execution_plan", result_.result->execution_plan);
-  auto length = result_.result->execution_plan.actions.size();
+  auto actions = result_.result->execution_plan.actions;
+  auto length = actions.size();
+  auto robots = std::vector<std::string>{};
+  for(auto action: actions){
+    if(std::find(robots.begin(), robots.end(), action.robot) == robots.end()){
+      robots.push_back(action.robot);
+    }
+  }
   setOutput("plan_length",static_cast<int>(length));
+  setOutput("robots", robots);
   return BT::NodeStatus::SUCCESS;
 }
 
@@ -50,6 +57,7 @@ BT::NodeStatus ComputePlanAction::on_aborted()
   athena_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
+  setOutput("robots", std::vector<std::string>{});
   return BT::NodeStatus::FAILURE;
 }
 
@@ -58,6 +66,7 @@ BT::NodeStatus ComputePlanAction::on_cancelled()
   athena_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
+  setOutput("robots", std::vector<std::string>{});
   return BT::NodeStatus::SUCCESS;
 }
 
@@ -67,6 +76,7 @@ void ComputePlanAction::halt()
   athena_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
+  setOutput("robots", std::vector<std::string>{});
   BtActionNode::halt();
 }
 

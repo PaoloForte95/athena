@@ -20,6 +20,9 @@
 
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/srv/generate_problem_file.hpp"
+#include <cv_bridge/cv_bridge.hpp>
+#include <opencv2/opencv.hpp>
+#include <sensor_msgs/msg/image.hpp>
 namespace athena_behavior_tree
 {
 /**
@@ -61,16 +64,18 @@ public:
             BT::OutputPort<std::string>("problem_file","The path to the object location file"),
             BT::InputPort<std::string>("format", "PDDL", "The format of the file to generate, either PDDL or HDDL"), 
             BT::InputPort<std::string>("instruction", "The instruction to the VLM"), 
-            BT::InputPort<std::string>("prompt", "The promt to the VLM"), 
+            BT::InputPort<std::string>("prompt", "The promt to the VLM")
         };
     }
 private:
-  
-  
-  rclcpp::Node::SharedPtr node_;
-  rclcpp::Client<athena_msgs::srv::GenerateProblemFile>::SharedPtr client_;
-  void generateProblemFile();
-  std::string problem_instance_;
+    
+     void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg);
+
+    rclcpp::Node::SharedPtr node_;
+    rclcpp::Client<athena_msgs::srv::GenerateProblemFile>::SharedPtr client_;
+    void generateProblemFile();
+    std::string problem_instance_;
+    std::string image_;
 
 
 

@@ -105,7 +105,7 @@ void DispatchMethodsAction::readPlan(){
         int subTask = method.substasks[0];
         for(athena_msgs::msg::Action action : execution_plan_.actions){
             if( action.action_id == subTask){
-                RCLCPP_INFO(node_->get_logger(), "Method: (%s, %d) associated to robot %s", method.name.c_str(),method.id, method.robot.c_str());
+                RCLCPP_INFO(node_->get_logger(), "Method: (%s, %d) associated to robot %s", method.name.c_str(), method.id, method.robot.c_str());
                 auto it = robots_methods.find(action.robot);
                 Methods set_methods;
                 if (it != robots_methods.end()){
@@ -140,11 +140,9 @@ int DispatchMethodsAction::sendMethods(){
         if(robot_state == "free"){
             bool method_can_be_executed = true;
             auto set_methods = robots_methods[robot];
-            RCLCPP_INFO(node_->get_logger(), "HERE 2!!!!");
             if (set_methods.empty()){
                 continue;
             }
-            RCLCPP_INFO(node_->get_logger(), "HERE 3!!!!");
             auto curr_method = set_methods[0];
             for(auto pm : curr_method.parents){
                 int parent_id = pm;
@@ -155,7 +153,6 @@ int DispatchMethodsAction::sendMethods(){
                     break;
                 }
             }
-             RCLCPP_INFO(node_->get_logger(), "HERE 4!!!!");
             if(method_can_be_executed){
                 RCLCPP_INFO(node_->get_logger(), "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
                 concurrent_methods.push_back(curr_method);

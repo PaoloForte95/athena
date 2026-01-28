@@ -45,34 +45,12 @@ void LPG::configure(
   name_ = name;
   
   RCLCPP_INFO(logger_, "Configuring %s of type LPGTD", name.c_str());
-  
-    athena_util::declare_parameter_if_not_declared(node, name + ".problem_type", rclcpp::ParameterValue(""));
-  node->get_parameter<std::string>(name + ".problem_type", problem_type_);
-  
-
-  athena_util::declare_parameter_if_not_declared(node, name + ".output_name", rclcpp::ParameterValue("plan.pddl"));
-  node->get_parameter<std::string>(name + ".output_name", output_filename_);
-
-  athena_util::declare_parameter_if_not_declared(node, name + ".proto_filename", rclcpp::ParameterValue("ExePlan.data"));
-  node->get_parameter<std::string>(name + ".proto_filename", proto_filename_);
-
-  athena_util::declare_parameter_if_not_declared(node, name + ".definition.robot", rclcpp::ParameterValue(""));
-  node->get_parameter<std::string>(name + ".definition.robot", robot_definition_);
-
-  athena_util::declare_parameter_if_not_declared(node, name + ".definition.location", rclcpp::ParameterValue(""));
-  node->get_parameter<std::string>(name + ".definition.location", location_definition_);
-
-  athena_util::declare_parameter_if_not_declared(node, name + ".plan_type", rclcpp::ParameterValue("TOTAL_ORDERED"));
-  node->get_parameter<std::string>(name + ".plan_type", plan_type_);
-
-  RCLCPP_INFO( logger_, "Configured plugin %s of type CostmapSelector with ", name_.c_str());
-
 }
 
 
 void LPG::activate()
 {
-  RCLCPP_INFO(logger_, "Activating plugin %s of type LPGTD",name_.c_str());
+  RCLCPP_INFO(logger_, "Activating plugin %s of type LPG-TD",name_.c_str());
 
   auto node = node_.lock();
   // Add callback for dynamic parameters
@@ -81,7 +59,7 @@ void LPG::activate()
 
 void LPG::deactivate()
 {
-  RCLCPP_INFO(logger_, "Deactivating plugin %s of type LPGTD",
+  RCLCPP_INFO(logger_, "Deactivating plugin %s of type LPG-TD",
     name_.c_str());
   _dyn_params_handler.reset();
 }
@@ -89,27 +67,21 @@ void LPG::deactivate()
 void LPG::cleanup()
 {
   RCLCPP_INFO(
-    logger_, "Cleaning up plugin %s of type LPGTD",name_.c_str());
+    logger_, "Cleaning up plugin %s of type LPG-TD",name_.c_str());
 
 }
 
 athena_msgs::msg::Plan LPG::computeExecutionPlan(const std::string & domain, const std::string & problem){
 
 athena_msgs::msg::Plan execution_plan;
-RCLCPP_INFO( logger_, "Test: %s, %s, %s ", output_filename_.c_str(), plan_type_.c_str(), robot_definition_.c_str());
 int status = system(("java -jar src/athena/planning/athena_planner/Planners/task_planner.jar lpg " + 
-problem_type_ + " " +
 domain + " " + 
-problem + " " + 
-plan_type_+ " " +
-output_filename_ + " " +
-robot_definition_ + " " +
-location_definition_
+problem + " " 
 ).c_str());
 
 
 
-if (status == -1) {
+if (status != 0) {
     RCLCPP_ERROR(logger_, "Cannot compute the execution plan!");
     return execution_plan;
 }

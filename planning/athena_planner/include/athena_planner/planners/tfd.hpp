@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #ifndef ATHENA_PLANNER__PLANNERS__TFD_HPP_
-#define ATHENA_PLANNER__PLANNERS__LILOTANE_HPP_
+#define ATHENA_PLANNER__PLANNERS__TFD_HPP_
 
 #include "athena_core/planner.hpp"
 #include "athena_msgs/msg/plan.hpp"
@@ -99,7 +99,7 @@ public:
 protected:
 
   rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
-  std::string name_, proto_filename_, output_filename_, plan_type_,robot_definition_, location_definition_, problem_type_;
+  std::string name_;
   rclcpp::Logger logger_{rclcpp::get_logger("TFD")};
 
   // Dynamic parameters handler

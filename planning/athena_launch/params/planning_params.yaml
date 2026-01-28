@@ -8,8 +8,8 @@ bt_planner:
     bt_loop_duration: 10
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
-    #default_plan_bt_xml: 'planning_w_dispatching.xml'
     default_plan_bt_xml: 'planning_w_dispatching_hddl.xml'
+    #default_plan_bt_xml: 'generate_problem_file.xml'
     #default_plan_bt_xml: 'plan_computation_w_planning_and_dispatching.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
@@ -28,44 +28,27 @@ bt_planner:
     - athena_updated_prompt_controller_bt_node
     - athena_pipeline_sequence_bt_node
     - athena_all_object_detected_condition_node
+    - athena_check_problem_file_condition_node
 
 task_planner_server:
  ros__parameters:
     use_sim_time: True
     planner_frequency: 3.0
+    definitions:
+      robot: "robot"
+      location: "location"
+      plan_filename: "plan.hddl"
+      proto_filename: "ExePlan.data"
     planner_plugins: ["MetricFF", "LPG", "TFD", "Lilotane"]
     MetricFF:
       plugin: "athena_planner::MetricFF"
-      problem_type: "Symbolic"
-      output_name: "plan.pddl"
-      definition:
-        robot: "robot"
-        location: "location"
-      plan_type: "PARTIAL_ORDERED"
     LPG:
       plugin: "athena_planner::LPG"
-      problem_type: "Symbolic"
-      output_name: "plan.pddl"
-      definition:
-        robot: "robot"
-        location: "location"
       plan_type: "PARTIAL_ORDERED"
     TFD:
       plugin: "athena_planner::TFD"
-      problem_type: "Symbolic"
-      output_name: "plan.hddl"
-      definition:
-        robot: "vehicle"
-        location: "location"
-      plan_type: "PARTIAL_ORDERED"
     Lilotane:
       plugin: "athena_planner::Lilotane"
-      problem_type: "Symbolic"
-      output_name: "plan.hddl"
-      definition:
-        robot: "vehicle"
-        location: "location"
-      plan_type: "PARTIAL_ORDERED"
 
 state_updater_server:
   ros__parameters:

@@ -26,20 +26,24 @@ SendMethodAction::SendMethodAction(
 : ActionNodeBase(action_name, conf)
 {
     getInput("service_name", service_name_);
-    getInput("robot", robot_);
     node_ = rclcpp::Node::make_shared("send_method_client_node");
-    std::vector<std::string> robots = {"robot1", "robot2"};
-    for(auto rb: robots){
-      std::string service_name = rb + "/" +  service_name_;
-      auto client = rclcpp_action::create_client<athena_msgs::action::ExecuteMethod>(node_, service_name);
-      clients_[rb] = client;
-    }
-    
     
 }
 
 inline BT::NodeStatus SendMethodAction::tick()
 { 
+    std::vector<std::string> robots;
+    getInput("robots", robots);
+    RCLCPP_INFO(node_->get_logger(), "Robots involved in the plan: %d", robots.size());
+    for(auto rb: robots){
+      if (clients_.find(rb) != clients_.end()) {
+        RCLCPP_DEBUG(node_->get_logger(), "Client for robot %s already exists", rb.c_str());
+        continue;
+      }
+      std::string service_name = rb + "/" +  service_name_;
+      auto client = rclcpp_action::create_client<athena_msgs::action::ExecuteMethod>(node_, service_name);
+      clients_[rb] = client;
+    }
     setStatus(BT::NodeStatus::RUNNING);
     //Get the load actions 
     std::vector<athena_msgs::msg::Method> methods;

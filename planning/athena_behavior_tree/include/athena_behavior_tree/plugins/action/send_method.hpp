@@ -72,8 +72,7 @@ public:
     return 
       {
         BT::InputPort<std::string>("service_name", "The name of the service"), 
-         BT::InputPort<std::string>("robot", "The robot to be associated with this action"), 
-
+        BT::InputPort<std::vector<std::string>>("robots", "", "The robots involved in the plan"),
       };
   }
 
