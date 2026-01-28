@@ -1,0 +1,44 @@
+(define
+	(problem pfile01)
+	(:domain  manipulation_domain_htn)
+	(:objects
+        fork knife - item
+        banana pear - food
+        mug glass bowl - container
+        wp1s wp2s wp3s wp4s wp5s wp6s wp7s - location
+        wp1f wp2f wp3f wp4f wp5f wp6f - location
+        home1 home2 - location 
+		robot1 robot2 - robot
+    )
+	(:htn
+		:parameters ()
+		:subtasks (and
+		 (task0 (move bowl wp3s))
+		 ;;(task1 (move knife wp2f))
+		 ;;(task2 (move bowl wp3f))
+		 ;;(task3 (move mug wp4f))
+		 ;;(task4 (move glass wp5f))
+		 ;;(task5 (put banana bowl))
+		 ;;(task6 (put pear bowl))
+		)
+		:ordering (and
+			;;(< task0 task1)
+			;;(< task1 task2)
+			;;(< task2 task3)
+			;;(< task3 task4)
+			;;(< task4 task5)
+			;;(< task5 task6)
+		)
+	)
+	(:init
+	    (at robot1 home1)
+		(at robot2 home2)
+	    (at fork wp1s)
+        (at knife wp2s)
+        (at bowl wp3s)
+        (at banana wp4s)
+        (at pear wp5s)
+        (at mug wp6s)
+        (at glass wp7s)
+	)
+)

@@ -32,6 +32,11 @@ class Planner
 public:
   using Ptr = std::shared_ptr<Planner>;
 
+
+  std::string property_filename_;
+  std::string proto_filename_;
+
+
    /**
    * @brief Virtual destructor
    */

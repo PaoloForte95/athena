@@ -1,0 +1,216 @@
+(define (domain manipulation_domain_htn)
+	(:requirements :negative-preconditions :typing :hierarchy :universal-preconditions :method-preconditions)
+	
+	(:types
+		location - object
+		locatable - object
+		item - locatable
+		robot  - locatable
+		container - item
+		food - item
+	)
+
+	(:predicates
+		(in ?arg0 - item ?arg1 - robot)
+		(at ?arg0 - locatable ?arg1 - location)
+		(on ?arg0 - item ?arg1 - item)
+	)
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TASKS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	(:task move
+		:parameters (?o - item ?l - location)
+	)
+
+	(:task put
+		:parameters (?o - item ?c - container)
+	)
+
+	(:task go_to
+		:parameters (?r - robot ?l - location)
+	)
+
+	(:task load
+		:parameters (?r - robot ?o - item ?l - location)
+	)
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; METHODS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	(:method m_i_am_there_ordering_0
+		:parameters (?l - location ?r - robot)
+		:task (go_to ?r ?l)
+		:subtasks (and
+		 (task0 (noop ?r ?l))
+		)
+	)
+
+	(:method m_go_to_ordering_0
+		:parameters (?l1 - location ?l2 - location ?r - robot)
+		:task (go_to ?r ?l2)
+		:subtasks (and
+		 (task0 (go ?r ?l1 ?l2))
+		)
+	)
+
+	(:method m_move_item_ordering_0
+		:parameters (?l1 - location ?l2 - location ?o - item ?r - robot)
+		:task (move ?o ?l2)
+		:subtasks (and
+		 (task0 (go_to ?r ?l1))
+		 (task1 (load ?r ?o ?l1))
+		 (task2 (go_to ?r ?l2))
+		 (task3 (place ?r ?o ?l2))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+		)
+	)
+
+	
+	(:method m_put_ordering_0
+		:parameters (?l1 - location ?l2 - location ?o1 - item ?c - container ?r - robot)
+		:task (put ?o1 ?c)
+		:subtasks (and
+		 (task0 (go_to ?r ?l1))
+		 (task1 (load ?r ?o1 ?l1))
+		 (task2 (go_to ?r ?l2))
+		 (task3 (put_on_container ?r ?o1 ?c ?l2))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+		)
+	)
+
+	(:method m_put_ordering_1
+		:parameters (?l1 - location ?l2 - location ?o1 - item ?c - container ?r - robot)
+		:task (put ?o1 ?c)
+		:subtasks (and
+		 (task0 (move ?c ?l2))
+		 (task1 (go_to ?r ?l1))
+		 (task2 (load ?r ?o1 ?l1))
+		 (task3 (go_to ?r ?l2))
+		 (task4 (put_on_container ?r ?o1 ?c ?l2))
+		)
+		:ordering (and
+			(< task0 task1)
+			(< task1 task2)
+			(< task2 task3)
+			(< task3 task4)
+		)
+	)
+
+
+	(:method m_load_ordering_0
+		:parameters (?l - location ?o - item ?r - robot)
+		:task (load ?r ?o ?l)
+		:subtasks (and
+		 (task0 (pick ?r ?o ?l))
+		)
+	)
+
+	(:method m_load_ordering_1
+		:parameters (?l - location ?o1 - item ?o2 - item ?r - robot)
+		:task (load ?r ?o1 ?l)
+		:subtasks (and
+		 (task0 (unstack ?r ?o1 ?o2 ?l))
+		)
+	)
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ACTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	(:action go
+		:parameters (?r - robot ?l1 - location ?l2 - location)
+		:precondition 
+			(and
+				(at ?r ?l1)
+			)
+		:effect
+			(and
+				(not (at ?r ?l1))
+				(at ?r ?l2)
+			)
+	)
+
+	(:action noop
+		:parameters (?r - robot ?l2 - location)
+		:precondition 
+			(and
+				(at ?r ?l2)
+			)
+		:effect ()
+	)
+
+	(:action place
+		:parameters (?r - robot ?o - item ?l - location )
+		:precondition 
+			(and
+				(at ?r ?l)
+				(in ?o ?r)
+			)
+		:effect
+			(and
+				(not (in ?o ?r))
+				(at ?o ?l)
+			)
+	)
+
+	(:action put_on_container
+		:parameters (?r - robot ?o1 - item ?c - container ?l - location)
+		:precondition 
+			(and
+				(at ?r ?l)
+				(in ?o1 ?r)
+				(at ?c ?l)
+			)
+		:effect
+			(and
+				(not (in ?o1 ?r))
+				(at ?o1 ?l)
+				(on ?o1 ?c)
+			)
+	)
+
+
+	(:action pick
+		:parameters (?r - robot ?o - item ?l - location )
+		:precondition 
+			(and
+				(at ?r ?l)
+				(at ?o ?l)
+				(forall (?o2 - item)
+						(not (on ?o2 ?o))
+				)
+			)
+		:effect
+			(and
+				(in ?o ?r)
+				(not (at ?o ?l))
+			)
+	)
+
+	(:action unstack
+		:parameters (?r - robot ?o1 - item ?o2 - item ?l - location )
+		:precondition 
+			(and
+				(at ?r ?l)
+				(at ?o2 ?l)
+				(at ?o1 ?l)
+				(forall (?o3 - item)
+					(not (on ?o3 ?o1))
+				)
+				(on ?o1 ?o2)
+			)
+		:effect
+			(and
+				(not (on ?o1 ?o2))
+				(in ?o1 ?r)
+				(not (at ?o1 ?l))
+			)
+	)
+
+
+)
