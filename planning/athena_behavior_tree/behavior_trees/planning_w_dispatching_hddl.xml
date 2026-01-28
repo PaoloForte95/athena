@@ -6,15 +6,20 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
-  <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}"/>
+  <CheckProblemFile name="CheckProblemFileCondition" problem_file="{problem_file}" isProblemDefined="{is_problem_defined}"/>
+   <GenerateProblemFile name="GenerateProblemFile" 
+    problem_file="{problem_file}" 
+    instruction="instruction.txt" 
+    prompt="prompt.txt" 
+    format="HDDL"
+    _skipIf="is_problem_defined"/>
+  <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
   <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
-  <RateController hz="3.0">
   <DispatchMethods name="MethodDispatcher"  execution_plan="{execution_plan}" concurrent_methods="{concurrent_methods}" completed_methods="{completed_methods}"/>
-  </RateController>
   <Sequence>
-  <SendMethod name="SendMethod" robot="robot1" service_name="method_executor" />
+  <SendMethod name="SendMethod" robots="{robots}" service_name="method_executor" />
   <UpdateState name="UpdateState" state_updater="SimpleStateUpdater" previous_state="{state}" current_state="{state}"/>
-  </Sequence> 
+  </Sequence>  
  </ExecutePlanNode>
   </Sequence> 
 </BehaviorTree>
