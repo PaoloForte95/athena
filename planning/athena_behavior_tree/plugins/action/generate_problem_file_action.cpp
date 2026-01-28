@@ -81,8 +81,8 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
     auto result = client_->async_send_request(request);
     if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
     {
-        auto file = result.get()->ouput_file;
-        RCLCPP_INFO(node_->get_logger(), "response.ouput_file %s" , file.data.c_str());
+        auto file = result.get()->problem_file;
+        RCLCPP_INFO(node_->get_logger(), "response.problem_file %s" , file.data.c_str());
         setOutput("problem_file", file.data);
         return BT::NodeStatus::SUCCESS;
     }

@@ -6,4 +6,4 @@ std_msgs/String image_file
 
 ---
 # Response
-std_msgs/String ouput_file
+std_msgs/String problem_file

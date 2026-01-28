@@ -17,6 +17,7 @@
             <input_port name="instruction">Instruction</input_port>
             <input_port name="format">The format of the file to generate</input_port>
             <input_port name="prompt">Prompt</input_port>
+            <input_port name="image_topic">The topic to get the image from</input_port>
     </Action>
 
     <Action ID="DispatchTasks">

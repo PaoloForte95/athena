@@ -17,7 +17,7 @@ from google import genai
 import PIL.Image
 
 GPT_MODEL="gpt-4o"
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-2.5-flash"
 open_ai_key = os.environ["OPEN_API_KEY"]
 gemini_api_key=os.environ["GEMINI_API_KEY"]
 class VlmApi:
@@ -34,7 +34,7 @@ class VlmApi:
         with open(instruction, "r") as command_file:
             # Read the entire content of the file
             self.instruction = command_file.read()
-        
+
         #self.openai_client = OpenAI(api_key=open_ai_key)
         self.gemini_client = genai.Client(api_key=gemini_api_key)
     # Function to encode the image
@@ -143,35 +143,36 @@ class VlmApiNode(Node):
         
         
     def compute_problem_file_callback(self, request, response):
-        if self.image is None:
-            self.get_logger().error(f'Image is not available')
-        else: 
-            try:
-                bridge = CvBridge()
-                self.get_logger().info(f'Creating problem')
-     
+        
+        try:
+            bridge = CvBridge()
+            self.get_logger().info(f'Creating problem')
+
+            if request.image_file.data.strip() != "":
+                image_path = request.image_file.data
+            
+            else:
                 # Convert ROS Image message to OpenCV image
                 cv_image = bridge.imgmsg_to_cv2(self.image, desired_encoding='bgr8')
 
                 # Create a file name
                 image_name = f'problem1.png'
-                outfile = f'problem1.pddl'
+                
                 image_path = os.path.join("./", image_name)
                 # Save the image
                 cv2.imwrite(image_path, cv_image)
                 
-                self.VlmApi = VlmApi(request.prompt.data, request.instruction.data, outfile)
-                filename = self.VlmApi.generateProblemFile(image_path)
-                msg = String()
-                msg.data = filename
-                response.ouput_file = msg
-                self.get_logger().info('Problem %s file created!' %filename)
-            
-            except Exception as e:
-                self.get_logger().error(f'Could not convert image: {e}')
-
-
-
+            outfile = f'problem1.pddl'
+    
+            self.VlmApi = VlmApi(request.prompt.data, request.instruction.data, outfile)
+            filename = self.VlmApi.generateProblemFile(image_path)
+            msg = String()
+            msg.data = filename
+            response.problem_file = msg
+            self.get_logger().info('Problem %s file created!' %filename)
+        
+        except Exception as e:
+            self.get_logger().error(f'Could not convert image: {e}')
         return response
 
 
