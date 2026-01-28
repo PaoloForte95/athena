@@ -2,6 +2,7 @@
 
 std_msgs/String prompt
 std_msgs/String instruction
+std_msgs/String image_file
 
 ---
 # Response

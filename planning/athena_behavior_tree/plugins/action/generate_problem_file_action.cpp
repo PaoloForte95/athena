@@ -25,8 +25,13 @@ GenerateProblemFileAction::GenerateProblemFileAction(
   const BT::NodeConfiguration & conf)
 : ActionNodeBase(action_name, conf)
 {
+    std::string image_topic;
     node_ = rclcpp::Node::make_shared("generate_planning_problem_node");   
     client_ = node_->create_client<athena_msgs::srv::GenerateProblemFile>("generate_problem_file");
+    getInput("image_topic", image_topic);
+    subscription_ = node_->create_subscription<sensor_msgs::msg::Image>(
+            image_topic, 10,
+            std::bind(&GenerateProblemFileAction::imageCallback, this, std::placeholders::_1));
 }
 
 
@@ -44,8 +49,28 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
 
     request->prompt.data = prompt;
     request->instruction.data = instruction;
+    request->image_file.data = "";
 
+    try {
+            // Convert ROS image message to OpenCV format
+            cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(latest_image_, sensor_msgs::image_encodings::BGR8);
+            
+            // Save as PNG
+            std::string filename = "captured_image.png";
+            cv::imwrite(filename, cv_ptr->image);
+            
+            RCLCPP_INFO(node_->get_logger(), "Saved image to: %s", filename.c_str());
+            
+        } catch (cv_bridge::Exception& e) {
+            RCLCPP_ERROR(node_->get_logger(), "cv_bridge exception: %s", e.what());
+    }
 
+    if(latest_image_ == nullptr){
+        RCLCPP_INFO(node_->get_logger(), "Waiting for image...");
+        return BT::NodeStatus::RUNNING;
+        
+    }
+    request->image_file.data = image_;
     // while (!client_->wait_for_service(1s)) {
     //     if (!rclcpp::ok()) {
     //         RCLCPP_ERROR(node_->get_logger(), "Interrupted while waiting for the service. Exiting.");
@@ -66,11 +91,9 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
 }
 
 
-void GenerateProblemFileAction::generateProblemFile(){
-
-}
-
-
+void GenerateProblemFileAction::imageCallback(const sensor_msgs::msg::Image::SharedPtr msg) {
+        latest_image_ = msg;
+    }
 } 
 
 #include "behaviortree_cpp/bt_factory.h"

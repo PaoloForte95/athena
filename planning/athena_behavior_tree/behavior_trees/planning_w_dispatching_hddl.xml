@@ -12,6 +12,7 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
     instruction="instruction.txt" 
     prompt="prompt.txt" 
     format="HDDL"
+    image_topic="/camera/image_raw"
     _skipIf="is_problem_defined"/>
   <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
   <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">

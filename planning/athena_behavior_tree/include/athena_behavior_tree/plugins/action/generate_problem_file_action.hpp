@@ -64,7 +64,8 @@ public:
             BT::OutputPort<std::string>("problem_file","The path to the object location file"),
             BT::InputPort<std::string>("format", "PDDL", "The format of the file to generate, either PDDL or HDDL"), 
             BT::InputPort<std::string>("instruction", "The instruction to the VLM"), 
-            BT::InputPort<std::string>("prompt", "The promt to the VLM")
+            BT::InputPort<std::string>("prompt", "The promt to the VLM"),
+            BT::InputPort<std::string>("image_topic", "/camera/image_raw", "The topic to get the image from")
         };
     }
 private:
@@ -73,7 +74,8 @@ private:
 
     rclcpp::Node::SharedPtr node_;
     rclcpp::Client<athena_msgs::srv::GenerateProblemFile>::SharedPtr client_;
-    void generateProblemFile();
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
+    sensor_msgs::msg::Image::SharedPtr latest_image_;
     std::string problem_instance_;
     std::string image_;
 
