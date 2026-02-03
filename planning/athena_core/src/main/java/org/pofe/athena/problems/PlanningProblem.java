@@ -314,11 +314,16 @@ public class PlanningProblem {
 		public void parse(File domain, File problem) throws FileNotFoundException{
 			planning_domain_file = domain.getAbsolutePath();
 			planning_problem_file = problem.getAbsolutePath();
+			System.out.println("Parsing domain file: " + planning_domain_file);
+			System.out.println("Parsing problem file: " + planning_problem_file);
 			this.problemType = TYPE.SYMBOLIC;
 			this.ParsedDomain = parser.parseDomain(domain);
 			this.ParsedProblem = parser.parseProblem(problem);
-			if(this.ParsedDomain == null || this.ParsedProblem == null) {
-				throw new IllegalArgumentException("The domain or problem file is not valid");
+			if(this.ParsedDomain == null){
+				throw new IllegalArgumentException("The domain file is not valid");
+			}
+			else if (this.ParsedProblem == null){
+				throw new IllegalArgumentException("The problem file is not valid");
 			}
 			parseActions();
 			parseMethods();
