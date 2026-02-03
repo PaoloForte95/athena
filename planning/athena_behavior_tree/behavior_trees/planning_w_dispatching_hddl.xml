@@ -10,9 +10,10 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
    <GenerateProblemFile name="GenerateProblemFile" 
     problem_file="{problem_file}" 
     instruction="instruction.txt" 
-    prompt="prompt.txt" 
+    prompt="prompt_hddl.txt" 
     format="HDDL"
-    image_topic="/camera/image_raw"
+    image_topic="/camera/camera/color/image_raw"
+    output_name= "problem.hddl"
     _skipIf="is_problem_defined"/>
   <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
   <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
