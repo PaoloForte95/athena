@@ -25,13 +25,21 @@ GenerateProblemFileAction::GenerateProblemFileAction(
   const BT::NodeConfiguration & conf)
 : ActionNodeBase(action_name, conf)
 {
+    getInput("output_name", output_name_);
     std::string image_topic;
-    node_ = rclcpp::Node::make_shared("generate_planning_problem_node");   
+    node_ = rclcpp::Node::make_shared("generate_planning_problem_node"); 
+    callback_group_ = node_->create_callback_group( rclcpp::CallbackGroupType::MutuallyExclusive, false);
+    callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
+    rclcpp::SubscriptionOptions sub_option;
+    sub_option.callback_group = callback_group_;
+
     client_ = node_->create_client<athena_msgs::srv::GenerateProblemFile>("generate_problem_file");
     getInput("image_topic", image_topic);
     subscription_ = node_->create_subscription<sensor_msgs::msg::Image>(
-            image_topic, 10,
-            std::bind(&GenerateProblemFileAction::imageCallback, this, std::placeholders::_1));
+            image_topic,  
+            rclcpp::SystemDefaultsQoS(),
+            std::bind(&GenerateProblemFileAction::imageCallback, this, std::placeholders::_1),
+            sub_option);
 }
 
 
@@ -46,15 +54,21 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
     getInput("prompt", prompt);
     config().blackboard->set<std::string>("prompt", prompt);
     auto request = std::make_shared<athena_msgs::srv::GenerateProblemFile::Request>();
-
+    callback_group_executor_.spin_some();
     request->prompt.data = prompt;
     request->instruction.data = instruction;
     request->image_file.data = "";
+    request->output_name.data = output_name_;
+
+    if(latest_image_ == nullptr){
+        RCLCPP_INFO(node_->get_logger(), "Waiting for image...");
+        return BT::NodeStatus::RUNNING;
+        
+    }
 
     try {
             // Convert ROS image message to OpenCV format
             cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(latest_image_, sensor_msgs::image_encodings::BGR8);
-            
             // Save as PNG
             std::string filename = "captured_image.png";
             cv::imwrite(filename, cv_ptr->image);
@@ -65,11 +79,7 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
             RCLCPP_ERROR(node_->get_logger(), "cv_bridge exception: %s", e.what());
     }
 
-    if(latest_image_ == nullptr){
-        RCLCPP_INFO(node_->get_logger(), "Waiting for image...");
-        return BT::NodeStatus::RUNNING;
-        
-    }
+
     request->image_file.data = image_;
     // while (!client_->wait_for_service(1s)) {
     //     if (!rclcpp::ok()) {

@@ -65,19 +65,23 @@ public:
             BT::InputPort<std::string>("format", "PDDL", "The format of the file to generate, either PDDL or HDDL"), 
             BT::InputPort<std::string>("instruction", "The instruction to the VLM"), 
             BT::InputPort<std::string>("prompt", "The promt to the VLM"),
+            BT::InputPort<std::string>("output_name", "The output file name"),
             BT::InputPort<std::string>("image_topic", "/camera/image_raw", "The topic to get the image from")
         };
     }
 private:
     
-     void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg);
+    void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg);
 
     rclcpp::Node::SharedPtr node_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_;
+    rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
     rclcpp::Client<athena_msgs::srv::GenerateProblemFile>::SharedPtr client_;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
     sensor_msgs::msg::Image::SharedPtr latest_image_;
     std::string problem_instance_;
     std::string image_;
+    std::string output_name_;
 
 
 
