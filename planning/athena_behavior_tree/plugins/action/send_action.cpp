@@ -26,15 +26,25 @@ SendActionAction::SendActionAction(
 : ActionNodeBase(action_name, conf)
 {
     getInput("service_name", service_name_);
-    getInput("robot", robot_);
     node_ = rclcpp::Node::make_shared("send_action_client_node");
 
-    std::string service_name = robot_ + "/" +  service_name_;
-    client_ = rclcpp_action::create_client<athena_msgs::action::ExecuteAction>(node_, service_name);
 }
 
 inline BT::NodeStatus SendActionAction::tick()
 { 
+
+    std::vector<std::string> robots;
+    getInput("robots", robots);
+    RCLCPP_INFO(node_->get_logger(), "Robots involved in the plan: %d", robots.size());
+    for(auto rb: robots){
+      if (clients_.find(rb) != clients_.end()) {
+        RCLCPP_DEBUG(node_->get_logger(), "Client for robot %s already exists", rb.c_str());
+        continue;
+      }
+      std::string service_name = rb + "/" +  service_name_;
+      auto client = rclcpp_action::create_client<athena_msgs::action::ExecuteAction>(node_, service_name);
+      clients_[rb] = client;
+    }
     setStatus(BT::NodeStatus::RUNNING);
 
     //Get the load actions 
@@ -44,11 +54,8 @@ inline BT::NodeStatus SendActionAction::tick()
       return BT::NodeStatus::SUCCESS;
     }
     for (auto action: actions){
-        if(action.robot == robot_){
-            action_ = action;
-            SendAction(action);
-            break;
-        }
+        action_ = action;
+        SendAction(action);
     }
     
     if(action_status_ == ActionStatus::SUCCEEDED){
@@ -62,7 +69,7 @@ inline BT::NodeStatus SendActionAction::tick()
         completed_actions.push_back(completed_action.action_id);
       }
       config().blackboard->set<IDs>("completed_actions", completed_actions);
-      config().blackboard->set<std::string>(robot_ + "_state", "free");
+      config().blackboard->set<std::string>(action_.robot + "_state", "free");
    
 
       return BT::NodeStatus::SUCCESS;
@@ -79,8 +86,8 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
     using namespace std::placeholders;
 
 
-    std::string robot = action.robot;
-    auto is_action_server_ready = client_->wait_for_action_server(std::chrono::seconds(5));
+    std::string robot = action_.robot;
+    auto is_action_server_ready = clients_[robot]->wait_for_action_server(std::chrono::seconds(5));
      while (!is_action_server_ready) { 
         RCLCPP_ERROR( node_->get_logger(), "send action action server is not available."); 
         std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -95,7 +102,7 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
     auto send_goal_options = rclcpp_action::Client<athena_msgs::action::ExecuteAction>::SendGoalOptions();
     send_goal_options.goal_response_callback =std::bind(&SendActionAction::goal_response_callback, this, std::placeholders::_1);
     send_goal_options.result_callback = std::bind(&SendActionAction::result_callback, this,std::placeholders::_1);
-    auto future_goal_handle = client_->async_send_goal(goal_msg, send_goal_options);
+    auto future_goal_handle = clients_[robot]->async_send_goal(goal_msg, send_goal_options);
     if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
     {
         RCLCPP_INFO(node_->get_logger(), "Failed sending goal"); // Failed sending the goal
@@ -104,7 +111,7 @@ void SendActionAction::SendAction(athena_msgs::msg::Action action)
     RCLCPP_INFO(node_->get_logger(), "Goal sent!");
     send_load_handler_ = future_goal_handle.get();
 
-    auto future_result = client_->async_get_result(send_load_handler_);
+    auto future_result = clients_[robot]->async_get_result(send_load_handler_);
     
     rclcpp::spin_until_future_complete(node_, future_result);
     rclcpp_action::ClientGoalHandle<athena_msgs::action::ExecuteAction>::WrappedResult wrapped_result = future_result.get();

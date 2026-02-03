@@ -72,7 +72,7 @@ public:
     return 
       {
         BT::InputPort<std::string>("service_name", "The name of the service"), 
-         BT::InputPort<std::string>("robot", "The robot to be associated with this action"), 
+        BT::InputPort<std::vector<std::string>>("robots", "", "The robots involved in the plan"),
 
       };
   }
@@ -91,8 +91,8 @@ private:
   ActionStatus action_status_;
   athena_msgs::msg::Action action_;
   Actions concurrent_actions_;
-  std::string robot_;
-  Client client_;
+  std::map<std::string, Client> clients_;
+
 
    void goal_response_callback(const GoalHandleSendLoad::SharedPtr & goal_handle);
 
