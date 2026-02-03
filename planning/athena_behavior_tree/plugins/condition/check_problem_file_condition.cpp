@@ -30,7 +30,6 @@ bool CheckProblemFileCondition::checkProblemFile(){
     std::string problem_file_;
     getInput<std::string>("problem_file", problem_file_);
     if(problem_file_.empty()){
-        RCLCPP_WARN(node_->get_logger(), "Problem file is not defined!");
         return false;
     }
     return true;
