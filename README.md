@@ -19,6 +19,10 @@ The planning component is responsible for parsing the domain and problem descrip
 
 <h1 align="center">Dependencies</h1>
 
+# ROS2 
+Install [ROS2](https://docs.ros.org/#ros-for-beginners) Jazzy following the instruction provided at this [link](https://docs.ros.org/en/jazzy/).
+
+
 # Protobuf
 Install Protobuf from https://github.com/protocolbuffers/protobuf
 
@@ -37,19 +41,25 @@ distributionUrl=https\://services.gradle.org/distributions/<compatible_gradle_ve
 ```
 <h1 align="center">Installation</h1>
 
+Create a ros2 workspace. Replace <ROS2-WS> with a fancy name.
+```
+mkdir -p ~/<ROS2-WS>/src
+cd ~/<ROS2-WS>/src
+```
 Clone the Athena repository:
 ```
 $ git clone https://github.com/PaoloForte95/athena.git
 ```
 Copy the generated PDDL4J JAR file into the Athena protobuf library directory:
 ```
-$ cp <path/to/pddl4j>/build/libs/pddl4j-4.0.0.jar src/athena/planning/athena_protobuf/lib/
+$ cp <path/to/pddl4j>/build/libs/pddl4j-4.0.0.jar ~/<ROS2-WS>/src/athena/planning/athena_core/lib/
+$ cp <path/to/pddl4j>/build/libs/pddl4j-4.0.0.jar ~/<ROS2-WS>/src/athena/planning/athena_protobuf/lib/
 ```
 Build the task planner executable, which invokes the Java code for parsing planning problems and computing execution plans:
 ```
-$ cd src/athena/planning/athena_core/
+$ cd ~/<ROS2-WS>/src/athena/planning/athena_core/
 $ ./gradlew build
-$ cp <path/to/pddl4j>/build/libs/athena_core-0.1.0 src/athena/planning/athena_protobuf/lib/
+$ cp build/libs/athena_core-0.1.0.jar ../athena_protobuf/lib/
 $ cd ../athena_protobuf/
 $ ./gradlew build
 ```
@@ -61,6 +71,7 @@ The parsing logic and the concurrent-plan generation code are located in athena_
 
 Finally, build the ROS 2 workspace using colcon
 ```
+cd ~/<ROS2-WS>
 $ colcon build --packages-up-to athena
 ```
 
@@ -99,7 +110,7 @@ source <path/to/venv/bin/activate>
 ```
 Install the required dependencies:
 ```
-pip install openai "numpy==1.26.4" "opencv-python==4.10.0.84" google-genai pillow
+pip install openai "opencv-python==4.10.0.84" google-genai pillow
 ```
 
 # Set up for api keys.
