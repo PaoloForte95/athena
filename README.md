@@ -1,4 +1,4 @@
-# Athena
+<h1 align="center">ATHENA</h1>
 
 <p align="center">
   <img height="300" src="doc/logo.png" />
@@ -10,36 +10,33 @@ Athena is a planning framework based on behavior trees. Its main features are:
 * Compute total ordered, partial ordered, and concurrent plans.
 * Plan, dispatch, and execute the actions using behavior tree.
 
-
-# Overview
+<h1 align="center">Overview</h1>
 
 Athena is composed of two main components: **planning** and **execution**.
 
 The planning component is responsible for parsing the domain and problem descriptions and computing an execution plan. The execution component dispatches and executes the actions and methods contained in the plan. Since actions are implemented as behavior tree nodes, their execution logic can be customized and extended.
 
----
 
+<h1 align="center">Dependencies</h1>
 
-# Dependencies
-
-## Protobuf
+# Protobuf
 Install Protobuf from https://github.com/protocolbuffers/protobuf
 
 
-## PDDL4j
+# PDDL4j
 Clone and build PDDL4J. It is not necessary to build it inside the ROS 2 workspace.
 ```
-git clone https://github.com/pellierd/pddl4j.git
+git clone https://github.com/PaoloForte95/pddl4j
 cd pddl4j
 git checkout devel
 ./gradlew build -PnoCheckStyle -PnoTest
 ```
-If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file:
+If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file according to your java version. You can check the Compatibility Matrix [here] (https://docs.gradle.org/current/userguide/compatibility.html):
 ```
-distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/<compatible_gradle_version>-bin.zip
 ```
+<h1 align="center">Installation</h1>
 
-# Installation
 Clone the Athena repository:
 ```
 $ git clone https://gitsvn-nt.oru.se/pofe/athena.git
@@ -56,6 +53,8 @@ $ cp <path/to/pddl4j>/build/libs/athena_core-0.1.0 src/athena/planning/athena_pr
 $ cd ../athena_protobuf/
 $ ./gradlew build
 ```
+If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file according to your java version. 
+
 This process generates an executable JAR file named task_planner in athena_planner/Planners. This executable is used to compute execution plans.
 
 The parsing logic and the concurrent-plan generation code are located in athena_core. Any modification to this component requires rebuilding the project.
@@ -64,10 +63,10 @@ Finally, build the ROS 2 workspace using colcon
 ```
 $ colcon build --packages-up-to athena
 ```
-# Running 
 
+<h1 align="center">Running</h1>
 
-## Running an example
+To run an example
 
 1) Source the workspace:
 ```
@@ -87,9 +86,10 @@ ros2 launch athena_exe_launch execution_launch.py
 source install/setup.bash
 ros2 topic pub --once /planning_problem athena_msgs/msg/PlanningProblem "{planning_domain: <path/to/pddl/planning/domain>, planning_problem: <path/to/pddl/planning/problem>}"
 ```
-# Connection with VLM 
 
-## Python Virtual Environment
+<h1 align="center">Connection with VLM</h1>
+
+# Python Virtual Environment
 
 Create a <a href="https://docs.python.org/3/library/venv.html">python virtual environment.</a>. 
 
@@ -102,19 +102,18 @@ Install the required dependencies:
 pip install openai "numpy==1.26.4" "opencv-python==4.10.0.84" google-genai pillow
 ```
 
-## Set up for api keys.
+# Set up for api keys.
 These keys are required for automatic planning-problem generation. <br> 
 Add the following lines to your .bashrc:
 ```
 export OPEN_API_KEY="your_api_key_here"
 expor GEMINI_API_KEY="your_api_key_here"
 ```
-## Creating a Prompt
+# Creating a Prompt
 Athena can automatically generate planning problem files. To enable this feature, create a prompt file and save it in the ROS 2 workspace.
 
+<h1 align="center">Add your own planner</h1>
 
-
-# Add your own planner
 Athena supports the integration of additional task planners.
 
 To add a new planner:
