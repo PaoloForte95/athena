@@ -39,7 +39,7 @@ distributionUrl=https\://services.gradle.org/distributions/<compatible_gradle_ve
 
 Clone the Athena repository:
 ```
-$ git clone https://gitsvn-nt.oru.se/pofe/athena.git
+$ git clone https://github.com/PaoloForte95/athena.git
 ```
 Copy the generated PDDL4J JAR file into the Athena protobuf library directory:
 ```
