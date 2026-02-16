@@ -18,9 +18,9 @@ import PIL.Image
 from pathlib import Path
 
 
-GPT_MODEL="gpt-4o"
-GEMINI_MODEL = "gemini-2.5-flash"
-open_ai_key = os.environ["OPEN_API_KEY"]
+GPT_MODEL="gpt-4.1"
+GEMINI_MODEL = "gemini-3-flash-preview"
+open_ai_key = os.environ["OPENAI_API_KEY"]
 gemini_api_key=os.environ["GEMINI_API_KEY"]
 class VlmApi:
     def __init__(self, system_prompt, instruction, output_file = "problem.pddl"):
@@ -37,8 +37,9 @@ class VlmApi:
             # Read the entire content of the file
             self.instruction = command_file.read()
 
-        #self.openai_client = OpenAI(api_key=open_ai_key)
+        self.openai_client = OpenAI(api_key=open_ai_key)  # CHANGED
         self.gemini_client = genai.Client(api_key=gemini_api_key)
+
     # Function to encode the image
     def encode_image(self, image_path):
         with open(image_path, "rb") as image_file:
@@ -48,31 +49,28 @@ class VlmApi:
     @lru_cache()
     def analyze_image(self,img_path, user_prompt, prompt):
         base64_image = self.encode_image(img_path)
-        response = self.openai_client.chat.completions.create(
+
+        response = self.openai_client.responses.create(
         model=GPT_MODEL,
-        messages=[
-            {"role": "system", "content": prompt},
+        temperature=0.0,
+        input=[
+            {"role": "system", "content": [{"type": "input_text", "text": prompt}]},
             {"role": "user", "content": [
-            {"type": "text", "text": user_prompt},
-            {"type": "image_url", "image_url": {
-                "url": f"data:image/png;base64,{base64_image}"}
-            }
+                {"type": "input_text", "text": user_prompt},
+                {"type": "input_image", "image_url": f"data:image/png;base64,{base64_image}"}
             ]}
         ],
-        temperature=0.0,
-         )
+        )
+        return response.output_text
         
-        response = response.choices[0].message.content
-        return response
-    
-    def generateProblemFile(self, image, model = "Gemini"):
+    def generateProblemFile(self, image, model = "ChatGpt"):
         if "Gemini" in model:
             self.logger.info(f"Generating planning problem using Gemini")
             response = self.gemini_client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=[self.prompt, image])
             response = response.text
-        elif "ChatGpt" in model:
+        if "ChatGpt" in model:
             self.logger.info(f"Generating planning problem using ChatGPT")
             response = self.analyze_image(image, self.instruction, self.prompt)
         self.logger.info(response)
@@ -104,21 +102,6 @@ class VlmApi:
 
         pddl_content = input_text[start_index:end_index]
 
-        # ### Creating an image with GPT output
-        # lines = pddl_content.split('\n')
-        # text_image = np.ones((1200, 800), dtype=np.uint8)*255
-        # text_size = 0.65
-        # text_width = 1
-        # text_color = (0,0,255)
-        # text_font = cv2.FONT_HERSHEY_SIMPLEX
-        # text_line = cv2.LINE_AA
-        # text_height = 50
-
-        # for line in lines:
-        #     text_image = cv2.putText(text_image, line, (5, text_height), text_font, text_size, text_color, text_width, text_line)
-        #     text_height += 25
-        # PILImage.fromarray(text_image).save("plan_image.png")
-
         with open(output_file, 'w') as file:
             file.write(pddl_content)
 
@@ -142,7 +125,7 @@ class VlmApiNode(Node):
         image_path = str(cwd) + image
         outfile = request.output_name.data
         self.VlmApi = VlmApi(request.prompt.data, request.instruction.data, outfile)
-        filename = self.VlmApi.generateProblemFile(image_path)
+        filename = self.VlmApi.generateProblemFile("/home/pofe/planning_ws/captured_image.png")
         msg = String()
         msg.data = filename
         response.problem_file = msg
@@ -162,8 +145,6 @@ def main(args=None):
     
     VlmApi.destroy_node()
     rclpy.try_shutdown()
-    #vlm = VlmApi("prompt.txt", "instruction.txt")
-    #vlm.generateProblemFile("problem1.png")
 
 
 if __name__ == '__main__':
