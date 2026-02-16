@@ -6,15 +6,15 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
-  <!-- <CheckProblemFile name="CheckProblemFileCondition" problem_file="{problem_file}" isProblemDefined="{is_problem_defined}"/>
+  <CheckProblemFile name="CheckProblemFileCondition" problem_file="{problem_file}" isProblemDefined="{is_problem_defined}"/>
    <GenerateProblemFile name="GenerateProblemFile" 
     problem_file="{problem_file}" 
     instruction="instruction.txt" 
-    prompt="prompt_hddl.txt" 
+    prompt="prompt_pddl.txt" 
     format="HDDL"
     image_topic="/camera/camera/color/image_raw"
-    output_name= "problem.hddl"
-    _skipIf="is_problem_defined"/> -->
+    output_name= "problem.pddl"
+    _skipIf="is_problem_defined"/>
   <ComputePlan name="ComputePlanAction" planner="LPG" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
   <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
   <DispatchTasks name="TaskDispatcher"  execution_plan="{execution_plan}" concurrent_actions="{concurrent_actions}" completed_actions="{completed_actions}"/>
