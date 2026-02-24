@@ -24,13 +24,13 @@
   <depend>std_srvs</depend>
   <depend>athena_util</depend>
   <depend>lifecycle_msgs</depend>
-  <depend>nav2_common</depend>
+  <depend>athena_common</depend>
   <depend>athena_msgs</depend>
   <depend>visualization_msgs</depend>
   <depend>athena_behavior_tree</depend>
   <depend>athena_exe_msgs</depend>
   <depend>material_handler_msgs</depend>
-  <depend>nav2_costmap_2d</depend>
+  <depend>ament_index_cpp</depend>
   <depend>location_msgs</depend>
   
 

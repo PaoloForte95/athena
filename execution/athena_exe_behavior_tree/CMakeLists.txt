@@ -39,8 +39,8 @@ find_package(athena_exe_msgs REQUIRED)
 find_package(material_handler_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(athena_behavior_tree REQUIRED)
-find_package(nav2_costmap_2d REQUIRED)
 find_package(location_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 include_directories(
   include
@@ -68,8 +68,8 @@ set(dependencies
   athena_util
   visualization_msgs
   athena_behavior_tree
-  nav2_costmap_2d
   location_msgs
+  ament_index_cpp
 )
 
 #Actions
