@@ -17,7 +17,7 @@ endif()
 
 
 find_package(ament_cmake REQUIRED)
-find_package(nav2_common REQUIRED)
+find_package(athena_common REQUIRED)
 
 
 if(BUILD_TESTING)

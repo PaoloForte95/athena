@@ -7,7 +7,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(nav2_common REQUIRED)
+find_package(athena_common REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)

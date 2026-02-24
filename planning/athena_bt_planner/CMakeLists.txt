@@ -7,7 +7,7 @@ endif()
 
 
 find_package(ament_cmake REQUIRED)
-find_package(nav2_common REQUIRED)
+find_package(athena_common REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
@@ -51,7 +51,7 @@ set(dependencies
   behaviortree_cpp
   std_srvs
   tf2_ros
-  nav2_common
+  athena_common
 )
 
 add_library(${library_name} SHARED
