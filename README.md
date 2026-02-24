@@ -22,18 +22,29 @@ The planning component is responsible for parsing the domain and problem descrip
 # ROS2 
 Install [ROS2](https://docs.ros.org/#ros-for-beginners) Jazzy following the instruction provided at this [link](https://docs.ros.org/en/jazzy/).
 
-
+# Initial Dependencies
+```
+$ sudo apt install libabsl-dev cmake clang g++ ros-jazzy-bondcpp ros-jazzy-bond ros-jazzy-behaviortree-cpp ros-jazzy-nav2-msgs
+```
 # Protobuf
-Install Protobuf from https://github.com/protocolbuffers/protobuf
-
+Install [Protobuf](https://protobuf.dev/), by running the following commands:
+```
+$ git clone https://github.com/protocolbuffers/protobuf
+$ cd protobuf
+$ git checkout v6.31.1
+$ mkdir build  && cd build
+$ cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -Dprotobuf_BUILD_TESTS-OFF
+$ sudo make install -j4
+$ sudo ldconfig
+```
 
 # PDDL4j
 Clone and build PDDL4J. It is not necessary to build it inside the ROS 2 workspace.
 ```
-git clone https://github.com/PaoloForte95/pddl4j
-cd pddl4j
-git checkout devel
-./gradlew build -PnoCheckStyle -PnoTest
+$ git clone https://github.com/PaoloForte95/pddl4j
+$ cd pddl4j
+$ git checkout devel
+$ ./gradlew build -PnoCheckStyle -PnoTest
 ```
 If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file according to your java version. You can check the Compatibility Matrix [here] (https://docs.gradle.org/current/userguide/compatibility.html):
 ```
@@ -43,8 +54,8 @@ distributionUrl=https\://services.gradle.org/distributions/<compatible_gradle_ve
 
 Create a ros2 workspace. Replace <ROS2-WS> with a fancy name.
 ```
-mkdir -p ~/<ROS2-WS>/src
-cd ~/<ROS2-WS>/src
+$ mkdir -p ~/<ROS2-WS>/src
+$ cd ~/<ROS2-WS>/src
 ```
 Clone the Athena repository:
 ```
@@ -58,9 +69,11 @@ $ cp <path/to/pddl4j>/build/libs/pddl4j-4.0.0.jar ~/<ROS2-WS>/src/athena/plannin
 Build the task planner executable, which invokes the Java code for parsing planning problems and computing execution plans:
 ```
 $ cd ~/<ROS2-WS>/src/athena/planning/athena_core/
+$ chmod +x gradlew
 $ ./gradlew build
 $ cp build/libs/athena_core-0.1.0.jar ../athena_protobuf/lib/
 $ cd ../athena_protobuf/
+$ chmod +x gradlew
 $ ./gradlew build
 ```
 If you encounter issues related to the Java version, update the distributionUrl in the gradle-wrapper.properties file according to your java version. 
@@ -110,7 +123,7 @@ source <path/to/venv/bin/activate>
 ```
 Install the required dependencies:
 ```
-pip install openai "opencv-python==4.10.0.84" google-genai pillow
+pip install openai "opencv-python==4.10.0.84" google-genai pillow yaml setuptools
 ```
 
 # Set up for api keys.
