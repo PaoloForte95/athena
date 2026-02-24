@@ -80,7 +80,6 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
     sensor_msgs::msg::Image::SharedPtr latest_image_;
     std::string problem_instance_;
-    std::string image_;
     std::string output_name_;
 
 

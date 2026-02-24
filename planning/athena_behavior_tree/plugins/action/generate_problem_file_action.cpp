@@ -74,13 +74,16 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
             cv::imwrite(filename, cv_ptr->image);
             
             RCLCPP_INFO(node_->get_logger(), "Saved image to: %s", filename.c_str());
+            std::filesystem::path cwd = std::filesystem::current_path();
+            request->image_file.data = (cwd / filename).string();
             
         } catch (cv_bridge::Exception& e) {
             RCLCPP_ERROR(node_->get_logger(), "cv_bridge exception: %s", e.what());
+            request->image_file.data = "";
     }
 
-
-    request->image_file.data = image_;
+    
+   
     // while (!client_->wait_for_service(1s)) {
     //     if (!rclcpp::ok()) {
     //         RCLCPP_ERROR(node_->get_logger(), "Interrupted while waiting for the service. Exiting.");

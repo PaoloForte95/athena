@@ -120,9 +120,8 @@ class VlmApiNode(Node):
         
     def compute_problem_file_callback(self, request, response):
         
-        image = request.image_file.data
-        cwd = Path.cwd()
-        image_path = str(cwd) + image
+        image_path = request.image_file.data
+        self.get_logger().info('Image path: %s' %image_path)
         outfile = request.output_name.data
         self.VlmApi = VlmApi(request.prompt.data, request.instruction.data, outfile)
         filename = self.VlmApi.generateProblemFile("/home/pofe/planning_ws/captured_image.png")
