@@ -38,6 +38,7 @@ find_package(visualization_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(standard_msgs REQUIRED)
 
 include_directories(
   include
@@ -65,6 +66,7 @@ set(dependencies
   yaml-cpp
   cv_bridge
   OpenCV
+  standard_msgs
 )
 
 add_library(${library_name} SHARED
@@ -79,25 +81,11 @@ ament_target_dependencies(${library_name}
 add_library(athena_compute_plan_action_bt_node SHARED plugins/action/compute_plan_action.cpp)
 list(APPEND plugin_libs athena_compute_plan_action_bt_node)
 
-add_library(athena_dispatch_tasks_action_bt_node SHARED plugins/action/dispatch_tasks_action.cpp)
-list(APPEND plugin_libs athena_dispatch_tasks_action_bt_node)
-
-add_library(athena_dispatch_methods_action_bt_node SHARED plugins/action/dispatch_methods_action.cpp)
-list(APPEND plugin_libs athena_dispatch_methods_action_bt_node)
-
-add_library(athena_send_method_action_bt_node SHARED plugins/action/send_method.cpp)
-list(APPEND plugin_libs athena_send_method_action_bt_node)
-
-add_library(athena_send_action_action_bt_node SHARED plugins/action/send_action.cpp)
-list(APPEND plugin_libs athena_send_action_action_bt_node)
-
 add_library(athena_update_state_action_bt_node SHARED plugins/action/update_state_action.cpp)
 list(APPEND plugin_libs athena_update_state_action_bt_node)
 
 add_library(athena_detect_objects_action_bt_node SHARED plugins/action/detect_objects_action.cpp)
 list(APPEND plugin_libs athena_detect_objects_action_bt_node)
-
-
 
 add_library(athena_generate_problem_file_action_bt_node SHARED plugins/action/generate_problem_file_action.cpp)
 list(APPEND plugin_libs athena_generate_problem_file_action_bt_node)
@@ -106,16 +94,22 @@ target_link_libraries(athena_generate_problem_file_action_bt_node ${OpenCV_LIBRA
 add_library(athena_update_prompt_action_bt_node SHARED plugins/action/update_prompt_action.cpp)
 list(APPEND plugin_libs athena_update_prompt_action_bt_node)
 
-#Condition
+add_library(athena_send_move_action_bt_node SHARED plugins/action/send_move_action.cpp)
+list(APPEND plugin_libs athena_send_move_action_bt_node)
 
+add_library(athena_send_load_action_bt_node SHARED plugins/action/send_load_action.cpp)
+list(APPEND plugin_libs athena_send_load_action_bt_node)
+
+add_library(athena_send_dump_action_bt_node SHARED plugins/action/send_dump_action.cpp)
+list(APPEND plugin_libs athena_send_dump_action_bt_node)
+
+#Condition
 add_library(athena_all_object_detected_condition_node SHARED plugins/condition/all_object_detected_condition.cpp)
 list(APPEND plugin_libs athena_all_object_detected_condition_node)
 target_link_libraries(athena_all_object_detected_condition_node yaml-cpp)
 
 add_library(athena_check_problem_file_condition_node SHARED plugins/condition/check_problem_file_condition.cpp)
 list(APPEND plugin_libs athena_check_problem_file_condition_node)
-
-
 
 #Control
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
@@ -124,14 +118,13 @@ list(APPEND plugin_libs athena_execute_plan_node_bt_node)
 add_library(athena_recovery_node_bt_node SHARED plugins/control/recovery_node.cpp)
 list(APPEND plugin_libs athena_recovery_node_bt_node)
 
-
 add_library(athena_pipeline_sequence_bt_node SHARED plugins/control/pipeline_sequence.cpp)
 list(APPEND plugin_libs athena_pipeline_sequence_bt_node)
 
-#Decorator
-add_library(athena_selected_robot_controller_bt_node SHARED plugins/decorator/selected_robot_controller.cpp)
-list(APPEND plugin_libs athena_selected_robot_controller_bt_node)
+add_library(athena_dispatcher_node_bt_node SHARED plugins/control/dispatcher_node.cpp)
+list(APPEND plugin_libs athena_dispatcher_node_bt_node)
 
+#Decorator
 add_library(athena_rate_controller_bt_node SHARED plugins/decorator/rate_controller.cpp)
 list(APPEND plugin_libs athena_rate_controller_bt_node)
 
