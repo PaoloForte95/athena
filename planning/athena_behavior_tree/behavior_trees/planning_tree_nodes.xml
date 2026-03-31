@@ -18,28 +18,7 @@
             <input_port name="format">The format of the file to generate</input_port>
             <input_port name="prompt">Prompt</input_port>
             <input_port name="image_topic">The topic to get the image from</input_port>
-    </Action>
-
-    <Action ID="DispatchTasks">
-            <output_port name="concurrent_actions">The set of all actions that can be executed at current step</output_port>
-            <input_port name="execution_plan">The computed execution plan</input_port>
-            <input_port name="completed_actions">The set of completed actions</input_port>
-    </Action>
-
-    <Action ID="DispatchMethods">
-            <output_port name="concurrent_methods">The set of all methods that can be executed at current step</output_port>
-            <input_port name="execution_plan">The computed execution plan</input_port>
-            <input_port name="completed_methods">The set of completed methods</input_port>
-    </Action>
-
-    <Action ID="SendMethod">
-            <input_port name="service_name"></input_port>
-            <input_port name="robots">The robots involved in the plan</input_port>
-    </Action>
-
-    <Action ID="SendAction">
-            <input_port name="service_name"></input_port>
-            <input_port name="robot_id">The id of the robot to be associated with this action</input_port>
+            <input_port name="output_name">The name of the output file</input_port>
     </Action>
 
      <Action ID="UpdatePrompt">
@@ -59,12 +38,22 @@
             <input_port name="output_objects">The location to the saved depth image</input_port>
             <input_port name="problem_instance">The path to the generated PDDL problem instance image</input_port>
     </Action>
+    
+    <Action ID="SendMove">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="robot_id">The id of the robot </input_port>
+    </Action>
+
 
     <!-- ############################### CONDITION NODES ############################## -->
 
     <Condition ID="AllObjectDetected">
     </Condition>
 
+    <Condition ID="CheckProblemFile">
+        <input_port name="problem_file">The problem file to check against</input_port>
+        <output_port name="isProblemDefined">Whether the problem file defines the action</output_port>
+    </Condition>
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="RecoveryNode">
       <input_port name="number_of_retries">Number of retries</input_port>
@@ -75,6 +64,15 @@
     </Control>
 
     <Control ID="PipelineSequence"/>
+
+    <Control ID="DispatcherNode">
+      <input_port name="execution_plan">The computed execution plan</input_port>
+      <input_port name="completed_actions">The set of completed actions</input_port>
+      <input_port name="completed_methods">The set of completed methods</input_port>
+      <input_port name="type">Whether to dispatch actions or methods</input_port>
+      <output_port name="concurrent_methods">The set of all methods that can be executed at current step</output_port>
+      <output_port name="concurrent_actions">The set of all actions that can be executed at current step</output_port>
+     </Control>
     <!-- ############################### DECORATOR NODES ############################## -->
 
     <Decorator ID="RateController">

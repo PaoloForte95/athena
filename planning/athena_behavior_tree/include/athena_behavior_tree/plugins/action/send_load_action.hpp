@@ -1,28 +1,13 @@
-// Copyright (c) 2023 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
-#ifndef ATHENA_CE_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
-#define ATHENA_CE_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
+#ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
+#define ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__SEND_LOAD_ACTION_HPP_
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "material_handler_msgs/action/load_material.hpp"
+#include "standard_msgs/action/load.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
 
-namespace athena_exe_behavior_tree
+namespace athena_behavior_tree
 {
 
 enum class ActionStatus
@@ -72,19 +57,19 @@ public:
     return 
       {
         BT::InputPort<std::string>("service_name", "The name of the service"), 
-        BT::InputPort<std::string>("global_frame", "map","Global frame"),
+        BT::InputPort<std::string>("robot_id", "The ID of the robot"),
       };
   }
 
 protected:
   typedef std::vector<athena_msgs::msg::Action> Actions;
-  typedef rclcpp_action::Client<material_handler_msgs::action::LoadMaterial>::SharedPtr Client;
-  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<material_handler_msgs::action::LoadMaterial>;
-  void sendLoad(Actions actions);
+  typedef rclcpp_action::Client<standard_msgs::action::Load>::SharedPtr Client;
+  using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<standard_msgs::action::Load>;
+  bool sendLoad(Actions actions);
   Actions getLoadActions();
 
 private:
-  std::string service_name_, global_frame_;
+  std::string service_name_, robot_id_;
   Client client_ptr_;
   GoalHandleSendLoad::SharedPtr send_load_handler_;
   rclcpp::Node::SharedPtr node_;
@@ -93,11 +78,11 @@ private:
 
    void goal_response_callback(const GoalHandleSendLoad::SharedPtr & goal_handle);
 
-   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const material_handler_msgs::action::LoadMaterial::Feedback> feedback);
+   void feedback_callback(GoalHandleSendLoad::SharedPtr, const std::shared_ptr<const standard_msgs::action::Load::Feedback> feedback);
 
    void result_callback(const GoalHandleSendLoad::WrappedResult & result);
 
-}; //End Class
+};
 
 
 }  

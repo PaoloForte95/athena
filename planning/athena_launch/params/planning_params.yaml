@@ -15,11 +15,6 @@ bt_planner:
     - athena_rate_controller_bt_node
     - athena_compute_plan_action_bt_node
     - athena_execute_plan_node_bt_node
-    - athena_dispatch_methods_action_bt_node
-    - athena_selected_robot_controller_bt_node
-    - athena_send_method_action_bt_node
-    - athena_dispatch_tasks_action_bt_node
-    - athena_send_action_action_bt_node
     - athena_update_state_action_bt_node
     - athena_generate_problem_file_action_bt_node
     - athena_update_prompt_action_bt_node
@@ -28,6 +23,10 @@ bt_planner:
     - athena_pipeline_sequence_bt_node
     - athena_all_object_detected_condition_node
     - athena_check_problem_file_condition_node
+    - athena_dispatcher_node_bt_node
+    - athena_send_move_action_bt_node
+    - athena_send_load_action_bt_node
+    - athena_send_dump_action_bt_node
 
 task_planner_server:
  ros__parameters:
