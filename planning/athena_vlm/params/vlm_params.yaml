@@ -1,0 +1,11 @@
+pddl_domain_agent_node:
+  ros__parameters:
+    robot_yaml_path: "/home/pofe/planning_ws/robot_semantic.yaml"
+    base_domain_path: "/home/pofe/Repositories/planning_domains/domain_general.pddl"
+    output_domain_path: "/home/pofe/planning_ws/athena_domain.pddl"
+
+
+capability_extractor_agent_node:
+  ros__parameters:
+    urdf_path: "/home/pofe/simulation_ws/src/algoryx_ros2/urdf/panda.urdf"
+    out_yaml_path: "/home/pofe/planning_ws/robot_semantic.yaml"

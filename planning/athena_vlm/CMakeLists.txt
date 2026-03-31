@@ -39,4 +39,21 @@ install(PROGRAMS
   RENAME vlm_api
 )
 
+install(PROGRAMS
+  ${PROJECT_NAME}/capability_extractor_agent.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME capability_extractor_agent
+)
+
+install(PROGRAMS
+  ${PROJECT_NAME}/pddl_domain_agent.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME pddl_domain_agent
+)
+
+install(DIRECTORY
+  params
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_package()
