@@ -24,7 +24,7 @@ Install [ROS2](https://docs.ros.org/#ros-for-beginners) Jazzy following the inst
 
 # Initial Dependencies
 ```
-$ sudo apt install libabsl-dev cmake clang g++ ros-jazzy-bondcpp ros-jazzy-bond ros-jazzy-behaviortree-cpp ros-jazzy-nav2-msgs
+$ sudo apt install libabsl-dev cmake clang g++ ros-jazzy-bondcpp ros-jazzy-bond ros-jazzy-behaviortree-cpp ros-jazzy-nav2-msgs ros-jazzy-moveit_msgs ros-jazzy-control-msgs
 ```
 # Protobuf
 Install [Protobuf](https://protobuf.dev/), by running the following commands:
