@@ -711,7 +711,7 @@ class ProtoAction final : public ::google::protobuf::Message
     kEffectsFieldNumber = 8,
     kNameFieldNumber = 1,
     kRobotFieldNumber = 3,
-    kMaterialFieldNumber = 5,
+    kObjectFieldNumber = 5,
     kIdFieldNumber = 2,
   };
   // repeated string waypoints = 4;
@@ -828,19 +828,19 @@ class ProtoAction final : public ::google::protobuf::Message
   ::std::string* PROTOBUF_NONNULL _internal_mutable_robot();
 
   public:
-  // string material = 5;
-  void clear_material() ;
-  const ::std::string& material() const;
+  // string object = 5;
+  void clear_object() ;
+  const ::std::string& object() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_material(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_material();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_material();
-  void set_allocated_material(::std::string* PROTOBUF_NULLABLE value);
+  void set_object(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_object();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_object();
+  void set_allocated_object(::std::string* PROTOBUF_NULLABLE value);
 
   private:
-  const ::std::string& _internal_material() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_material(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_material();
+  const ::std::string& _internal_object() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_object(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_object();
 
   public:
   // int32 id = 2;
@@ -858,7 +858,7 @@ class ProtoAction final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<3, 8,
-                                   0, 81,
+                                   0, 79,
                                    2>
       _table_;
 
@@ -886,7 +886,7 @@ class ProtoAction final : public ::google::protobuf::Message
     ::google::protobuf::RepeatedPtrField<::std::string> effects_;
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::google::protobuf::internal::ArenaStringPtr robot_;
-    ::google::protobuf::internal::ArenaStringPtr material_;
+    ::google::protobuf::internal::ArenaStringPtr object_;
     ::int32_t id_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1480,69 +1480,69 @@ ProtoAction::_internal_mutable_waypoints() {
   return &_impl_.waypoints_;
 }
 
-// string material = 5;
-inline void ProtoAction::clear_material() {
+// string object = 5;
+inline void ProtoAction::clear_object() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.material_.ClearToEmpty();
+  _impl_.object_.ClearToEmpty();
   _impl_._has_bits_[0] &= ~0x00000004u;
 }
-inline const ::std::string& ProtoAction::material() const
+inline const ::std::string& ProtoAction::object() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:athena.ProtoAction.material)
-  return _internal_material();
+  // @@protoc_insertion_point(field_get:athena.ProtoAction.object)
+  return _internal_object();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void ProtoAction::set_material(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void ProtoAction::set_object(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.material_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:athena.ProtoAction.material)
+  _impl_.object_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:athena.ProtoAction.object)
 }
-inline ::std::string* PROTOBUF_NONNULL ProtoAction::mutable_material()
+inline ::std::string* PROTOBUF_NONNULL ProtoAction::mutable_object()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::std::string* _s = _internal_mutable_material();
-  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.material)
+  ::std::string* _s = _internal_mutable_object();
+  // @@protoc_insertion_point(field_mutable:athena.ProtoAction.object)
   return _s;
 }
-inline const ::std::string& ProtoAction::_internal_material() const {
+inline const ::std::string& ProtoAction::_internal_object() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.material_.Get();
+  return _impl_.object_.Get();
 }
-inline void ProtoAction::_internal_set_material(const ::std::string& value) {
+inline void ProtoAction::_internal_set_object(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.material_.Set(value, GetArena());
+  _impl_.object_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL ProtoAction::_internal_mutable_material() {
+inline ::std::string* PROTOBUF_NONNULL ProtoAction::_internal_mutable_object() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_._has_bits_[0] |= 0x00000004u;
-  return _impl_.material_.Mutable( GetArena());
+  return _impl_.object_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE ProtoAction::release_material() {
+inline ::std::string* PROTOBUF_NULLABLE ProtoAction::release_object() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:athena.ProtoAction.material)
+  // @@protoc_insertion_point(field_release:athena.ProtoAction.object)
   if ((_impl_._has_bits_[0] & 0x00000004u) == 0) {
     return nullptr;
   }
   _impl_._has_bits_[0] &= ~0x00000004u;
-  auto* released = _impl_.material_.Release();
+  auto* released = _impl_.object_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
-    _impl_.material_.Set("", GetArena());
+    _impl_.object_.Set("", GetArena());
   }
   return released;
 }
-inline void ProtoAction::set_allocated_material(::std::string* PROTOBUF_NULLABLE value) {
+inline void ProtoAction::set_allocated_object(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     _impl_._has_bits_[0] |= 0x00000004u;
   } else {
     _impl_._has_bits_[0] &= ~0x00000004u;
   }
-  _impl_.material_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.material_.IsDefault()) {
-    _impl_.material_.Set("", GetArena());
+  _impl_.object_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.object_.IsDefault()) {
+    _impl_.object_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:athena.ProtoAction.material)
+  // @@protoc_insertion_point(field_set_allocated:athena.ProtoAction.object)
 }
 
 // repeated int32 parents = 6;

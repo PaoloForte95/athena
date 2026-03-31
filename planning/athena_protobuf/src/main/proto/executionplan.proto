@@ -23,7 +23,7 @@ message ProtoAction {
   int32 id = 2;
   string robot = 3;
   repeated string waypoints = 4;
-  string material = 5;
+  string object = 5;
   repeated int32 parents = 6;
   repeated string preconditions = 7;
   repeated string effects = 8;

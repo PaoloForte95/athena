@@ -71,7 +71,7 @@ public class Allocator {
         for(ProtoMethod method : methods){
             for(ProtoAction act: actions){
                 if (method.getActionsIdsList().contains(act.getId())){
-                    String mat = act.getMaterial();
+                    String mat = act.getObject();
                     piles.put(method.getId(), mat);
                     if(mat != ""){
                         break;

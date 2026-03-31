@@ -73,8 +73,6 @@ class TaskPlanner{
 
 		File plan = new File(output_name);
 
-		//Defining types 
-		//Define robot, material and location types used in PDDL
 		planningProblem.readPlan(plan);
 		AbstractPlan executionPlan = planningProblem.getPlan();
 		DefaultDirectedGraph<org.pofe.athena.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();

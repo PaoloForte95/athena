@@ -3,7 +3,7 @@ string name
 int32 action_id
 string robot
 int32[] parents
-string material
+string object
 string[] waypoints
 string[] preconditions
 string[] effects
