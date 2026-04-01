@@ -44,6 +44,16 @@
             <input_port name="robot_id">The id of the robot </input_port>
     </Action>
 
+    <Action ID="SendLoad">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="robot_id">The id of the robot </input_port>
+    </Action>
+
+    <Action ID="SendDump">
+            <input_port name="service_name">The name of the service </input_port>
+            <input_port name="robot_id">The id of the robot </input_port>
+    </Action>
+
 
     <!-- ############################### CONDITION NODES ############################## -->
 

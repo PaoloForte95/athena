@@ -10,6 +10,7 @@ This Behavior Tree computes and executed a plan. If the plan failed, it has reco
   <DispatcherNode name="DispatcherNode" execution_plan="{execution_plan}" completed_actions="{completed_actions}" completed_methods="{completed_methods}" type="action">
   <SendMove name="Move" robot_id="robot1" service_name="move_to_pose"/>
   <SendLoad name="Load" robot_id="robot1" service_name="send_load"/>
+  <SendDump name="Dump" robot_id="robot1" service_name="send_dump"/>
   </DispatcherNode>
   </Sequence> 
 </BehaviorTree>
