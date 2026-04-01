@@ -48,6 +48,7 @@ TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
   declare_parameter("planner_frequency", 20.0);
   declare_parameter("definitions.robot", "robot");
   declare_parameter("definitions.location", "location");
+  declare_parameter("definitions.object", std::vector<std::string>());
   declare_parameter("definitions.proto_filename", "ExePlan.data");
   declare_parameter("definitions.plan_filename", "");
   declare_parameter("planner_plugins", default_ids_);
@@ -62,6 +63,7 @@ TaskPlannerServer::~TaskPlannerServer()
 
 athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/){
   auto node = shared_from_this();
+  std::vector<std::string> object_definitions;
   RCLCPP_INFO(get_logger(), "Configuring task planner interface");
 
 
@@ -81,11 +83,14 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
   get_parameter("definitions.location", location_definition_);
   get_parameter("definitions.proto_filename", proto_filename_);
   get_parameter("definitions.plan_filename", plan_filename_); 
+  get_parameter("definitions.object", object_definitions_);
   RCLCPP_INFO(get_logger(), "Robot definition set to %s", robot_definition_.c_str());
   RCLCPP_INFO(get_logger(), "Location definition set to %s", location_definition_.c_str());
   RCLCPP_INFO(get_logger(), "Proto filename set to %s", proto_filename_.c_str());
   RCLCPP_INFO(get_logger(), "Plan filename set to %s", plan_filename_.c_str());
-
+  for (const auto & object_definition : object_definitions_) {
+    RCLCPP_INFO(get_logger(), "Object definition set to %s", object_definition.c_str());
+  }
   property_filename_ = "planning_params.properties";
   
 
@@ -367,6 +372,13 @@ TaskPlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> para
         props << "planner.frequency=" << planner_frequency_ << "\n";
         props << "definitions.robot=" << robot_definition_ << "\n";
         props << "definitions.location=" << location_definition_ << "\n";
+        props << "definitions.object=";
+        for (size_t i = 0; i < object_definitions_.size(); ++i) {
+            props << object_definitions_[i];
+            if (i < object_definitions_.size() - 1) {
+                props << ",";
+            }
+        }        props << "\n";
         props << "definitions.plan_filename=" << plan_filename_ << "\n";
         props << "definitions.proto_filename=" << proto_filename_ << "\n";
         

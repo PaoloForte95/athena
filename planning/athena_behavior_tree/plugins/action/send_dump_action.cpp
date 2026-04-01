@@ -56,6 +56,7 @@ Actions SendDumpAction::getDumpActions()
   for (const athena_msgs::msg::Action & act : actions_) {
     if (act.name.find("dump")  != std::string::npos ||
         act.name.find("stack") != std::string::npos ||
+        act.name.find("place") != std::string::npos ||
         act.name.find("drop")  != std::string::npos)
     {
       if (act.robot == robot_id_) {
@@ -78,10 +79,10 @@ bool SendDumpAction::sendDump(Actions actions)
 
   for (const athena_msgs::msg::Action & dump_action : actions) {
     std::string mat;
-    config().blackboard->get<std::string>("material_loaded", mat);
+    config().blackboard->get<std::string>("object_loaded", mat);
 
-    std::string location;
-    config().blackboard->get<std::string>("dump_position", location);
+    std::string location = dump_action.waypoints[0];
+
 
     auto goal_msg = standard_msgs::action::Dump::Goal();
     goal_msg.target = mat;
@@ -131,18 +132,22 @@ void SendDumpAction::result_callback(const GoalHandleSendDump::WrappedResult & r
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED:
       RCLCPP_INFO(node_->get_logger(), "Dump succeeded!");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::SUCCEEDED;
       break;
     case rclcpp_action::ResultCode::ABORTED:
       RCLCPP_ERROR(node_->get_logger(), "Dump was aborted.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::FAILED;
       break;
     case rclcpp_action::ResultCode::CANCELED:
       RCLCPP_ERROR(node_->get_logger(), "Dump was canceled.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::FAILED;
       break;
     default:
       RCLCPP_ERROR(node_->get_logger(), "Unknown result code.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::UNKNOWN;
       break;
   }

@@ -172,6 +172,7 @@ protected:
   std::vector<std::string> planner_types_;
   std::string planner_ids_concat_;
   std::string robot_definition_, location_definition_, proto_filename_, plan_filename_, property_filename_;
+  std::vector<std::string> object_definitions_;
 
   // Clock
   rclcpp::Clock steady_clock_{RCL_STEADY_TIME};

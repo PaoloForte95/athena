@@ -83,7 +83,6 @@ bool SendMoveAction::sendMove(Actions actions)
     }
 
     const std::string & wp_name = move_action.waypoints.back();
-    config().blackboard->set<std::string>("load_position", wp_name);
 
     auto goal = buildGoal(wp_name);
 
@@ -157,18 +156,22 @@ void SendMoveAction::result_callback(const GoalHandleMoveToPose::WrappedResult &
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED:
       RCLCPP_INFO(node_->get_logger(), "MoveToPose succeeded!");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::SUCCEEDED;
       break;
     case rclcpp_action::ResultCode::ABORTED:
       RCLCPP_ERROR(node_->get_logger(), "MoveToPose was aborted.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::FAILED;
       break;
     case rclcpp_action::ResultCode::CANCELED:
       RCLCPP_ERROR(node_->get_logger(), "MoveToPose was canceled.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::FAILED;
       break;
     default:
       RCLCPP_ERROR(node_->get_logger(), "Unknown result code.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::UNKNOWN;
       break;
   }

@@ -30,6 +30,7 @@ class TaskPlanner{
 	private String output_name;
 	private List<String> robotDefinitions;
 	private List<String> locationDefinitions;
+	private List<String> objectDefinitions;
 	private String planFilename;
 	private String protoFilename;
 	private PlanningProblem planningProblem;
@@ -50,6 +51,10 @@ class TaskPlanner{
 			.collect(Collectors.toList());
 		String locationsStr = props.getProperty("definitions.location", "");
 		locationDefinitions = Arrays.stream(locationsStr.split(","))
+			.map(String::trim)
+			.collect(Collectors.toList());
+		String objectsStr = props.getProperty("definitions.object", "");
+		objectDefinitions = Arrays.stream(objectsStr.split(","))
 			.map(String::trim)
 			.collect(Collectors.toList());
         this.planFilename = props.getProperty("definitions.plan_filename", "");
@@ -99,6 +104,12 @@ class TaskPlanner{
 				}
 				else if (!Collections.disjoint(input.getType(),locationDefinitions)){
 					action.addWaypoints(input.getVariable());			
+				}
+				else if (!Collections.disjoint(input.getType(),objectDefinitions)){
+					action.setObject(input.getVariable());
+				}
+				else{
+					System.out.println("Input " + input.getVariable() + " of action " + name + " does not match any known type (robot, location, object).");
 				}
 				
 			}

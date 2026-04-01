@@ -77,9 +77,7 @@ bool SendLoadAction::sendLoad(Actions actions)
   }
 
   for (const athena_msgs::msg::Action & load_action : actions) {
-    std::string location;
-    config().blackboard->get<std::string>("load_position", location);
-
+    std::string location = load_action.waypoints[0];
     auto goal_msg = standard_msgs::action::Load::Goal();
     goal_msg.location = location;
     goal_msg.target = load_action.object;
@@ -130,18 +128,22 @@ void SendLoadAction::result_callback(const GoalHandleSendLoad::WrappedResult & r
   switch (result.code) {
     case rclcpp_action::ResultCode::SUCCEEDED:
       RCLCPP_INFO(node_->get_logger(), "Load succeeded!");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::SUCCEEDED;
       break;
     case rclcpp_action::ResultCode::ABORTED:
       RCLCPP_ERROR(node_->get_logger(), "Load was aborted.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::FAILED;
       break;
     case rclcpp_action::ResultCode::CANCELED:
       RCLCPP_ERROR(node_->get_logger(), "Load was canceled.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "free");
       action_status_ = ActionStatus::FAILED;
       break;
     default:
       RCLCPP_ERROR(node_->get_logger(), "Unknown result code.");
+      config().blackboard->set<std::string>(robot_id_ + "_state", "failure");
       action_status_ = ActionStatus::UNKNOWN;
       break;
   }
