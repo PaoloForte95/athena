@@ -35,6 +35,7 @@ task_planner_server:
     definitions:
       robot: "robot"
       location: "location"
+      object: ["item", "food"]
       plan_filename: "plan.pddl"
       proto_filename: "ExePlan.data"
     planner_plugins: ["MetricFF", "LPG", "TFD", "Lilotane"]
