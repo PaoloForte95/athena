@@ -64,6 +64,14 @@
         <input_port name="problem_file">The problem file to check against</input_port>
         <output_port name="isProblemDefined">Whether the problem file defines the action</output_port>
     </Condition>
+
+    <Condition ID="IsPileMoved">
+      <input_port name="criteria" default="NumberCycles">Criteria to use to check if the pile is completely moved.</input_port>
+      <input_port name="ticks" default="1">"Number of ticks to do (If NumberCycles criteria is selected)"</input_port>
+      <input_port name="image_topic" default="image">The camera image topic</input_port>
+      <input_port name="desired_amount" default="0.5">The desired amount of material to move </input_port>
+      <input_port name="robot_id">The name of the robot </input_port>
+    </Condition>
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="RecoveryNode">
       <input_port name="number_of_retries">Number of retries</input_port>
@@ -72,6 +80,9 @@
     <Control ID="ExecutePlanNode">
       <input_port name="plan_length">Length of the execution plan</input_port>
     </Control>
+
+
+    <Control ID="MovePileMethodNode"/>
 
     <Control ID="PipelineSequence"/>
 
