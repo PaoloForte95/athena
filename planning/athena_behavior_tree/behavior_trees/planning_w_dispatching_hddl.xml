@@ -1,28 +1,17 @@
-<!--
-This Behavior Tree computes and executed a plan. If the plan failed, it has recovery actions to recompute a plan.
--->
-
 <root BTCPP_format="4" main_tree_to_execute="MasterTree">
 
 <BehaviorTree ID="MasterTree">
   <Sequence>
-  <CheckProblemFile name="CheckProblemFileCondition" problem_file="{problem_file}" isProblemDefined="{is_problem_defined}"/>
-   <GenerateProblemFile name="GenerateProblemFile" 
-    problem_file="{problem_file}" 
-    instruction="instruction.txt" 
-    prompt="prompt_hddl.txt" 
-    format="HDDL"
-    image_topic="/camera/camera/color/image_raw"
-    output_name= "problem.hddl"
-    _skipIf="is_problem_defined"/>
-  <ComputePlan name="ComputePlanAction" planner="TFD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
-  <ExecutePlanNode name="PlanExecutor" plan_length="{plan_length}">
-  <DispatchMethods name="MethodDispatcher"  execution_plan="{execution_plan}" concurrent_methods="{concurrent_methods}" completed_methods="{completed_methods}"/>
-  <Sequence>
-  <SendMethod name="SendMethod" robots="{robots}" service_name="method_executor" />
-  <UpdateState name="UpdateState" state_updater="SimpleStateUpdater" previous_state="{state}" current_state="{state}"/>
-  </Sequence>  
- </ExecutePlanNode>
+  <ComputePlan name="ComputePlanAction" planner="Lilotane" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
+  <DispatcherNode name="DispatcherNode" execution_plan="{execution_plan}" completed_actions="{completed_actions}" completed_methods="{completed_methods}" type="method">
+  <MovePileMethodNode name= "Move Pile" robot_id="robot1">
+  <SendMove name="Move" robot_id="robot1" service_name="move_to_pose"/>
+  <SendLoad name="Load" robot_id="robot1" service_name="send_load"/>
+  <SendMove name="Move" robot_id="robot1" service_name="move_to_pose"/>
+  <SendDump name="Dump" robot_id="robot1" service_name="send_dump"/>
+  <IsPileMoved name="Check" criteria="Amount" desired_amount="10.0" robot_id="robot1"/>
+  </MovePileMethodNode>
+  </DispatcherNode>
   </Sequence> 
 </BehaviorTree>
 

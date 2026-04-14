@@ -42,12 +42,6 @@ def generate_launch_description():
 
     lifecycle_nodes = ['bt_planner','task_planner_server', 'state_updater_server']
 
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
-    # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
 
     
     remappings = [('/tf', 'tf'),
@@ -88,7 +82,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(params_dir, 'params', 'planning_params.yaml'),
+        default_value=os.path.join(params_dir, 'params', 'planning_params_hddl.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_log_level_cmd = DeclareLaunchArgument(
