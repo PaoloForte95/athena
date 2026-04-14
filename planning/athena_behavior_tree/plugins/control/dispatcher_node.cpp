@@ -25,8 +25,6 @@ BT::NodeStatus DispatcherNode::tick()
         readPlan();
     }
 
-    dispatch();
-
     // Update completed count
     if(type_ == "action"){
         completed_ = getInput<IDs>("completed_actions").value_or(IDs());
@@ -35,10 +33,15 @@ BT::NodeStatus DispatcherNode::tick()
     }
     count_ = completed_.size();
 
+    // Remove completed actions/methods from the plan
+    removeCompleted();
+
     if(count_ >= plan_length_){
         haltChildren();
         return BT::NodeStatus::SUCCESS;
     }
+
+    dispatch();
 
     // Tick ALL children every tick
     for(unsigned i = 0; i < children_nodes_.size(); i++){
@@ -54,7 +57,7 @@ BT::NodeStatus DispatcherNode::tick()
 
 void DispatcherNode::halt()
 {
-    haltChildren();  // ← use haltChildren() not ControlNode::halt() directly
+    haltChildren();
     count_ = 0;
     current_child_idx_ = 0;
     plan_length_ = 0;
@@ -63,6 +66,27 @@ void DispatcherNode::halt()
     completed_.clear();
 }
 
+void DispatcherNode::removeCompleted()
+{
+    for (auto& [robot, actions] : plan_actions_) {
+        actions.erase(
+            std::remove_if(actions.begin(), actions.end(),
+                [this](const auto& action) {
+                    return std::find(completed_.begin(), completed_.end(),
+                        action.action_id) != completed_.end();
+                }),
+            actions.end());
+    }
+    for (auto& [robot, methods] : plan_methods_) {
+        methods.erase(
+            std::remove_if(methods.begin(), methods.end(),
+                [this](const auto& method) {
+                    return std::find(completed_.begin(), completed_.end(),
+                        method.id) != completed_.end();
+                }),
+            methods.end());
+    }
+}
 
 void DispatcherNode::readPlan(){
     std::vector<std::string> robotIDs;
@@ -126,11 +150,11 @@ void DispatcherNode::dispatch(){
             config().blackboard->get<std::string>(robot + "_state", robot_state);
             RCLCPP_INFO(logger_, "robot %s state %s!", robot.c_str(), robot_state.c_str());
             if(robot_state == "free"){
-                bool action_can_be_executed = true;
                 if (actions.empty()){
                     continue;
                 }
                 auto curr_action = actions[0];
+                bool action_can_be_executed = true;
                 for(auto pa : curr_action.parents){
                     int parent_id = pa;
                     auto it_parent = std::find(completed_.begin(), completed_.end(), parent_id);
@@ -143,17 +167,14 @@ void DispatcherNode::dispatch(){
                 if(action_can_be_executed){
                     RCLCPP_INFO(logger_, "Sending action %d, %s....", curr_action.action_id, curr_action.name.c_str());
                     concurrent_actions.push_back(curr_action);
-                    actions.erase(actions.begin());
-                    plan_actions_[robot] = actions;
                     config().blackboard->set<std::string>(robot + "_state", "busy");
                 }
             }
             else{
                 RCLCPP_INFO(logger_, "robot %s is busy!", robot.c_str());
             }
-           
         }
-         RCLCPP_INFO(logger_, "Concurrent actions size %d", concurrent_actions.size());
+        RCLCPP_INFO(logger_, "Concurrent actions size %d", concurrent_actions.size());
         setOutput("concurrent_actions", concurrent_actions);
         config().blackboard->set<Actions>("concurrent_actions", concurrent_actions);
     } else if (type_ == "method"){
@@ -164,12 +185,12 @@ void DispatcherNode::dispatch(){
             RCLCPP_INFO(logger_, "robot %s state %s!", robot.c_str(), robot_state.c_str());
             
             if(robot_state == "free"){
-                bool method_can_be_executed = true;
                 auto robot_methods = plan_methods_[robot];
                 if(robot_methods.empty()){
                     continue;
                 }
                 auto curr_method = robot_methods[0];
+                bool method_can_be_executed = true;
                 for(auto pm : curr_method.parents){
                     int parent_id = pm;
                     auto it_parent = std::find(completed_.begin(), completed_.end(), parent_id);
@@ -182,23 +203,29 @@ void DispatcherNode::dispatch(){
                 if(method_can_be_executed){
                     RCLCPP_INFO(logger_, "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
                     concurrent_methods.push_back(curr_method);
-                    robot_methods.erase(robot_methods.begin());
-                    plan_methods_[robot] = robot_methods;
                     config().blackboard->set<std::string>(robot + "_state", "busy");
+
+                    // Resolve method subtasks into actions for children to use
+                    Actions subtask_actions;
+                    for (int subtask_id : curr_method.substasks) {
+                        for (const auto& action : execution_plan_.actions) {
+                            if (action.action_id == subtask_id) {
+                                subtask_actions.push_back(action);
+                                break;
+                            }
+                        }
+                    }
+                    config().blackboard->set<Actions>("concurrent_actions", subtask_actions);
                 }
             }
             else{
                 RCLCPP_INFO(logger_, "robot %s is busy!", robot.c_str());
             }
         }
-     setOutput("concurrent_methods", concurrent_methods);
-     config().blackboard->set<Methods>("concurrent_methods", concurrent_methods);
+        setOutput("concurrent_methods", concurrent_methods);
+        config().blackboard->set<Methods>("concurrent_methods", concurrent_methods);
     }
-
-
 }
-
-
 
 }  // namespace athena_behavior_tree
 

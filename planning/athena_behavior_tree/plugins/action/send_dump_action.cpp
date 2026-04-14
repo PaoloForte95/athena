@@ -79,7 +79,7 @@ bool SendDumpAction::sendDump(Actions actions)
 
   for (const athena_msgs::msg::Action & dump_action : actions) {
     std::string mat;
-    config().blackboard->get<std::string>("object_loaded", mat);
+    config().blackboard->get<std::string>(robot_id_ + "_object_loaded", mat);
 
     std::string location = dump_action.waypoints[0];
 

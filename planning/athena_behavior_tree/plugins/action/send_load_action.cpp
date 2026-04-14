@@ -84,7 +84,7 @@ bool SendLoadAction::sendLoad(Actions actions)
     goal_msg.amount = 1;
 
     RCLCPP_INFO(node_->get_logger(), "Loading object '%s' at '%s'", load_action.object.c_str(), location.c_str());
-    config().blackboard->set<std::string>("object_loaded", load_action.object);
+    config().blackboard->set<std::string>(robot_id_ + "_object_loaded", load_action.object);
 
     auto send_goal_options = rclcpp_action::Client<standard_msgs::action::Load>::SendGoalOptions();
     send_goal_options.goal_response_callback =

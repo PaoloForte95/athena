@@ -80,6 +80,8 @@ public:
      */
     void readPlan();
 
+    void removeCompleted();
+
     void dispatch();
 };
 

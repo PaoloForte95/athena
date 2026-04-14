@@ -52,10 +52,12 @@ Actions SendMoveAction::getMoveActions()
 {
   Actions move_actions;
   config().blackboard->get<Actions>("concurrent_actions", actions_);
+  RCLCPP_INFO(node_->get_logger(), "Checking for move actions among %d concurrent actions", actions_.size());
 
   for (const athena_msgs::msg::Action & act : actions_) {
     if (act.name.find("move")  != std::string::npos ||
         act.name.find("go")    != std::string::npos ||
+        act.name.find("transport") != std::string::npos ||
         act.name.find("drive") != std::string::npos)
     {
       if (act.robot == robot_id_) {
@@ -75,7 +77,7 @@ bool SendMoveAction::sendMove(Actions actions)
     RCLCPP_ERROR(node_->get_logger(), "'%s' action server is not available.", service_name_.c_str());
     return false;
   }
-
+  std::string wp;
   for (const athena_msgs::msg::Action & move_action : actions) {
     if (move_action.waypoints.empty()) {
       RCLCPP_ERROR(node_->get_logger(), "Action '%s' has no waypoints, skipping.", move_action.name.c_str());
@@ -93,6 +95,7 @@ bool SendMoveAction::sendMove(Actions actions)
       std::bind(&SendMoveAction::result_callback, this, _1);
 
     RCLCPP_INFO(node_->get_logger(), "Sending MoveToPose goal for waypoint '%s'", wp_name.c_str());
+    wp = wp_name;
     auto future_goal_handle = client_ptr_->async_send_goal(goal, send_goal_options);
 
     if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS) {
@@ -110,6 +113,7 @@ bool SendMoveAction::sendMove(Actions actions)
     RCLCPP_INFO(node_->get_logger(), "Waiting for result...");
     rclcpp::spin_until_future_complete(node_, future_result);
   }
+   config().blackboard->set<std::string>(robot_id_+"_current_position", wp);
 
   return true;
 }
