@@ -39,6 +39,7 @@ find_package(yaml-cpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(standard_msgs REQUIRED)
+find_package(material_handler_msgs REQUIRED)
 
 include_directories(
   include
@@ -67,6 +68,7 @@ set(dependencies
   cv_bridge
   OpenCV
   standard_msgs
+  material_handler_msgs
 )
 
 add_library(${library_name} SHARED
@@ -111,6 +113,11 @@ target_link_libraries(athena_all_object_detected_condition_node yaml-cpp)
 add_library(athena_check_problem_file_condition_node SHARED plugins/condition/check_problem_file_condition.cpp)
 list(APPEND plugin_libs athena_check_problem_file_condition_node)
 
+add_library(athena_is_pile_moved_condition_bt_node SHARED plugins/condition/is_pile_moved_condition.cpp)
+list(APPEND plugin_libs athena_is_pile_moved_condition_bt_node)
+
+#Controls
+
 #Control
 add_library(athena_execute_plan_node_bt_node SHARED plugins/control/execute_plan_node.cpp)
 list(APPEND plugin_libs athena_execute_plan_node_bt_node)
@@ -123,6 +130,10 @@ list(APPEND plugin_libs athena_pipeline_sequence_bt_node)
 
 add_library(athena_dispatcher_node_bt_node SHARED plugins/control/dispatcher_node.cpp)
 list(APPEND plugin_libs athena_dispatcher_node_bt_node)
+
+add_library(athena_move_pile_method_node SHARED plugins/control/move_pile_method_node.cpp)
+list(APPEND plugin_libs athena_move_pile_method_node)
+
 
 #Decorator
 add_library(athena_rate_controller_bt_node SHARED plugins/decorator/rate_controller.cpp)
