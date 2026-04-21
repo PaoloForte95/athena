@@ -5,11 +5,13 @@
 #include <vector>
 #include "behaviortree_cpp/control_node.h"
 #include "athena_msgs/msg/method.hpp"
-
+#include "athena_msgs/msg/action.hpp"
+#include "athena_msgs/msg/plan.hpp"
 namespace athena_behavior_tree
 {
 
 using Methods = std::vector<athena_msgs::msg::Method>;
+using Actions = std::vector<athena_msgs::msg::Action>;
 using IDs = std::vector<int>;
 
 class MovePileMethodNode : public BT::ControlNode
@@ -31,6 +33,7 @@ public:
 private:
   unsigned int current_child_idx_;
   int active_method_id_{-1};
+  Actions subtask_actions_;
 
   BT::NodeStatus tick() override;
   void halt() override;

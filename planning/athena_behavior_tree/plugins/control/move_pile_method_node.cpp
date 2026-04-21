@@ -35,6 +35,18 @@ BT::NodeStatus MovePileMethodNode::tick()
     for (const auto& method : concurrent_methods) {
       if (method.robot == robot_id && method.name == "move_pile") {
         active_method_id_ = method.id;
+
+        // Resolve subtasks into ordered actions
+        subtask_actions_.clear();
+        for (int subtask_id : method.substasks) {
+          auto execution_plan = config().blackboard->get<athena_msgs::msg::Plan>("execution_plan");
+          for (const auto& action : execution_plan.actions) {
+            if (action.action_id == subtask_id) {
+              subtask_actions_.push_back(action);
+              break;
+            }
+          }
+        }
         break;
       }
     }
@@ -46,6 +58,13 @@ BT::NodeStatus MovePileMethodNode::tick()
 
   setStatus(BT::NodeStatus::RUNNING);
   while (current_child_idx_ < children_count) {
+
+    // Set current subtask action on blackboard (children 0-3 only)
+    if (current_child_idx_ < subtask_actions_.size()) {
+      Actions current_action = {subtask_actions_[current_child_idx_]};
+      config().blackboard->set<Actions>("concurrent_actions", current_action);
+    }
+
     TreeNode* child_node = children_nodes_[current_child_idx_];
     const BT::NodeStatus child_status = child_node->executeTick();
 
@@ -53,10 +72,10 @@ BT::NodeStatus MovePileMethodNode::tick()
       switch (child_status) {
         case BT::NodeStatus::SUCCESS:
         {
-          IDs completed_methods;
-          config().blackboard->get<IDs>("completed_methods", completed_methods);
-          completed_methods.push_back(active_method_id_);
-          config().blackboard->set<IDs>("completed_methods", completed_methods);
+          IDs completed;
+          config().blackboard->get<IDs>("completed_methods", completed);
+          completed.push_back(active_method_id_);
+          config().blackboard->set<IDs>("completed_methods", completed);
           config().blackboard->set<std::string>(robot_id + "_state", "free");
           halt();
           return BT::NodeStatus::SUCCESS;
@@ -99,6 +118,7 @@ void MovePileMethodNode::halt()
   ControlNode::halt();
   current_child_idx_ = 0;
   active_method_id_ = -1;
+  subtask_actions_.clear();
 }
 
 }  // namespace athena_behavior_tree
