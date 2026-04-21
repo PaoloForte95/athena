@@ -90,6 +90,7 @@ public:
 protected:
   // The factory that will be used to dynamically construct the behavior tree
   BT::BehaviorTreeFactory factory_;
+  int tree_run_count_ = 0;
 };
 
 }  // namespace athena_behavior_tree
