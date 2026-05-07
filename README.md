@@ -57,6 +57,11 @@ Create a ros2 workspace. Replace <ROS2-WS> with a fancy name.
 $ mkdir -p ~/<ROS2-WS>/src
 $ cd ~/<ROS2-WS>/src
 ```
+Clone the common interface package
+```
+$ git clone https://github.com/PaoloForte95/common_interfaces.git
+```
+
 Clone the Athena repository:
 ```
 $ git clone https://github.com/PaoloForte95/athena.git

@@ -8,6 +8,7 @@
 #include "standard_msgs/action/move_to_pose.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/msg/action.hpp"
+#include <location_msgs/msg/waypoint_array.hpp>
 
 namespace athena_behavior_tree
 {
@@ -64,7 +65,8 @@ public:
   {
     return {
       BT::InputPort<std::string>("service_name", "The name of the MoveToPose action server"),
-      BT::InputPort<std::string>("robot_id", "The name of the robot")
+      BT::InputPort<std::string>("robot_id", "The name of the robot"),
+      BT::InputPort<std::string>("waypoint_topic", "waypoints", "Topic publishing waypoints")
     };
   }
 
@@ -82,6 +84,7 @@ private:
   ActionStatus action_status_;
   Actions actions_;
   std::map<std::string, Waypoint> waypoints_;
+  rclcpp::Subscription<location_msgs::msg::WaypointArray>::SharedPtr waypoints_sub_;
 
   void goal_response_callback(const GoalHandleMoveToPose::SharedPtr & goal_handle);
   void result_callback(const GoalHandleMoveToPose::WrappedResult & result);

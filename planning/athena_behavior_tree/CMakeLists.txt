@@ -24,6 +24,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(location_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
@@ -53,6 +54,7 @@ set(dependencies
   rclcpp_lifecycle
   athena_msgs
   geometry_msgs
+  location_msgs
   sensor_msgs
   nav2_msgs
   nav_msgs

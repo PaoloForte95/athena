@@ -12,17 +12,48 @@ SendMoveAction::SendMoveAction(
 : ActionNodeBase(action_name, conf),
   action_status_(ActionStatus::UNKNOWN)
 {
+  std::string wp_topic;
   getInput("service_name", service_name_);
   getInput("robot_id", robot_id_);
+  getInput("waypoint_topic", wp_topic);
 
   node_ = rclcpp::Node::make_shared("send_move_client_node");
   const std::string full_action_name = robot_id_ + "/" + service_name_;
   client_ptr_ = rclcpp_action::create_client<MoveToPose>(node_, full_action_name);
+
+  waypoints_sub_ = node_->create_subscription<location_msgs::msg::WaypointArray>(
+    wp_topic,
+    rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable(),
+    [this](const location_msgs::msg::WaypointArray::SharedPtr msg) {
+      for (const auto & wp_msg : msg->waypoints) {
+        Waypoint wp;
+        wp.x = wp_msg.pose.position.x;
+        wp.y = wp_msg.pose.position.y;
+        // Extract yaw from quaternion.
+        double qw = wp_msg.pose.orientation.w;
+        double qx = wp_msg.pose.orientation.x;
+        double qy = wp_msg.pose.orientation.y;
+        double qz = wp_msg.pose.orientation.z;
+        double siny_cosp = 2.0 * (qw * qz + qx * qy);
+        double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+        wp.theta = std::atan2(siny_cosp, cosy_cosp);
+        waypoints_[wp_msg.name] = wp;
+      }
+      RCLCPP_INFO(
+        node_->get_logger(),
+        "Received %zu waypoints", msg->waypoints.size());
+    });
+
+
 }
 
 BT::NodeStatus SendMoveAction::tick()
 {
   setStatus(BT::NodeStatus::RUNNING);
+  
+  if (waypoints_.empty()) {
+    rclcpp::spin_some(node_);
+  }
 
   Actions actions = getMoveActions();
   if (actions.empty()) {

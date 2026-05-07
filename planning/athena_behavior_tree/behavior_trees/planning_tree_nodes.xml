@@ -42,6 +42,7 @@
     <Action ID="SendMove">
             <input_port name="service_name">The name of the service </input_port>
             <input_port name="robot_id">The id of the robot </input_port>
+            <input_port name="waypoint_topic">The topic to get the waypoints from</input_port>
     </Action>
 
     <Action ID="SendLoad">
