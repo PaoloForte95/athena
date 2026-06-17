@@ -1,0 +1,14 @@
+#goal definition
+string behavior_tree
+string instruction
+---
+# Result
+uint16 NONE=0
+
+uint16 error_code
+string error_msg
+---
+#feedback definition
+athena_msgs/State current_state
+athena_msgs/Action current_action
+athena_msgs/Method current_method

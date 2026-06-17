@@ -16,27 +16,32 @@ find_package(geometry_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME} 
-   #Msgs
-   "msg/Action.msg"
-   "msg/BehaviorTreeLog.msg"
-   "msg/BehaviorTreeStatusChange.msg"
-   "msg/Execution.msg"
-   "msg/Method.msg"
-   "msg/Plan.msg"
-   "msg/PlanningProblem.msg"
-   "msg/State.msg"
-   #Services
-   "srv/GetPlan.srv"
-   "srv/RecomputePlan.srv"
-   "srv/ManageLifecycleNodes.srv"
-   "srv/GenerateProblemFile.srv"
-   "srv/DetectObjects.srv"
-   #Actions
-   "action/ComputePlan.action"
-   "action/OptmizePlan.action"
-   "action/ExecuteMethod.action"
-   "action/ExecuteAction.action"
-   "action/UpdateState.action"
+    #Msgs
+    "msg/Action.msg"
+    "msg/BehaviorTreeLog.msg"
+    "msg/BehaviorTreeStatusChange.msg"
+    "msg/Execution.msg"
+    "msg/Method.msg"
+    "msg/Plan.msg"
+    "msg/PlanningProblem.msg"
+    "msg/State.msg"
+    #Services
+    "srv/GetPlan.srv"
+    "srv/RecomputePlan.srv"
+    "srv/ManageLifecycleNodes.srv"
+    "srv/GenerateProblemFile.srv"
+    "srv/DetectObjects.srv"
+    "srv/GetTypes.srv"
+    "srv/GetPredicateList.srv"
+    "srv/GetActionList.srv"
+    "srv/GenerateDomain.srv"
+    #Actions
+    "action/ComputePlan.action"
+    "action/OptmizePlan.action"
+    "action/ExecuteMethod.action"
+    "action/ExecuteAction.action"
+    "action/UpdateState.action"
+    "action/GenerateTasks.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs
 )
 

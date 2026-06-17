@@ -1,0 +1,7 @@
+string types
+string predicates
+string actions
+---
+bool success
+string path
+string message
