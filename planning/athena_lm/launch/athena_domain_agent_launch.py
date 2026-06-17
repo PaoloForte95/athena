@@ -7,7 +7,7 @@ import os
 def generate_launch_description():
 
 
-    pkg_share = get_package_share_directory("athena_vlm")
+    pkg_share = get_package_share_directory("athena_lm")
 
     param_file = os.path.join(
         pkg_share,
@@ -17,16 +17,16 @@ def generate_launch_description():
 
     return LaunchDescription([
         Node(
-            package="athena_vlm",
+            package="athena_lm",
             executable="capability_extractor_agent",
             name="capability_extractor_agent_node",
             parameters=[param_file],
             output="screen"
         ),
         Node(
-            package="athena_vlm",
-            executable="pddl_domain_agent",
-            name="pddl_domain_agent_node",
+            package="athena_lm",
+            executable="domain_file_generator",
+            name="domain_file_generator_node",
             parameters=[param_file],
             output="screen",
         )

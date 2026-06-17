@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(athena_vlm)
+project(athena_lm)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -34,9 +34,9 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  ${PROJECT_NAME}/vlm_api.py
+  ${PROJECT_NAME}/problem_file_generator.py
   DESTINATION lib/${PROJECT_NAME}
-  RENAME vlm_api
+  RENAME problem_file_generator
 )
 
 install(PROGRAMS
@@ -46,9 +46,9 @@ install(PROGRAMS
 )
 
 install(PROGRAMS
-  ${PROJECT_NAME}/pddl_domain_agent.py
+  ${PROJECT_NAME}/domain_file_generator.py
   DESTINATION lib/${PROJECT_NAME}
-  RENAME pddl_domain_agent
+  RENAME domain_file_generator
 )
 
 install(DIRECTORY

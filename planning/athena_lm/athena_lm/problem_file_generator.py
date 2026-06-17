@@ -16,10 +16,12 @@ from athena_msgs.srv import GenerateProblemFile
 from google import genai
 import PIL.Image
 from pathlib import Path
-
+import ollama
 
 GPT_MODEL="gpt-4.1"
 GEMINI_MODEL = "gemini-3-flash-preview"
+OLLAMA_MODEL = "qwen3.5"
+
 open_ai_key = os.environ["OPENAI_API_KEY"]
 gemini_api_key=os.environ["GEMINI_API_KEY"]
 class VlmApi:
@@ -62,17 +64,31 @@ class VlmApi:
         ],
         )
         return response.output_text
+    
+    @lru_cache()
+    def analyze_image_ollama(self, img_path, user_prompt, prompt):
+        response = ollama.generate(
+            model=OLLAMA_MODEL,
+            prompt=f"{prompt}\n\n{user_prompt}",
+            images=[img_path],
+            options={"temperature": 0.0}
+        )
+        return response["response"]
         
-    def generateProblemFile(self, image, model = "ChatGpt"):
+    def generateProblemFile(self, image, model="Ollama"):
         if "Gemini" in model:
-            self.logger.info(f"Generating planning problem using Gemini")
+            self.logger.info("Generating planning problem using Gemini")
             response = self.gemini_client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=[self.prompt, image])
             response = response.text
-        if "ChatGpt" in model:
-            self.logger.info(f"Generating planning problem using ChatGPT")
+        elif "ChatGpt" in model:
+            self.logger.info("Generating planning problem using ChatGPT")
             response = self.analyze_image(image, self.instruction, self.prompt)
+        elif "Ollama" in model:
+            self.logger.info("Generating planning problem using local Ollama (Qwen3.5)")
+            response = self.analyze_image_ollama(image, self.instruction, self.prompt)
+
         self.logger.info(response)
         parse = self.export_file(response, self.output_file)
         self.logger.info(parse)
