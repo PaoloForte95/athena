@@ -56,7 +56,7 @@ set(dependencies
 
 add_library(${library_name} SHARED
   src/bt_planner.cpp
-  src/planners/task_planner.cpp
+  src/planners/generate_actions.cpp
 )
 
 ament_target_dependencies(${executable_name}

@@ -1,17 +1,3 @@
-// Copyright (c) 2023 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #include <memory>
 #include <string>
 
@@ -57,8 +43,6 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
     callback_group_executor_.spin_some();
     request->prompt.data = prompt;
     request->instruction.data = instruction;
-    request->image_file.data = "";
-    request->output_name.data = output_name_;
 
     if(latest_image_ == nullptr){
         RCLCPP_INFO(node_->get_logger(), "Waiting for image...");
@@ -75,11 +59,10 @@ inline BT::NodeStatus GenerateProblemFileAction::tick()
             
             RCLCPP_INFO(node_->get_logger(), "Saved image to: %s", filename.c_str());
             std::filesystem::path cwd = std::filesystem::current_path();
-            request->image_file.data = (cwd / filename).string();
             
         } catch (cv_bridge::Exception& e) {
             RCLCPP_ERROR(node_->get_logger(), "cv_bridge exception: %s", e.what());
-            request->image_file.data = "";
+
     }
 
     
