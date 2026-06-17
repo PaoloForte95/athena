@@ -17,17 +17,17 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import PushRosNamespace,Node
 from athena_common.launch import RewrittenYaml
-
-
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
     # Get the launch directory
 
     params_dir = get_package_share_directory('athena_launch')
+    domain_agent_dir = get_package_share_directory('athena_lm')
 
 
     namespace = LaunchConfiguration('namespace')
@@ -82,7 +82,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(params_dir, 'params', 'planning_params_hddl.yaml'),
+        default_value=os.path.join(params_dir, 'params', 'planning_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_log_level_cmd = DeclareLaunchArgument(
@@ -100,7 +100,7 @@ def generate_launch_description():
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
     
     declare_generate_planning_problem_cmd = DeclareLaunchArgument(
-        'generate_planning_problem', default_value='True',
+        'generate_planning_problem', default_value='False',
         description='Whether to generated the planning problem using VLM.')
 
     load_nodes = GroupAction(
@@ -121,17 +121,11 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
                 
-        Node(
-                condition=IfCondition(generate_planning_problem),
-                package='athena_vlm',
-                executable='vlm_api',
-                name='vlm_api',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(domain_agent_dir, 'launch', 'athena_domain_agent_launch.py')
+            )
+        ),
         
         Node(
                 condition=IfCondition(use_task_planner),
