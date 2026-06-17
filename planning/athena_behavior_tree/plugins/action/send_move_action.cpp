@@ -17,10 +17,19 @@ SendMoveAction::SendMoveAction(
   getInput("robot_id", robot_id_);
   getInput("waypoint_topic", wp_topic);
 
-  node_ = rclcpp::Node::make_shared("send_move_client_node");
-  const std::string full_action_name = robot_id_ + "/" + service_name_;
-  client_ptr_ = rclcpp_action::create_client<MoveToPose>(node_, full_action_name);
+  node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
 
+  callback_group_ = node_->create_callback_group(
+    rclcpp::CallbackGroupType::MutuallyExclusive, false);
+  callback_group_executor_.add_callback_group(
+    callback_group_, node_->get_node_base_interface());
+
+  const std::string full_action_name = robot_id_ + "/" + service_name_;
+  client_ptr_ = rclcpp_action::create_client<MoveToPose>(
+    node_, full_action_name, callback_group_);
+
+  rclcpp::SubscriptionOptions sub_options;
+  sub_options.callback_group = callback_group_;
   waypoints_sub_ = node_->create_subscription<location_msgs::msg::WaypointArray>(
     wp_topic,
     rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable(),
@@ -29,7 +38,6 @@ SendMoveAction::SendMoveAction(
         Waypoint wp;
         wp.x = wp_msg.pose.position.x;
         wp.y = wp_msg.pose.position.y;
-        // Extract yaw from quaternion.
         double qw = wp_msg.pose.orientation.w;
         double qx = wp_msg.pose.orientation.x;
         double qy = wp_msg.pose.orientation.y;
@@ -42,8 +50,8 @@ SendMoveAction::SendMoveAction(
       RCLCPP_INFO(
         node_->get_logger(),
         "Received %zu waypoints", msg->waypoints.size());
-    });
-
+    },
+    sub_options);
 
 }
 
@@ -52,7 +60,7 @@ BT::NodeStatus SendMoveAction::tick()
   setStatus(BT::NodeStatus::RUNNING);
   
   if (waypoints_.empty()) {
-    rclcpp::spin_some(node_);
+    callback_group_executor_.spin_some();
   }
 
   Actions actions = getMoveActions();
@@ -129,7 +137,8 @@ bool SendMoveAction::sendMove(Actions actions)
     wp = wp_name;
     auto future_goal_handle = client_ptr_->async_send_goal(goal, send_goal_options);
 
-    if (rclcpp::spin_until_future_complete(node_, future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS) {
+    if (callback_group_executor_.spin_until_future_complete(future_goal_handle) != rclcpp::FutureReturnCode::SUCCESS)
+    {
       RCLCPP_ERROR(node_->get_logger(), "Failed to send goal for waypoint '%s'", wp_name.c_str());
       return false;
     }
@@ -142,7 +151,7 @@ bool SendMoveAction::sendMove(Actions actions)
 
     auto future_result = client_ptr_->async_get_result(goal_handle_);
     RCLCPP_INFO(node_->get_logger(), "Waiting for result...");
-    rclcpp::spin_until_future_complete(node_, future_result);
+    callback_group_executor_.spin_until_future_complete(future_result);
   }
    config().blackboard->set<std::string>(robot_id_+"_current_position", wp);
 

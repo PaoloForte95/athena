@@ -129,7 +129,6 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
   // Initialize pubs & subs
   plan_publisher_ = create_publisher<athena_msgs::msg::Plan>("execution_plan", 1);
 
-  // Create the action servers for path planning to a pose and through poses
   action_server_plan_ = std::make_unique<ActionServerPlan>(
     shared_from_this(),
     "compute_execution_plan",

@@ -79,6 +79,8 @@ protected:
 private:
   std::string service_name_, robot_id_;
   rclcpp::Node::SharedPtr node_;
+  rclcpp::CallbackGroup::SharedPtr callback_group_;
+  rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
   rclcpp_action::Client<MoveToPose>::SharedPtr client_ptr_;
   GoalHandleMoveToPose::SharedPtr goal_handle_;
   ActionStatus action_status_;
