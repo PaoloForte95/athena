@@ -1,17 +1,3 @@
-// Copyright (c) 2023 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #ifndef ATHENA_BT_PLANNER__PLANNER_HPP_
 #define ATHENA_BT_PLANNER__PLANNER_HPP_
 
@@ -20,7 +6,6 @@
 #include <vector>
 #include <mutex>
 
-#include "athena_util/odometry_utils.hpp"
 #include "tf2_ros/buffer.h"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -42,8 +27,7 @@ public:
   /**
    * @brief A Planner Muxer constructor
    */
-  PlannerMuxer()
-  : current_planner_(std::string("")) {}
+  PlannerMuxer() = default;
 
   /**
    * @brief Get the planner muxer state
@@ -64,10 +48,10 @@ public:
     std::scoped_lock l(mutex_);
     if (!current_planner_.empty()) {
       RCLCPP_ERROR(
-        rclcpp::get_logger("PlannerMutex"),
+        rclcpp::get_logger("PlannerMuxer"),
         "Major error! Planner requested while another planner"
         " task is in progress! This likely occurred from an incorrect"
-        "implementation of a planner plugin.");
+        " implementation of a planner plugin.");
     }
     current_planner_ = planner_name;
   }
@@ -81,12 +65,12 @@ public:
     std::scoped_lock l(mutex_);
     if (current_planner_ != planner_name) {
       RCLCPP_ERROR(
-        rclcpp::get_logger("PlannerMutex"),
+        rclcpp::get_logger("PlannerMuxer"),
         "Major error! Planner stopped while another planner"
         " task is in progress! This likely occurred from an incorrect"
-        "implementation of a planner plugin.");
+        " implementation of a planner plugin.");
     } else {
-      current_planner_ = std::string("");
+      current_planner_.clear();
     }
   }
 
@@ -108,10 +92,7 @@ public:
   /**
    * @brief A Planner constructor
    */
-  Planner()
-  {
-    plugin_muxer_ = nullptr;
-  }
+  Planner() = default;
 
   /**
    * @brief Virtual destructor
@@ -124,22 +105,23 @@ public:
    * @param plugin_lib_names a vector of plugin shared libraries to load
    * @param plugin_muxer The muxing object to ensure only one planner
    * can be active at a time
-   * @param odom_smoother Object to get current smoothed robot's speed
    * @return bool If successful
    */
   bool on_configure(
     rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node,
     const std::vector<std::string> & plugin_lib_names,
-    athena_bt_planner::PlannerMuxer * plugin_muxer,
-    std::shared_ptr<athena_util::OdomSmoother> odom_smoother)
+    athena_bt_planner::PlannerMuxer * plugin_muxer)
   {
     auto node = parent_node.lock();
+    if (!node) {
+      return false;
+    }
     logger_ = node->get_logger();
     clock_ = node->get_clock();
     plugin_muxer_ = plugin_muxer;
 
     // get the default behavior tree for this planner
-    std::string default_bt_xml_filename = getDefaultBTFilepath(parent_node);
+    std::string default_bt_xml_filename = getBTFilepath(parent_node);
 
     // Create the Behavior Tree Action Server for this planner
     bt_action_server_ = std::make_unique<athena_behavior_tree::BtActionServer<ActionT>>(
@@ -152,17 +134,12 @@ public:
       std::bind(&Planner::onPreempt, this, std::placeholders::_1),
       std::bind(&Planner::onCompletion, this, std::placeholders::_1, std::placeholders::_2));
 
-    bool ok = true;
-    if (!bt_action_server_->on_configure()) {
-      ok = false;
-    }
+    bool server_ok = bt_action_server_->on_configure();
 
     BT::Blackboard::Ptr blackboard = bt_action_server_->getBlackboard();
-    blackboard->set<bool>("initial_pose_received", false);  // NOLINT
     blackboard->set<int>("number_recoveries", 0);  // NOLINT
-    blackboard->set<std::shared_ptr<athena_util::OdomSmoother>>("odom_smoother", odom_smoother);  // NOLINT
-    
-    return configure(parent_node, odom_smoother) && ok;
+
+    return configure(parent_node) && server_ok;
   }
 
   /**
@@ -171,13 +148,8 @@ public:
    */
   bool on_activate()
   {
-    bool ok = true;
-
-    if (!bt_action_server_->on_activate()) {
-      ok = false;
-    }
-
-    return activate() && ok;
+    bool server_ok = bt_action_server_->on_activate();
+    return activate() && server_ok;
   }
 
   /**
@@ -186,12 +158,8 @@ public:
    */
   bool on_deactivate()
   {
-    bool ok = true;
-    if (!bt_action_server_->on_deactivate()) {
-      ok = false;
-    }
-
-    return deactivate() && ok;
+    bool server_ok = bt_action_server_->on_deactivate();
+    return deactivate() && server_ok;
   }
 
   /**
@@ -200,14 +168,9 @@ public:
    */
   bool on_cleanup()
   {
-    bool ok = true;
-    if (!bt_action_server_->on_cleanup()) {
-      ok = false;
-    }
-
+    bool server_ok = bt_action_server_->on_cleanup();
     bt_action_server_.reset();
-
-    return cleanup() && ok;
+    return cleanup() && server_ok;
   }
 
   /**
@@ -216,7 +179,7 @@ public:
    */
   virtual std::string getName() = 0;
 
-  virtual std::string getDefaultBTFilepath(rclcpp_lifecycle::LifecycleNode::WeakPtr node) = 0;
+  virtual std::string getBTFilepath(rclcpp_lifecycle::LifecycleNode::WeakPtr node) = 0;
 
   /**
    * @brief Get the action server
@@ -291,8 +254,7 @@ protected:
    * @param Method to configure resources.
    */
   virtual bool configure(
-    rclcpp_lifecycle::LifecycleNode::WeakPtr /*node*/,
-    std::shared_ptr<athena_util::OdomSmoother>/*odom_smoother*/)
+    rclcpp_lifecycle::LifecycleNode::WeakPtr /*node*/)
   {
     return true;
   }
@@ -315,9 +277,9 @@ protected:
   std::unique_ptr<athena_behavior_tree::BtActionServer<ActionT>> bt_action_server_;
   rclcpp::Logger logger_{rclcpp::get_logger("TaskPlanner")};
   rclcpp::Clock::SharedPtr clock_;
-  PlannerMuxer * plugin_muxer_;
+  PlannerMuxer * plugin_muxer_{nullptr};
 };
 
-}  
+}  // namespace athena_bt_planner
 
-#endif 
+#endif  // ATHENA_BT_PLANNER__PLANNER_HPP_

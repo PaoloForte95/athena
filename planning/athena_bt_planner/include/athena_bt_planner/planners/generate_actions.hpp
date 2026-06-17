@@ -1,17 +1,3 @@
-// Copyright (c) 2023 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #ifndef ATHENA_BT_PLANNER__PLANNERS__TASK_PLANNER_HPP_
 #define ATHENA_BT_PLANNER__PLANNERS__TASK_PLANNER_HPP_
 
@@ -20,10 +6,13 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "athena_bt_planner/planner.hpp"
-#include "athena_msgs/msg/planning_problem.hpp"
-#include "athena_msgs/action/compute_plan.hpp"
+#include "athena_bt_planner/behavior_tree_planner.hpp"
+#include "std_msgs/msg/string.hpp"
+#include "athena_msgs/action/generate_tasks.hpp"
 #include "athena_msgs/msg/plan.hpp"
+#include "athena_msgs/msg/state.hpp"
+#include "athena_msgs/msg/action.hpp"
+#include "athena_msgs/msg/method.hpp"
 #include "athena_util/geometry_utils.hpp"
 #include "athena_util/robot_utils.hpp"
 
@@ -32,51 +21,46 @@ namespace athena_bt_planner
 
 /**
  * @class TaskPlanner
- * @brief A planner for task planning 
+ * @brief A planner for task planning that generates actions from instructions
  */
-class TaskPlanner
-  : public athena_bt_planner::Planner<athena_msgs::action::ComputePlan>
-{
+class TaskPlanner: public athena_bt_planner::Planner<athena_msgs::action::GenerateTasks>{
 public:
-  using ActionT = athena_msgs::action::ComputePlan;
+  using ActionT = athena_msgs::action::GenerateTasks;
 
   /**
    * @brief A constructor for TaskPlanner
    */
-  TaskPlanner()
-  : Planner() {}
+  TaskPlanner() = default;
 
   /**
    * @brief A configure state transition to configure planner's state
    * @param node Weakptr to the lifecycle node
-   * @param odom_smoother Object to get current smoothed robot's speed
    */
-  bool configure(
-    rclcpp_lifecycle::LifecycleNode::WeakPtr node, std::shared_ptr<athena_util::OdomSmoother> odom_smoother) override;
+  bool configure(rclcpp_lifecycle::LifecycleNode::WeakPtr node) override;
 
   /**
    * @brief A cleanup state transition to remove memory allocated
    */
   bool cleanup() override;
 
-    /**
-   * @brief A subscription and callback to handle the topic-based planning problem published
-   * @param pose Pose received via atopic
+  /**
+   * @brief A subscription and callback to handle the topic-based instruction published
+   * @param msg Instruction received via a topic
    */
-  void onPlanningProblemReceived(const athena_msgs::msg::PlanningProblem::SharedPtr pose);
+  void onInstructionReceived(const std_msgs::msg::String::SharedPtr msg);
 
   /**
    * @brief Get action name for this planner
    * @return string Name of action server
    */
-  std::string getName() {return std::string("task_planner");}
+  std::string getName() override {return std::string("task_planner");}
 
   /**
-   * @brief Get planner's default BT
+   * @brief Get planner's BT
    * @param node WeakPtr to the lifecycle node
-   * @return string Filepath to default XML
+   * @return string Filepath to XML bt
    */
-  std::string getDefaultBTFilepath(rclcpp_lifecycle::LifecycleNode::WeakPtr node) override;
+  std::string getBTFilepath(rclcpp_lifecycle::LifecycleNode::WeakPtr node) override;
 
 protected:
   /**
@@ -111,22 +95,20 @@ protected:
     const athena_behavior_tree::BtStatus final_bt_status) override;
 
   /**
-   * @brief planning problem initialization on the blackboard
+   * @brief Generate actions from the instruction and BT on the blackboard
    * @param goal Action template's goal message to process
    */
-  void initializePlanningProblem(ActionT::Goal::ConstSharedPtr goal);
+  void initializeFromGoal(ActionT::Goal::ConstSharedPtr goal);
 
   rclcpp::Time start_time_;
-
-  rclcpp::Subscription<athena_msgs::msg::PlanningProblem>::SharedPtr planning_problem_sub_;
+  rclcpp::Node::SharedPtr node_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr instruction_sub_;
   rclcpp_action::Client<ActionT>::SharedPtr self_client_;
 
-  std::string domain_file_blackboard_id_;
-  std::string problem_file_blackboard_id_;
+  std::string behavior_tree_blackboard_id_;
+  std::string instruction_blackboard_id_;
   std::string plan_blackboard_id_;
-
-  // Odometry smoother object
-  std::shared_ptr<athena_util::OdomSmoother> odom_smoother_;
+  std::string behavior_tree_;
 };
 
 } 

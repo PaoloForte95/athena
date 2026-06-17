@@ -32,52 +32,32 @@ namespace athena_bt_planner
 BtPlanner::BtPlanner(const rclcpp::NodeOptions & options)
 : athena_util::LifecycleNode("bt_planner", "", options)
 {
-  RCLCPP_INFO(get_logger(), "Creating");
-
   const std::vector<std::string> plugin_libs = {
     "athena_compute_plan_action_bt_node"
 
   };
 
   declare_parameter("plugin_lib_names", plugin_libs);
-  declare_parameter("transform_tolerance", rclcpp::ParameterValue(0.1));
-  declare_parameter("global_frame", std::string("map"));
-  declare_parameter("robot_base_frame", std::string("base_link"));
-  declare_parameter("odom_topic", std::string("odom"));
+  declare_parameter("behavior_tree", std::string(""));
+  declare_parameter("bt_package_dir", std::string("athena_behavior_tree"));
+
 }
 
-BtPlanner::~BtPlanner()
-{
-}
+BtPlanner::~BtPlanner() = default;
 
 athena_util::CallbackReturn
 BtPlanner::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
 
-  tf_ = std::make_shared<tf2_ros::Buffer>(get_clock());
-  auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    get_node_base_interface(), get_node_timers_interface());
-  tf_->setCreateTimerInterface(timer_interface);
-  tf_->setUsingDedicatedThread(true);
-  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_, this, false);
 
-  global_frame_ = get_parameter("global_frame").as_string();
-  robot_frame_ = get_parameter("robot_base_frame").as_string();
-  transform_tolerance_ = get_parameter("transform_tolerance").as_double();
-  odom_topic_ = get_parameter("odom_topic").as_string();
 
   // Libraries to pull plugins (BT Nodes) from
   auto plugin_lib_names = get_parameter("plugin_lib_names").as_string_array();
 
   planner_ = std::make_unique<athena_bt_planner::TaskPlanner>();
 
-
-  // Odometry smoother object for getting current speed
-  odom_smoother_ = std::make_shared<athena_util::OdomSmoother>(shared_from_this(), 0.3, odom_topic_);
-
-  if (!planner_->on_configure(
-      shared_from_this(), plugin_lib_names, &plugin_muxer_, odom_smoother_))
+  if (!planner_->on_configure(shared_from_this(), plugin_lib_names, &plugin_muxer_))
   {
     return athena_util::CallbackReturn::FAILURE;
   }
@@ -120,10 +100,6 @@ athena_util::CallbackReturn
 BtPlanner::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Cleaning up");
-
-  // Reset the listener before the buffer
-  tf_listener_.reset();
-  tf_.reset();
 
   if (!planner_->on_cleanup()) {
     return athena_util::CallbackReturn::FAILURE;
