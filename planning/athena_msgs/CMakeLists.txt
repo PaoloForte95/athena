@@ -20,7 +20,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     "msg/Action.msg"
     "msg/BehaviorTreeLog.msg"
     "msg/BehaviorTreeStatusChange.msg"
-    "msg/Execution.msg"
+    "msg/DomainAction.msg"
+    "msg/Event.msg"
     "msg/Method.msg"
     "msg/Plan.msg"
     "msg/PlanningProblem.msg"
@@ -35,11 +36,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     "srv/GetPredicateList.srv"
     "srv/GetActionList.srv"
     "srv/GenerateDomain.srv"
+    "srv/GetObjects.srv"
     #Actions
     "action/ComputePlan.action"
     "action/OptmizePlan.action"
-    "action/ExecuteMethod.action"
-    "action/ExecuteAction.action"
     "action/UpdateState.action"
     "action/GenerateTasks.action"
   DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs

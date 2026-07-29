@@ -1,8 +1,8 @@
 # Get the pose of an object
-
-std_msgs/String prompt
-std_msgs/String instruction
-
+string instruction
+string domain
+string[] objects
+string[] init
 ---
 # Response
 std_msgs/String problem_file
