@@ -2,6 +2,7 @@
 #include <string>
 
 #include "athena_behavior_tree/plugins/action/generate_problem_file_action.hpp"
+#include "behaviortree_cpp/bt_factory.h"
 
 namespace athena_behavior_tree
 {
@@ -12,87 +13,54 @@ GenerateProblemFileAction::GenerateProblemFileAction(
 : ActionNodeBase(action_name, conf)
 {
     getInput("output_name", output_name_);
-    std::string image_topic;
-    node_ = rclcpp::Node::make_shared("generate_planning_problem_node"); 
-    callback_group_ = node_->create_callback_group( rclcpp::CallbackGroupType::MutuallyExclusive, false);
+    node_ = rclcpp::Node::make_shared("generate_planning_problem_node");
+    callback_group_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
     callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
     rclcpp::SubscriptionOptions sub_option;
     sub_option.callback_group = callback_group_;
 
     client_ = node_->create_client<athena_msgs::srv::GenerateProblemFile>("generate_problem_file");
-    getInput("image_topic", image_topic);
-    subscription_ = node_->create_subscription<sensor_msgs::msg::Image>(
-            image_topic,  
-            rclcpp::SystemDefaultsQoS(),
-            std::bind(&GenerateProblemFileAction::imageCallback, this, std::placeholders::_1),
-            sub_option);
+    get_objects_client_ = node_->create_client<athena_msgs::srv::GetObjects>("get_objects");
 }
 
-
-inline BT::NodeStatus GenerateProblemFileAction::tick()
-{   
-    std::string format, instruction, prompt;
+BT::NodeStatus GenerateProblemFileAction::tick()
+{
     setStatus(BT::NodeStatus::RUNNING);
-    //Get the computed execution plan
-    getInput("format", format);
-    getInput("instruction", instruction);
-    //Get the completed actions
-    getInput("prompt", prompt);
-    config().blackboard->set<std::string>("prompt", prompt);
+
+    std::string instruction, domain_file;
+    config().blackboard->get<std::string>("instruction", instruction);
+    RCLCPP_INFO(node_->get_logger(), "instruction: %s", instruction.c_str());
+
+    auto objects_request = std::make_shared<athena_msgs::srv::GetObjects::Request>();
+    auto objects_result = get_objects_client_->async_send_request(objects_request);
+    if (rclcpp::spin_until_future_complete(node_, objects_result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+        RCLCPP_ERROR(node_->get_logger(), "Failed to call get_objects service");
+        return BT::NodeStatus::FAILURE;
+    }
+
+    auto objects_response = objects_result.get();
+
     auto request = std::make_shared<athena_msgs::srv::GenerateProblemFile::Request>();
-    callback_group_executor_.spin_some();
-    request->prompt.data = prompt;
-    request->instruction.data = instruction;
-
-    if(latest_image_ == nullptr){
-        RCLCPP_INFO(node_->get_logger(), "Waiting for image...");
-        return BT::NodeStatus::RUNNING;
-        
-    }
-
-    try {
-            // Convert ROS image message to OpenCV format
-            cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(latest_image_, sensor_msgs::image_encodings::BGR8);
-            // Save as PNG
-            std::string filename = "captured_image.png";
-            cv::imwrite(filename, cv_ptr->image);
-            
-            RCLCPP_INFO(node_->get_logger(), "Saved image to: %s", filename.c_str());
-            std::filesystem::path cwd = std::filesystem::current_path();
-            
-        } catch (cv_bridge::Exception& e) {
-            RCLCPP_ERROR(node_->get_logger(), "cv_bridge exception: %s", e.what());
-
-    }
-
-    
-   
-    // while (!client_->wait_for_service(1s)) {
-    //     if (!rclcpp::ok()) {
-    //         RCLCPP_ERROR(node_->get_logger(), "Interrupted while waiting for the service. Exiting.");
-    //     }
-    //     RCLCPP_INFO(node_->get_logger(), "service not available, waiting again...");
-    // }
+    request->instruction = instruction;
+    request->objects = objects_response->objects;
+    request->init = objects_response->init;
+    getInput("domain_file", domain_file);
+    request->domain = domain_file;
 
     auto result = client_->async_send_request(request);
     if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
     {
         auto file = result.get()->problem_file;
-        RCLCPP_INFO(node_->get_logger(), "response.problem_file %s" , file.data.c_str());
+        RCLCPP_INFO(node_->get_logger(), "response.problem_file %s", file.data.c_str());
         setOutput("problem_file", file.data);
         return BT::NodeStatus::SUCCESS;
     }
     return BT::NodeStatus::RUNNING;
-    
 }
 
+}  // namespace athena_behavior_tree
 
-void GenerateProblemFileAction::imageCallback(const sensor_msgs::msg::Image::SharedPtr msg) {
-        latest_image_ = msg;
-    }
-} 
-
-#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
   factory.registerNodeType<athena_behavior_tree::GenerateProblemFileAction>("GenerateProblemFile");

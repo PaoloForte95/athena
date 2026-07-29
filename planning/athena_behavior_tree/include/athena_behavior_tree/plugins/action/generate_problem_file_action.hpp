@@ -1,32 +1,18 @@
-// Copyright (c) 2025 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #ifndef ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__GENERATE_PROBLEM_FILE_ACTION_HPP_
 #define ATHENA_BEHAVIOR_TREE__PLUGINS__ACTION__GENERATE_PROBLEM_FILE_ACTION_HPP_
 
 #include <string>
 #include <memory>
 
-#include "athena_behavior_tree/bt_action_node.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "behaviortree_cpp/action_node.h"
 #include "athena_msgs/srv/generate_problem_file.hpp"
-#include <cv_bridge/cv_bridge.hpp>
-#include <opencv2/opencv.hpp>
-#include <sensor_msgs/msg/image.hpp>
+#include "athena_msgs/srv/get_objects.hpp"
+
 namespace athena_behavior_tree
 {
 /**
- * @brief A athena_behavior_tree::BtActionNode class that wraps athena_behavior_tree::action::DispatchTasksAction
+ * @brief A BT action node that generates a problem file based on the provided instruction
  */
 class GenerateProblemFileAction : public BT::ActionNodeBase
 {
@@ -34,7 +20,7 @@ class GenerateProblemFileAction : public BT::ActionNodeBase
 public:
 
     /**
-     * @brief A constructor for athena_behavior_tree::DispatchTasksAction
+     * @brief A constructor for athena_behavior_tree::GenerateProblemFileAction
      * @param action_name Action name this node creates a client for
      * @param conf BT node configuration
      */
@@ -59,33 +45,25 @@ public:
      */
     static BT::PortsList providedPorts()
     {
-        return 
-        {   
+        return
+        {
             BT::OutputPort<std::string>("problem_file","The path to the object location file"),
-            BT::InputPort<std::string>("format", "PDDL", "The format of the file to generate, either PDDL or HDDL"), 
-            BT::InputPort<std::string>("instruction", "The instruction to the VLM"), 
-            BT::InputPort<std::string>("prompt", "The promt to the VLM"),
-            BT::InputPort<std::string>("output_name", "The output file name"),
-            BT::InputPort<std::string>("image_topic", "/camera/image_raw", "The topic to get the image from")
+            BT::InputPort<std::string>("output_name", "problem.pddl" "The output file name"),
+            BT::InputPort<std::string>("domain_file", "The path to the planning domain file"),
         };
     }
 private:
-    
-    void imageCallback(const sensor_msgs::msg::Image::SharedPtr msg);
 
     rclcpp::Node::SharedPtr node_;
     rclcpp::CallbackGroup::SharedPtr callback_group_;
     rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
     rclcpp::Client<athena_msgs::srv::GenerateProblemFile>::SharedPtr client_;
-    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
-    sensor_msgs::msg::Image::SharedPtr latest_image_;
+    rclcpp::Client<athena_msgs::srv::GetObjects>::SharedPtr get_objects_client_;
     std::string problem_instance_;
     std::string output_name_;
 
+};
 
-
-}; //Class end
-
-}  
+}
 
 #endif

@@ -29,5 +29,12 @@ def generate_launch_description():
             name="domain_file_generator_node",
             parameters=[param_file],
             output="screen",
+        ),
+        Node(
+            package="athena_lm",
+            executable="problem_file_generator",
+            name="problem_file_generator_node",
+            parameters=[param_file],
+            output="screen",
         )
     ])

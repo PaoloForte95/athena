@@ -93,7 +93,6 @@ list(APPEND plugin_libs athena_detect_objects_action_bt_node)
 
 add_library(athena_generate_problem_file_action_bt_node SHARED plugins/action/generate_problem_file_action.cpp)
 list(APPEND plugin_libs athena_generate_problem_file_action_bt_node)
-target_link_libraries(athena_generate_problem_file_action_bt_node ${OpenCV_LIBRARIES})
 
 add_library(athena_update_prompt_action_bt_node SHARED plugins/action/update_prompt_action.cpp)
 list(APPEND plugin_libs athena_update_prompt_action_bt_node)
@@ -106,6 +105,9 @@ list(APPEND plugin_libs athena_send_load_action_bt_node)
 
 add_library(athena_send_dump_action_bt_node SHARED plugins/action/send_dump_action.cpp)
 list(APPEND plugin_libs athena_send_dump_action_bt_node)
+
+add_library(athena_generate_domain_file_action_bt_node SHARED plugins/action/generate_domain_file_action.cpp)
+list(APPEND plugin_libs athena_generate_domain_file_action_bt_node)
 
 #Condition
 add_library(athena_all_object_detected_condition_node SHARED plugins/condition/all_object_detected_condition.cpp)

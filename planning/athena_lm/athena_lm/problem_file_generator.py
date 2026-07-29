@@ -5,160 +5,257 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 import os
-import base64
 from openai import OpenAI
 from functools import lru_cache
-from cv_bridge import CvBridge
-import base64
-import cv2
-from sensor_msgs.msg import Image
+
 from athena_msgs.srv import GenerateProblemFile
 from google import genai
-import PIL.Image
-from pathlib import Path
 import ollama
 
-GPT_MODEL="gpt-4.1"
+GPT_MODEL = "gpt-5.2"
 GEMINI_MODEL = "gemini-3-flash-preview"
 OLLAMA_MODEL = "qwen3.5"
 
 open_ai_key = os.environ["OPENAI_API_KEY"]
-gemini_api_key=os.environ["GEMINI_API_KEY"]
+gemini_api_key = os.environ["GEMINI_API_KEY"]
+
+SYSTEM_PROMPT = (
+    "You write PDDL planning goals. "
+    "You are given a planning domain, an instruction in plain language, "
+    "and the list of available objects. "
+    "Produce only the goal section of a PDDL problem. "
+    "Use only the predicates defined in the domain and only the objects provided. Use only the types from the domain file "
+    "Return a single block that starts with (:goal and nothing else."
+)
+
+INIT_CHECK_PROMPT = (
+    "You review the initial state of a PDDL problem. "
+    "You are given a planning domain, the objects, and the current initial state. "
+    "List only initial state facts that are clearly missing for this scene. "
+    "Use only predicates defined in the domain and only the listed objects. "
+    "Return each fact on its own line as a PDDL fact like (predicate arg1 arg2). "
+    "If nothing is missing, return NONE."
+)
+
+
 class VlmApi:
-    def __init__(self, system_prompt, instruction, output_file = "problem.pddl"):
+    def __init__(self, domain_file, output_file="problem.pddl", check_init=False):
 
         self.output_file = output_file
-        self.prompt = None
-        self.instruction = None
+        self.prompt = SYSTEM_PROMPT
+        self.check_init = check_init
         self.logger = rclpy.logging.get_logger('VlmApi')
-        with open(system_prompt, "r") as file:
-            # Read the entire content of the file
-            self.prompt = file.read()
 
-        with open(instruction, "r") as command_file:
-            # Read the entire content of the file
-            self.instruction = command_file.read()
+        with open(domain_file, "r") as file:
+            self.domain = file.read()
 
-        self.openai_client = OpenAI(api_key=open_ai_key)  # CHANGED
+        self.openai_client = OpenAI(api_key=open_ai_key)
         self.gemini_client = genai.Client(api_key=gemini_api_key)
 
-    # Function to encode the image
-    def encode_image(self, image_path):
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+    def build_user_prompt(self, instruction, objects):
+        objects_text = "\n".join(objects)
+        return (
+            f"Planning domain:\n{self.domain}\n\n"
+            f"Instruction:\n{instruction}\n\n"
+            f"Available objects:\n{objects_text}\n\n"
+            "Write only the PDDL goal section for the instruction above. "
+            "Use only the listed objects and only predicates defined in the domain. "
+            "Return a single block starting with (:goal and nothing else."
+        )
 
-    # Path to your image
+    def build_init_check_prompt(self, instruction, objects, init):
+        objects_text = "\n".join(objects)
+        init_text = "\n".join(init)
+        return (
+            f"Planning domain:\n{self.domain}\n\n"
+            f"Instruction:\n{instruction}\n\n"
+            f"Objects:\n{objects_text}\n\n"
+            f"Current initial state:\n{init_text}\n\n"
+            "List any initial state facts that are clearly missing for this scene. "
+            "Use only predicates from the domain and only the listed objects. "
+            "Return each fact on its own line as a PDDL fact. "
+            "If nothing is missing, return NONE."
+        )
+
     @lru_cache()
-    def analyze_image(self,img_path, user_prompt, prompt):
-        base64_image = self.encode_image(img_path)
-
+    def analyze_text(self, user_prompt, prompt):
         response = self.openai_client.responses.create(
-        model=GPT_MODEL,
-        temperature=0.0,
-        input=[
-            {"role": "system", "content": [{"type": "input_text", "text": prompt}]},
-            {"role": "user", "content": [
-                {"type": "input_text", "text": user_prompt},
-                {"type": "input_image", "image_url": f"data:image/png;base64,{base64_image}"}
-            ]}
-        ],
+            model=GPT_MODEL,
+            temperature=0.0,
+            input=[
+                {"role": "system", "content": [{"type": "input_text", "text": prompt}]},
+                {"role": "user", "content": [{"type": "input_text", "text": user_prompt}]},
+            ],
         )
         return response.output_text
-    
+
     @lru_cache()
-    def analyze_image_ollama(self, img_path, user_prompt, prompt):
+    def analyze_text_ollama(self, user_prompt, prompt):
         response = ollama.generate(
             model=OLLAMA_MODEL,
             prompt=f"{prompt}\n\n{user_prompt}",
-            images=[img_path],
-            options={"temperature": 0.0}
+            options={"temperature": 0.0},
         )
         return response["response"]
-        
-    def generateProblemFile(self, image, model="Ollama"):
+
+    def call_model(self, user_prompt, system_prompt, model):
         if "Gemini" in model:
-            self.logger.info("Generating planning problem using Gemini")
             response = self.gemini_client.models.generate_content(
                 model=GEMINI_MODEL,
-                contents=[self.prompt, image])
-            response = response.text
+                contents=[system_prompt, user_prompt])
+            return response.text
         elif "ChatGpt" in model:
-            self.logger.info("Generating planning problem using ChatGPT")
-            response = self.analyze_image(image, self.instruction, self.prompt)
+            return self.analyze_text(user_prompt, system_prompt)
         elif "Ollama" in model:
-            self.logger.info("Generating planning problem using local Ollama (Qwen3.5)")
-            response = self.analyze_image_ollama(image, self.instruction, self.prompt)
+            return self.analyze_text_ollama(user_prompt, system_prompt)
+        return ""
 
+    def generate_goal(self, instruction, objects, model="ChatGpt"):
+        self.logger.info("Generating goal using %s" % model)
+        user_prompt = self.build_user_prompt(instruction, objects)
+        response = self.call_model(user_prompt, self.prompt, model)
         self.logger.info(response)
-        parse = self.export_file(response, self.output_file)
-        self.logger.info(parse)
-        return self.output_file
-    
+        return self.extract_goal(response)
 
-    def export_file(self,input_text, output_file):
+    def check_missing_init(self, instruction, objects, init, model="ChatGpt"):
+        self.logger.info("Checking initial state using %s" % model)
+        user_prompt = self.build_init_check_prompt(instruction, objects, init)
+        response = self.call_model(user_prompt, INIT_CHECK_PROMPT, model)
+        self.logger.info(response)
+        return self.extract_facts(response)
+
+    def extract_goal(self, input_text):
         """
-        Extracts the PDDL section from a string where the PDDL code is embedded within other text
-        and saves it to a specified file path, replacing any existing content.
-
-        Parameters:
-        input_text (str): The string from which to extract the PDDL content.
-        output_file (str): The path to the file where the PDDL content should be saved.
-        
-        Returns:
-        str: Confirmation message about saving, or an error message if not found.
+        Extracts the balanced (:goal ...) block from the model output.
+        Returns an empty goal if none is found.
         """
-
-        start_index = input_text.find("(define")
+        start_index = input_text.find("(:goal")
         if start_index == -1:
-            return "PDDL content not found."
+            return "(:goal (and ))"
 
-        end_index = input_text.rfind(")") + 1
-        if end_index == 0:
-            return "PDDL content not found."
+        depth = 0
+        for i in range(start_index, len(input_text)):
+            if input_text[i] == "(":
+                depth += 1
+            elif input_text[i] == ")":
+                depth -= 1
+                if depth == 0:
+                    return input_text[start_index:i + 1]
+        return "(:goal (and ))"
 
-        pddl_content = input_text[start_index:end_index]
+    def extract_facts(self, input_text):
+        """
+        Collects every top level balanced (...) expression from the model output.
+        Returns a list of fact strings.
+        """
+        facts = []
+        depth = 0
+        start = -1
+        for i, char in enumerate(input_text):
+            if char == "(":
+                if depth == 0:
+                    start = i
+                depth += 1
+            elif char == ")":
+                if depth > 0:
+                    depth -= 1
+                    if depth == 0 and start != -1:
+                        facts.append(input_text[start:i + 1])
+                        start = -1
+        return facts
+    
+    def is_valid_fact(self, fact):
+        inner = fact.strip()
+        if not (inner.startswith("(") and inner.endswith(")")):
+            return False
+        return len(inner[1:-1].split()) >= 2
 
-        with open(output_file, 'w') as file:
-            file.write(pddl_content)
+    def merge_init(self, init, extra_facts):
+        merged = [f for f in init if self.is_valid_fact(f)]
+        for fact in extra_facts:
+            if self.is_valid_fact(fact) and fact not in merged:
+                merged.append(fact)
+                self.logger.info("Added missing init fact: %s" % fact)
+        return merged
 
-        return f"PDDL content successfully saved to {output_file}"
-   
+    def build_problem_file(self, objects, init, goal):
+        objects_text = "\n    ".join(objects)
+        init_text = "\n    ".join(init)
+        return (
+            f"(define (problem pb01)\n"
+            f"  (:domain domain_pddl)\n"
+            f"  (:objects\n    {objects_text}\n  )\n"
+            f"  (:init\n    {init_text}\n  )\n"
+            f"  {goal}\n"
+            f")\n"
+        )
+
+    def generateProblemFile(self, instruction, objects, init, model="ChatGpt"):
+        goal = self.generate_goal(instruction, objects, model)
+
+        if self.check_init:
+            extra_facts = self.check_missing_init(instruction, objects, init, model)
+            init = self.merge_init(init, extra_facts)
+
+        problem = self.build_problem_file(objects, init, goal)
+
+        with open(self.output_file, 'w') as file:
+            file.write(problem)
+
+        self.logger.info("PDDL problem saved to %s" % self.output_file)
+        return self.output_file
+
 
 class VlmApiNode(Node):
 
     def __init__(self):
         super().__init__("VlmApi")
-        
+
+        self.declare_parameter("output_file", "problem.pddl")
+        self.declare_parameter("model", "ChatGpt")
+        self.declare_parameter("check_init", False)
+
         self.srv = self.create_service(GenerateProblemFile, 'generate_problem_file', self.compute_problem_file_callback)
-      
-        
-        
-        
+
     def compute_problem_file_callback(self, request, response):
-        
-        image_path = request.image_file.data
-        self.get_logger().info('Image path: %s' %image_path)
-        outfile = request.output_name.data
-        self.VlmApi = VlmApi(request.prompt.data, request.instruction.data, outfile)
-        filename = self.VlmApi.generateProblemFile("/home/pofe/planning_ws/captured_image.png")
+        instruction = request.instruction
+        objects = list(request.objects)
+        init = list(request.init)
+        domain_file = request.domain
+
+        self.get_logger().info('Instruction: %s' % instruction)
+        self.get_logger().info('Domain file: %s' % domain_file)
+        self.get_logger().info('Objects received: %d' % len(objects))
+        for obj in objects:
+            self.get_logger().info('Object: %s' % obj)
+        self.get_logger().info('Init facts received: %d' % len(init))
+        for fact in init:
+            self.get_logger().info('Init fact: %s' % fact)
+
+        output_file = self.get_parameter("output_file").get_parameter_value().string_value
+        model = self.get_parameter("model").get_parameter_value().string_value
+        check_init = self.get_parameter("check_init").get_parameter_value().bool_value
+
+        vlm = VlmApi(domain_file, output_file, check_init)
+        filename = vlm.generateProblemFile(instruction, objects, init, model)
+
         msg = String()
         msg.data = filename
         response.problem_file = msg
-        self.get_logger().info('Problem %s file created!' %filename)
+        self.get_logger().info('Problem %s file created!' % filename)
         return response
-
 
 
 def main(args=None):
     rclpy.init(args=args)
 
-    VlmApi = VlmApiNode()
+    node = VlmApiNode()
     try:
-        rclpy.spin(VlmApi)
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-    
-    VlmApi.destroy_node()
+
+    node.destroy_node()
     rclpy.try_shutdown()
 
 

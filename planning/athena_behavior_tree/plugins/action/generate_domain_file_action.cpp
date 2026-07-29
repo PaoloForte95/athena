@@ -70,7 +70,7 @@ BT::NodeStatus GenerateDomainFileAction::tick()
         RCLCPP_ERROR(node_->get_logger(), "get_action_list service call failed");
         return BT::NodeStatus::FAILURE;
     }
-
+    
     auto gen_req = std::make_shared<athena_msgs::srv::GenerateDomain::Request>();
     gen_req->types = types_res->types;
     gen_req->predicates = pred_res->predicates;
