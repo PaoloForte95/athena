@@ -13,7 +13,10 @@ DispatcherNode::DispatcherNode(
   count_(0),
   logger_(rclcpp::get_logger("DispatcherNode"))
 {
-
+    node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
+    event_pub_ = node_->create_publisher<athena_msgs::msg::Event>(
+        "/plan_actions",
+        rclcpp::QoS(rclcpp::KeepLast(100)).transient_local().reliable());
 }
 
 BT::NodeStatus DispatcherNode::tick()
@@ -33,6 +36,15 @@ BT::NodeStatus DispatcherNode::tick()
     }
     count_ = completed_.size();
 
+    for (int id : completed_) {
+        if (published_.find(id) == published_.end() &&
+            starts_.find(id) != starts_.end()) {
+            publishEvent(id, names_[id], kinds_[id], starts_[id], node_->now(),
+                athena_msgs::msg::Event::SUCCESS);
+            published_.insert(id);
+        }
+    }
+
     // Remove completed actions/methods from the plan
     removeCompleted();
 
@@ -47,6 +59,13 @@ BT::NodeStatus DispatcherNode::tick()
     for(unsigned i = 0; i < children_nodes_.size(); i++){
         BT::NodeStatus child_status = children_nodes_[i]->executeTick();
         if(child_status == BT::NodeStatus::FAILURE){
+            for (const auto & entry : starts_) {
+                if (published_.find(entry.first) == published_.end()) {
+                    publishEvent(entry.first, names_[entry.first], kinds_[entry.first],
+                        entry.second, node_->now(), athena_msgs::msg::Event::FAILURE);
+                    published_.insert(entry.first);
+                }
+            }
             haltChildren();
             return BT::NodeStatus::FAILURE;
         }
@@ -64,6 +83,10 @@ void DispatcherNode::halt()
     plan_actions_.clear();
     plan_methods_.clear();
     completed_.clear();
+    starts_.clear();
+    names_.clear();
+    kinds_.clear();
+    published_.clear();
 }
 
 void DispatcherNode::removeCompleted()
@@ -168,6 +191,11 @@ void DispatcherNode::dispatch(){
                     RCLCPP_INFO(logger_, "Sending action %d, %s....", curr_action.action_id, curr_action.name.c_str());
                     concurrent_actions.push_back(curr_action);
                     config().blackboard->set<std::string>(robot + "_state", "busy");
+                    if (starts_.find(curr_action.action_id) == starts_.end()) {
+                        starts_[curr_action.action_id] = node_->now();
+                        names_[curr_action.action_id] = curr_action.name;
+                        kinds_[curr_action.action_id] = athena_msgs::msg::Event::ACTION;
+                    }
                 }
             }
             else{
@@ -204,6 +232,11 @@ void DispatcherNode::dispatch(){
                     RCLCPP_INFO(logger_, "Sending method %d, %s....", curr_method.id, curr_method.name.c_str());
                     concurrent_methods.push_back(curr_method);
                     config().blackboard->set<std::string>(robot + "_state", "busy");
+                    if (starts_.find(curr_method.id) == starts_.end()) {
+                        starts_[curr_method.id] = node_->now();
+                        names_[curr_method.id] = curr_method.name;
+                        kinds_[curr_method.id] = athena_msgs::msg::Event::METHOD;
+                    }
 
                     // Resolve method subtasks into actions for children to use
                     Actions subtask_actions;
@@ -225,6 +258,20 @@ void DispatcherNode::dispatch(){
         setOutput("concurrent_methods", concurrent_methods);
         config().blackboard->set<Methods>("concurrent_methods", concurrent_methods);
     }
+}
+
+void DispatcherNode::publishEvent(
+    int id, const std::string & name, uint8_t kind,
+    const rclcpp::Time & start, const rclcpp::Time & end, uint8_t status)
+{
+    athena_msgs::msg::Event event;
+    event.id = id;
+    event.name = name;
+    event.kind = kind;
+    event.start_time = start;
+    event.end_time = end;
+    event.status = status;
+    event_pub_->publish(event);
 }
 
 }  // namespace athena_behavior_tree

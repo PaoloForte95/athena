@@ -2,6 +2,9 @@
 #define ATHENA_BEHAVIOR_TREE__PLUGINS__DISPATCHER_NODE_HPP_
 
 #include <string>
+#include <map>
+#include <set>
+#include "athena_msgs/msg/event.hpp"
 #include "behaviortree_cpp/control_node.h"
 #include "athena_msgs/msg/plan.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -59,7 +62,13 @@ public:
         std::string type_;
         rclcpp::Logger logger_ ;
         IDs completed_;
-    
+        rclcpp::Node::SharedPtr node_;
+        rclcpp::Publisher<athena_msgs::msg::Event>::SharedPtr event_pub_;
+        std::map<int, rclcpp::Time> starts_;
+        std::map<int, std::string> names_;
+        std::map<int, uint8_t> kinds_;
+        std::set<int> published_;
+            
 
     /**
      * @brief The main override required by a BT action
@@ -83,6 +92,8 @@ public:
     void removeCompleted();
 
     void dispatch();
+
+    void publishEvent(int id, const std::string & name, uint8_t kind, const rclcpp::Time & start, const rclcpp::Time & end, uint8_t status);
 };
 
 } 
