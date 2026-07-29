@@ -128,7 +128,7 @@ source <path/to/venv/bin/activate>
 ```
 Install the required dependencies:
 ```
-pip install openai "opencv-python==4.10.0.84" google-genai pillow yaml setuptools
+pip install openai "opencv-python==4.10.0.84" google-genai pillow pyyaml setuptools
 ```
 
 # Set up for api keys.
