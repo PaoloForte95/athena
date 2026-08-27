@@ -9,11 +9,11 @@ domain_file_generator_node:
     #backend: "ollama"
     #ollama_model: "qwen3.5:latest"
     backend: openai
-    output_file: "/home/pofe/planning_ws/bringup/tasks/unloading_shopping_items/domain.pddl"
+    output_file: "/home/pofe/planning_ws/domain.pddl"
     capabilities: "/home/pofe/planning_ws/bringup/semantic/unitree_h1_semantic.yaml"
 
 problem_file_generator_node:
   ros__parameters:
-    output_file: "/home/pofe/planning_ws/bringup/tasks/unloading_shopping_items/problem.pddl"
+    output_file: "/home/pofe/planning_ws/problem.pddl"
     model: "ChatGpt"
 

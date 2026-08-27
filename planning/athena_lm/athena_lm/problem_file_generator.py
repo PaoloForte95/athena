@@ -113,6 +113,7 @@ class VlmApi:
     def generate_goal(self, instruction, objects, model="ChatGpt"):
         self.logger.info("Generating goal using %s" % model)
         user_prompt = self.build_user_prompt(instruction, objects)
+        self.logger.info("User prompt:\n%s" % user_prompt)
         response = self.call_model(user_prompt, self.prompt, model)
         self.logger.info(response)
         return self.extract_goal(response)
@@ -120,6 +121,7 @@ class VlmApi:
     def check_missing_init(self, instruction, objects, init, model="ChatGpt"):
         self.logger.info("Checking initial state using %s" % model)
         user_prompt = self.build_init_check_prompt(instruction, objects, init)
+        self.logger.info("User prompt:\n%s" % user_prompt)
         response = self.call_model(user_prompt, INIT_CHECK_PROMPT, model)
         self.logger.info(response)
         return self.extract_facts(response)
