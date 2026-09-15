@@ -56,14 +56,24 @@ SENSOR_KEYWORDS = ["camera", "lidar", "laser", "depth", "rgbd", "imu", "sonar", 
 GRIPPER_KEYWORDS = ["gripper", "finger", "jaw", "claw"]
 HAND_KEYWORDS = ["hand", "palm", "wrist"]
 
+WHEEL_KEYWORDS = ["wheel", "tire"]
+LEG_KEYWORDS = ["leg", "hip", "thigh", "knee", "ankle", "foot"]
 
-NAV_KEYWORDS = ["wheel", "tire", "leg", "hip", "thigh", "knee", "ankle"]
+
+def joint_is_wheel_like(j: Joint) -> bool:
+    n = j.name.lower()
+    c = j.child.lower()
+    return any(k in n or k in c for k in WHEEL_KEYWORDS)
+
+
+def joint_is_leg_like(j: Joint) -> bool:
+    n = j.name.lower()
+    c = j.child.lower()
+    return any(k in n or k in c for k in LEG_KEYWORDS)
 
 
 def joint_is_locomotion_like(j: Joint) -> bool:
-    n = j.name.lower()
-    c = j.child.lower()
-    return any(k in n or k in c for k in NAV_KEYWORDS)
+    return joint_is_wheel_like(j) or joint_is_leg_like(j)
 
 
 def joint_is_gripper_like(j: Joint) -> bool:
@@ -87,6 +97,20 @@ def is_non_fixed_joint(j: Joint) -> bool:
 
 def is_arm_chain_joint(j: Joint) -> bool:
     return is_non_fixed_joint(j) and not joint_is_locomotion_like(j) and not joint_is_gripper_like(j)
+
+
+def wheel_joints(facts: URDFFacts) -> List[str]:
+    return [
+        j.name for j in facts.joints.values()
+        if joint_is_wheel_like(j) and j.jtype in ["revolute", "continuous"]
+    ]
+
+
+def leg_joints(facts: URDFFacts) -> List[str]:
+    return [
+        j.name for j in facts.joints.values()
+        if joint_is_leg_like(j) and j.jtype in ["revolute", "continuous", "prismatic"]
+    ]
 
 
 def call_llm_reasoner(facts: URDFFacts, model: str = "gpt-4.1-mini") -> Optional[dict]:
@@ -123,15 +147,17 @@ def call_llm_reasoner(facts: URDFFacts, model: str = "gpt-4.1-mini") -> Optional
         '  "robot": {"name": string},\n'
         '  "capabilities": {\n'
         '    "navigation": boolean,\n'
+        '    "legged": boolean,\n'
         '    "perception": boolean,\n'
         '    "manipulation": boolean,\n'
         '    "grasping": boolean\n'
         '  }\n'
         "}\n"
         "Rules:\n"
-        "- navigation = true iff there are at least 2 locomotion joints (name or child link contains 'wheel', 'tire', 'leg', 'hip', 'thigh', 'knee', or 'ankle'; joint type revolute or continuous).\n"
+        "- navigation = true iff there are at least 2 wheel joints (name or child link contains 'wheel' or 'tire'; joint type revolute or continuous).\n"
+        "- legged = true iff there are at least 2 leg joints (name or child link contains 'leg', 'hip', 'thigh', 'knee', 'ankle', or 'foot'; joint type revolute, continuous, or prismatic).\n"
         "- grasping = true iff there is at least one joint whose name contains: gripper, finger, jaw, or claw (type revolute, continuous, or prismatic).\n"
-        "- manipulation = true iff there is at least one link whose name contains: hand, palm, or wrist, AND at least 2 non-fixed joints that are not locomotion and not gripper.\n"
+        "- manipulation = true iff there is at least one link whose name contains: hand, palm, or wrist, AND at least 2 non-fixed joints that are not locomotion (wheel or leg) and not gripper.\n"
         "- perception = true iff there is at least one link whose name contains any of: camera, lidar, laser, depth, rgbd, imu, sonar, sensor, kinect, realsense.\n"
         "- Use ONLY joint/link names provided in the input. Do not invent names.\n"
     )
@@ -151,11 +177,9 @@ def call_llm_reasoner(facts: URDFFacts, model: str = "gpt-4.1-mini") -> Optional
 
 
 def rule_based_reasoner(facts: URDFFacts) -> dict:
-    loco_joints = [
-        j.name for j in facts.joints.values()
-        if joint_is_locomotion_like(j) and j.jtype in ["revolute", "continuous"]
-    ]
-    nav = len(loco_joints) >= 2
+    nav = len(wheel_joints(facts)) >= 2
+
+    legged = len(leg_joints(facts)) >= 2
 
     gripper_joints = [
         j.name for j in facts.joints.values()
@@ -177,6 +201,7 @@ def rule_based_reasoner(facts: URDFFacts) -> dict:
         "robot": {"name": facts.robot_name},
         "capabilities": {
             "navigation": nav,
+            "legged": legged,
             "perception": perception,
             "manipulation": manip,
             "grasping": grasping
@@ -201,14 +226,15 @@ def checker_validate_and_correct(facts: URDFFacts, y: dict) -> Tuple[dict, List[
 
     caps = y["capabilities"]
 
-    loco_joints = [
-        j.name for j in facts.joints.values()
-        if joint_is_locomotion_like(j) and j.jtype in ["revolute", "continuous"]
-    ]
-    nav_truth = len(loco_joints) >= 2
+    nav_truth = len(wheel_joints(facts)) >= 2
     if caps.get("navigation") != nav_truth:
         issues.append(f"navigation corrected to {nav_truth}")
     caps["navigation"] = nav_truth
+
+    legged_truth = len(leg_joints(facts)) >= 2
+    if caps.get("legged") != legged_truth:
+        issues.append(f"legged corrected to {legged_truth}")
+    caps["legged"] = legged_truth
 
     gripper_joints = [
         j.name for j in facts.joints.values()
@@ -237,6 +263,7 @@ def checker_validate_and_correct(facts: URDFFacts, y: dict) -> Tuple[dict, List[
 
     ordered_caps = {
         "navigation": caps["navigation"],
+        "legged": caps["legged"],
         "perception": caps["perception"],
         "manipulation": caps["manipulation"],
         "grasping": caps["grasping"]
