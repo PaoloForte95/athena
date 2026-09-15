@@ -1,0 +1,20 @@
+<!--
+This Behavior Tree computes and executed a plan. If the plan failed, it has recovery actions to recompute a plan.
+-->
+
+<root BTCPP_format="4" main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+
+   <UpdatedPromptController>
+   <RecoveryNode number_of_retries="1" name="ProblemGenerationRecovery">
+   <Sequence>
+    <DetectObjects name="DetectObject" problem_instance="/home/pofe/dev_ws/problem1.pddl" />
+    <AllObjectDetected />
+    </Sequence>
+    <UpdatePrompt name="UpdatePrompt" previous_prompt="prompt.txt" failure_type="ObjectDetection" updated_prompt="prompt.txt"/>
+    </RecoveryNode> 
+  </UpdatedPromptController>
+</BehaviorTree>
+
+</root>
