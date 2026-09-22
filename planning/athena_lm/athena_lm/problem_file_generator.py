@@ -290,7 +290,7 @@ class VlmApi:
     def generateProblemFile(self, instruction, objects, init, model="ChatGpt"):
         goal = self.generate_goal(instruction, objects, model)
         if goal is None:
-            return ""
+            return "", ""
 
         if self.check_init:
             extra_facts = self.check_missing_init(instruction, objects, init, model)
@@ -302,7 +302,7 @@ class VlmApi:
             file.write(problem)
 
         self.logger.info("PDDL problem saved to %s" % self.output_file)
-        return self.output_file
+        return self.output_file, problem
 
 
 class VlmApiNode(Node):
@@ -315,6 +315,7 @@ class VlmApiNode(Node):
         self.declare_parameter("check_init", False)
         self.declare_parameter("max_retries", 3)
 
+        self.problem_pub = self.create_publisher(String, 'generated_problem', 10)
         self.srv = self.create_service(GenerateProblemFile, 'generate_problem_file', self.compute_problem_file_callback)
 
     def compute_problem_file_callback(self, request, response):
@@ -338,13 +339,16 @@ class VlmApiNode(Node):
         max_retries = self.get_parameter("max_retries").get_parameter_value().integer_value
 
         vlm = VlmApi(domain_file, output_file, check_init, max_retries)
-        filename = vlm.generateProblemFile(instruction, objects, init, model)
+        filename, problem = vlm.generateProblemFile(instruction, objects, init, model)
 
         msg = String()
         msg.data = filename
         response.problem_file = msg
         if filename:
-            self.get_logger().info('Problem %s file created!' % filename)
+            problem_msg = String()
+            problem_msg.data = problem
+            self.problem_pub.publish(problem_msg)
+            self.get_logger().info('Problem %s file created and published on generated_problem' % filename)
         else:
             self.get_logger().error('No problem file created: goal rejected')
         return response
