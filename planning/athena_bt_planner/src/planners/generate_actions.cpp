@@ -5,6 +5,7 @@
 #include <limits>
 #include "athena_bt_planner/planners/generate_actions.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "athena_msgs/msg/planning_problem.hpp"
 
 namespace athena_bt_planner
 {
@@ -33,6 +34,16 @@ bool TaskPlanner::configure(
   }
   plan_blackboard_id_ = node->get_parameter("plan_blackboard_id").as_string();
 
+  if (!node->has_parameter("domain_file_blackboard_id")) {
+    node->declare_parameter("domain_file_blackboard_id", std::string("domain_file"));
+  }
+  domain_file_blackboard_id_ = node->get_parameter("domain_file_blackboard_id").as_string();
+
+  if (!node->has_parameter("problem_file_blackboard_id")) {
+    node->declare_parameter("problem_file_blackboard_id", std::string("problem_file"));
+  }
+  problem_file_blackboard_id_ = node->get_parameter("problem_file_blackboard_id").as_string();
+
   self_client_ = rclcpp_action::create_client<ActionT>(node, getName());
 
   instruction_sub_ = node->create_subscription<std_msgs::msg::String>(
@@ -40,7 +51,12 @@ bool TaskPlanner::configure(
     rclcpp::SystemDefaultsQoS(),
     std::bind(&TaskPlanner::onInstructionReceived, this, std::placeholders::_1));
 
-  RCLCPP_INFO(logger_, "TaskPlanner configured, listening on 'instruction' topic");
+  start_bt_sub_ = node->create_subscription<athena_msgs::msg::PlanningProblem>(
+    "start_bt",
+    rclcpp::SystemDefaultsQoS(),
+    std::bind(&TaskPlanner::onStartBtReceived, this, std::placeholders::_1));
+
+  RCLCPP_INFO(logger_, "TaskPlanner configured, listening on 'instruction' and 'start_bt' topics");
 
   return true;
 }
@@ -68,6 +84,7 @@ bool
 TaskPlanner::cleanup()
 {
   instruction_sub_.reset();
+  start_bt_sub_.reset();
   self_client_.reset();
   return true;
 }
@@ -185,6 +202,20 @@ TaskPlanner::initializeFromGoal(ActionT::Goal::ConstSharedPtr goal)
   // Set the instruction on blackboard
   blackboard->set<std::string>(instruction_blackboard_id_, goal->instruction);
 
+  // Set the domain and problem files on blackboard if they were received on start_bt
+  std::optional<athena_msgs::msg::PlanningProblem> problem;
+  {
+    std::lock_guard<std::mutex> lock(pending_mutex_);
+    problem.swap(pending_problem_);
+  }
+  if (problem) {
+    blackboard->set<std::string>(domain_file_blackboard_id_, problem->planning_domain);
+    blackboard->set<std::string>(problem_file_blackboard_id_, problem->planning_problem);
+    RCLCPP_INFO(
+      logger_, "Domain file: %s, problem file: %s",
+      problem->planning_domain.c_str(), problem->planning_problem.c_str());
+  }
+
   RCLCPP_INFO(
     logger_, "Begin generating actions for instruction: \"%s\" using BT: %s",
     goal->instruction.c_str(), goal->behavior_tree.c_str());
@@ -193,14 +224,47 @@ TaskPlanner::initializeFromGoal(ActionT::Goal::ConstSharedPtr goal)
 void
 TaskPlanner::onInstructionReceived(const std_msgs::msg::String::SharedPtr msg)
 {
+  RCLCPP_INFO(logger_, "Received instruction: \"%s\"", msg->data.c_str());
+  last_instruction_ = msg->data;
+  sendGoal(msg->data);
+}
+
+void
+TaskPlanner::onStartBtReceived(const athena_msgs::msg::PlanningProblem::SharedPtr msg)
+{
+  if (msg->planning_domain.empty() || msg->planning_problem.empty()) {
+    RCLCPP_WARN(logger_, "Received start_bt with an empty domain or problem file, BT not started");
+    return;
+  }
+
+  RCLCPP_INFO(
+    logger_, "Received start_bt with domain \"%s\" and problem \"%s\"",
+    msg->planning_domain.c_str(), msg->planning_problem.c_str());
+
+  {
+    std::lock_guard<std::mutex> lock(pending_mutex_);
+    pending_problem_ = *msg;
+  }
+  if (!sendGoal(last_instruction_)) {
+    std::lock_guard<std::mutex> lock(pending_mutex_);
+    pending_problem_.reset();
+  }
+}
+
+bool
+TaskPlanner::sendGoal(const std::string & instruction)
+{
+  if (!self_client_->action_server_is_ready()) {
+    RCLCPP_WARN(logger_, "Action server '%s' is not ready, goal not sent", getName().c_str());
+    return false;
+  }
 
   ActionT::Goal goal;
-  goal.instruction = msg->data;
+  goal.instruction = instruction;
   goal.behavior_tree = behavior_tree_;
 
-  RCLCPP_INFO(logger_, "Received instruction: \"%s\"", msg->data.c_str());
-
   self_client_->async_send_goal(goal);
+  return true;
 }
 
 }  // namespace athena_bt_planner

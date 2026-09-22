@@ -4,11 +4,14 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <mutex>
+#include <optional>
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "athena_bt_planner/behavior_tree_planner.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "athena_msgs/action/generate_tasks.hpp"
+#include "athena_msgs/msg/planning_problem.hpp"
 #include "athena_msgs/msg/plan.hpp"
 #include "athena_msgs/msg/state.hpp"
 #include "athena_msgs/msg/action.hpp"
@@ -48,6 +51,14 @@ public:
    * @param msg Instruction received via a topic
    */
   void onInstructionReceived(const std_msgs::msg::String::SharedPtr msg);
+
+  /**
+   * @brief A subscription and callback that starts the behavior tree when a planning
+   * problem is received on the start_bt topic. The domain and problem files are put on
+   * the blackboard when the goal starts. The last received instruction is used.
+   * @param msg Planning domain and problem files received via a topic
+   */
+  void onStartBtReceived(const athena_msgs::msg::PlanningProblem::SharedPtr msg);
 
   /**
    * @brief Get action name for this planner
@@ -100,15 +111,29 @@ protected:
    */
   void initializeFromGoal(ActionT::Goal::ConstSharedPtr goal);
 
+  /**
+   * @brief Send a goal to this planner's own action server, which starts the BT
+   * @param instruction Instruction to put in the goal
+   * @return bool if the goal was sent
+   */
+  bool sendGoal(const std::string & instruction);
+
   rclcpp::Time start_time_;
   rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr instruction_sub_;
+  rclcpp::Subscription<athena_msgs::msg::PlanningProblem>::SharedPtr start_bt_sub_;
   rclcpp_action::Client<ActionT>::SharedPtr self_client_;
 
   std::string behavior_tree_blackboard_id_;
   std::string instruction_blackboard_id_;
   std::string plan_blackboard_id_;
+  std::string domain_file_blackboard_id_;
+  std::string problem_file_blackboard_id_;
   std::string behavior_tree_;
+  std::string last_instruction_;
+
+  std::mutex pending_mutex_;
+  std::optional<athena_msgs::msg::PlanningProblem> pending_problem_;
 };
 
 } 
