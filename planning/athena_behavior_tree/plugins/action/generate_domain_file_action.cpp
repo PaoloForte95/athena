@@ -9,13 +9,22 @@ template<typename ServiceT>
 typename ServiceT::Response::SharedPtr call_service(
   rclcpp::executors::SingleThreadedExecutor & executor,
   const typename rclcpp::Client<ServiceT>::SharedPtr & client,
-  const typename ServiceT::Request::SharedPtr & request)
+  const typename ServiceT::Request::SharedPtr & request,
+  const rclcpp::Logger & logger,
+  const std::string & service_name)
 {
     if (!client->wait_for_service(std::chrono::seconds(5))) {
+        RCLCPP_ERROR(logger, "service '%s' is not available after 5s", service_name.c_str());
         return nullptr;
     }
     auto future = client->async_send_request(request);
-    if (executor.spin_until_future_complete(future) != rclcpp::FutureReturnCode::SUCCESS) {
+    auto code = executor.spin_until_future_complete(future, std::chrono::seconds(300));
+    if (code == rclcpp::FutureReturnCode::TIMEOUT) {
+        RCLCPP_ERROR(logger, "service '%s' did not answer within 300s", service_name.c_str());
+        return nullptr;
+    }
+    if (code != rclcpp::FutureReturnCode::SUCCESS) {
+        RCLCPP_ERROR(logger, "service '%s' was interrupted", service_name.c_str());
         return nullptr;
     }
     return future.get();
@@ -49,41 +58,54 @@ GenerateDomainFileAction::GenerateDomainFileAction(
 
 BT::NodeStatus GenerateDomainFileAction::tick()
 {
+    auto logger = node_->get_logger();
 
     auto types_req = std::make_shared<athena_msgs::srv::GetTypes::Request>();
-    auto types_res = call_service<athena_msgs::srv::GetTypes>(callback_group_executor_, get_types_client_, types_req);
+    auto types_res = call_service<athena_msgs::srv::GetTypes>(
+      callback_group_executor_, get_types_client_, types_req, logger, "get_types");
     if (!types_res) {
-        RCLCPP_ERROR(node_->get_logger(), "get_types service call failed");
         return BT::NodeStatus::FAILURE;
     }
 
     auto pred_req = std::make_shared<athena_msgs::srv::GetPredicateList::Request>();
-    auto pred_res = call_service<athena_msgs::srv::GetPredicateList>(callback_group_executor_, get_predicates_client_, pred_req);
+    auto pred_res = call_service<athena_msgs::srv::GetPredicateList>(
+      callback_group_executor_, get_predicates_client_, pred_req, logger, "get_predicate_list");
     if (!pred_res) {
-        RCLCPP_ERROR(node_->get_logger(), "get_predicate_list service call failed");
         return BT::NodeStatus::FAILURE;
     }
 
     auto act_req = std::make_shared<athena_msgs::srv::GetActionList::Request>();
-    auto act_res = call_service<athena_msgs::srv::GetActionList>(callback_group_executor_, get_actions_client_, act_req);
+    auto act_res = call_service<athena_msgs::srv::GetActionList>(
+      callback_group_executor_, get_actions_client_, act_req, logger, "get_action_list");
     if (!act_res) {
-        RCLCPP_ERROR(node_->get_logger(), "get_action_list service call failed");
         return BT::NodeStatus::FAILURE;
     }
-    
+
+    RCLCPP_INFO(
+      logger, "requesting domain: %zu types, %zu predicates, %zu actions",
+      types_res->types.size(), pred_res->predicates.size(), act_res->actions.size());
+
     auto gen_req = std::make_shared<athena_msgs::srv::GenerateDomain::Request>();
     gen_req->types = types_res->types;
     gen_req->predicates = pred_res->predicates;
     gen_req->actions = act_res->actions;
 
-    auto gen_res = call_service<athena_msgs::srv::GenerateDomain>(callback_group_executor_, generate_domain_client_, gen_req);
-    if (!gen_res || !gen_res->success) {
-        RCLCPP_ERROR(node_->get_logger(), "generate_domain service call failed");
+    auto gen_res = call_service<athena_msgs::srv::GenerateDomain>(
+      callback_group_executor_, generate_domain_client_, gen_req, logger, "generate_domain");
+    if (!gen_res) {
+        return BT::NodeStatus::FAILURE;
+    }
+    if (!gen_res->success) {
+        RCLCPP_ERROR(logger, "generate_domain rejected the request: %s", gen_res->message.c_str());
+        return BT::NodeStatus::FAILURE;
+    }
+    if (gen_res->path.empty()) {
+        RCLCPP_ERROR(logger, "generate_domain returned success but no file path");
         return BT::NodeStatus::FAILURE;
     }
 
     setOutput("domain_file", gen_res->path);
-    RCLCPP_INFO(node_->get_logger(), "Domain saved: %s", gen_res->path.c_str());
+    RCLCPP_INFO(logger, "Domain saved: %s", gen_res->path.c_str());
     return BT::NodeStatus::SUCCESS;
 }
 
