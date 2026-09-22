@@ -20,6 +20,8 @@ find_package(athena_protobuf REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 
 include_directories(
@@ -125,7 +127,7 @@ ament_target_dependencies(${updater_library_name}_vlm
 
 
 ament_target_dependencies(${executable_name} ${dependencies})
-target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
+target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane yaml-cpp)
 
 ament_target_dependencies(${state_updater_executable_name} ${dependencies})
 target_link_libraries(${state_updater_executable_name} ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)

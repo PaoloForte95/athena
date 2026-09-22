@@ -60,11 +60,11 @@ public:
 
   /**
    * @brief Get the Execution Plan object
-   * 
-   * @param domain 
-   * @param problem 
-   * @param planner_id 
-   * @return std::string 
+   *
+   * @param domain
+   * @param problem
+   * @param planner_id
+   * @return std::string
    */
   athena_msgs::msg::Plan getExecutionPlan(
     const std::string & domain,
@@ -140,15 +140,15 @@ protected:
   std::unique_ptr<ActionServerPlan> action_server_plan_;
 
   /**
-   * @brief 
-   * 
+   * @brief
+   *
    */
   void computeExecutionPlan();
 
- 
+
   /**
    * @brief Publish the planner for debug purposes
-   * @param plann Reference to the execution plan 
+   * @param plann Reference to the execution plan
    */
   void publishPlan(const athena_msgs::msg::Plan & plan);
 
@@ -171,7 +171,10 @@ protected:
   std::vector<std::string> planner_ids_;
   std::vector<std::string> planner_types_;
   std::string planner_ids_concat_;
-  std::string robot_definition_, location_definition_, proto_filename_, plan_filename_, property_filename_;
+  std::string robot_definitions_file_, location_definitions_file_, object_definitions_file_;
+  std::string proto_filename_, plan_filename_, property_filename_;
+  std::vector<std::string> robot_definitions_;
+  std::vector<std::string> location_definitions_;
   std::vector<std::string> object_definitions_;
 
   // Clock
@@ -184,12 +187,23 @@ protected:
 
   double planner_frequency_;
 
-  private: 
+private:
+  /**
+   * @brief Read a YAML definitions file. The file holds either a list of
+   * definitions, or a map where the key given by name holds the list.
+   * @param name Name of the definition type (robot, location, object)
+   * @param path Path to the YAML file
+   * @param definitions Output list of definitions
+   * @return true if the file was read, false otherwise
+   */
+  bool loadDefinitionsFile(
+    const std::string & name,
+    const std::string & path,
+    std::vector<std::string> & definitions);
 
-      void writePropertiesFile();
-  
+  void writePropertiesFile();
 };
 
-}  
+}  // namespace athena_planner
 
-#endif  
+#endif  // ATHENA_PLANNER__TASK_PLANNER_SERVER_HPP_

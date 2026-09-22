@@ -8,7 +8,8 @@ bt_planner:
     bt_loop_duration: 10
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
-    behavior_tree: 'generation_and_planning.xml'
+    #behavior_tree: 'generation_and_planning.xml'
+    behavior_tree: 'planning_w_dispatching_pddl.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -33,9 +34,9 @@ task_planner_server:
     use_sim_time: True
     planner_frequency: 3.0
     definitions:
-      robot: "robot"
-      location: "location"
-      object: ["item", "food"]
+      robot: "/home/pofe/planning_ws/bringup/robot_definitions.yaml"
+      location: "/home/pofe/planning_ws/bringup/location_definitions.yaml"
+      object: "/home/pofe/planning_ws/bringup/object_definitions.yaml"
       plan_filename: "plan.pddl"
       proto_filename: "ExePlan.data"
     planner_plugins: ["MetricFF", "LPG"]

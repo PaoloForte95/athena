@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <unistd.h>
+
 #include <chrono>
 #include <cmath>
 #include <iomanip>
@@ -19,10 +21,13 @@
 #include <limits>
 #include <iterator>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <utility>
 #include <fstream>
+
+#include "yaml-cpp/yaml.h"
 
 #include "builtin_interfaces/msg/duration.hpp"
 #include "athena_util/node_utils.hpp"
@@ -33,6 +38,23 @@
 using namespace std::chrono_literals;
 using rcl_interfaces::msg::ParameterType;
 using std::placeholders::_1;
+
+namespace
+{
+
+std::string joinDefinitions(const std::vector<std::string> & definitions)
+{
+  std::string joined;
+  for (size_t i = 0; i < definitions.size(); ++i) {
+    joined += definitions[i];
+    if (i < definitions.size() - 1) {
+      joined += ",";
+    }
+  }
+  return joined;
+}
+
+}  // namespace
 
 namespace athena_planner
 {
@@ -46,26 +68,23 @@ TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
   RCLCPP_INFO(get_logger(), "Creating task planner server");
 
   declare_parameter("planner_frequency", 20.0);
-  declare_parameter("definitions.robot", "robot");
-  declare_parameter("definitions.location", "location");
-  declare_parameter("definitions.object", std::vector<std::string>());
+  declare_parameter("definitions.robot", "");
+  declare_parameter("definitions.location", "");
+  declare_parameter("definitions.object", "");
   declare_parameter("definitions.proto_filename", "ExePlan.data");
   declare_parameter("definitions.plan_filename", "");
   declare_parameter("planner_plugins", default_ids_);
-
 }
 
 TaskPlannerServer::~TaskPlannerServer()
 {
   planners_.clear();
-
 }
 
-athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/){
+athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
+{
   auto node = shared_from_this();
-  std::vector<std::string> object_definitions;
   RCLCPP_INFO(get_logger(), "Configuring task planner interface");
-
 
   get_parameter("planner_plugins", planner_ids_);
   if (planner_ids_ == default_ids_) {
@@ -79,24 +98,22 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
 
   get_parameter("planner_frequency", planner_frequency_);
   RCLCPP_INFO(get_logger(), "Task planner frequency set to %.4fHz", planner_frequency_);
-  get_parameter("definitions.robot", robot_definition_);
-  get_parameter("definitions.location", location_definition_);
+  get_parameter("definitions.robot", robot_definitions_file_);
+  get_parameter("definitions.location", location_definitions_file_);
+  get_parameter("definitions.object", object_definitions_file_);
   get_parameter("definitions.proto_filename", proto_filename_);
-  get_parameter("definitions.plan_filename", plan_filename_); 
-  get_parameter("definitions.object", object_definitions_);
-  RCLCPP_INFO(get_logger(), "Robot definition set to %s", robot_definition_.c_str());
-  RCLCPP_INFO(get_logger(), "Location definition set to %s", location_definition_.c_str());
+  get_parameter("definitions.plan_filename", plan_filename_);
   RCLCPP_INFO(get_logger(), "Proto filename set to %s", proto_filename_.c_str());
   RCLCPP_INFO(get_logger(), "Plan filename set to %s", plan_filename_.c_str());
-  for (const auto & object_definition : object_definitions_) {
-    RCLCPP_INFO(get_logger(), "Object definition set to %s", object_definition.c_str());
+
+  if (!loadDefinitionsFile("robot", robot_definitions_file_, robot_definitions_) ||
+    !loadDefinitionsFile("location", location_definitions_file_, location_definitions_) ||
+    !loadDefinitionsFile("object", object_definitions_file_, object_definitions_))
+  {
+    return athena_util::CallbackReturn::FAILURE;
   }
+
   property_filename_ = "planning_params.properties";
-  
-
-
-  planner_types_.resize(planner_ids_.size());
-
 
   for (size_t i = 0; i != planner_ids_.size(); i++) {
     try {
@@ -125,7 +142,6 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     get_logger(),
     "Task Planner Server has %s planners available.", planner_ids_concat_.c_str());
 
-
   // Initialize pubs & subs
   plan_publisher_ = create_publisher<athena_msgs::msg::Plan>("execution_plan", 1);
 
@@ -136,7 +152,14 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     nullptr,
     std::chrono::milliseconds(500),
     true);
-  writePropertiesFile();
+
+  try {
+    writePropertiesFile();
+  } catch (const std::exception & ex) {
+    RCLCPP_FATAL(get_logger(), "Failed to write properties file. Exception: %s", ex.what());
+    return athena_util::CallbackReturn::FAILURE;
+  }
+
   return athena_util::CallbackReturn::SUCCESS;
 }
 
@@ -148,14 +171,12 @@ TaskPlannerServer::on_activate(const rclcpp_lifecycle::State & /*state*/)
   plan_publisher_->on_activate();
   action_server_plan_->activate();
 
-
   PlannerMap::iterator it;
   for (it = planners_.begin(); it != planners_.end(); ++it) {
     it->second->activate();
   }
 
   auto node = shared_from_this();
-
 
   // Add callback for dynamic parameters
   dyn_params_handler_ = node->add_on_set_parameters_callback(
@@ -196,7 +217,6 @@ TaskPlannerServer::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
   action_server_plan_.reset();
   plan_publisher_.reset();
 
-
   PlannerMap::iterator it;
   for (it = planners_.begin(); it != planners_.end(); ++it) {
     it->second->cleanup();
@@ -225,8 +245,6 @@ bool TaskPlannerServer::isServerInactive(
   return false;
 }
 
-
-
 template<typename T>
 bool TaskPlannerServer::isCancelRequested(
   std::unique_ptr<athena_util::SimpleActionServer<T>> & action_server)
@@ -250,7 +268,6 @@ void TaskPlannerServer::getPreemptedGoalIfRequested(
   }
 }
 
-
 void
 TaskPlannerServer::computeExecutionPlan()
 {
@@ -269,14 +286,17 @@ TaskPlannerServer::computeExecutionPlan()
 
     getPreemptedGoalIfRequested(action_server_plan_, goal);
 
-    RCLCPP_WARN( get_logger(), "Choosen Task Planner: %s ", goal->planner.c_str());
+    RCLCPP_WARN(get_logger(), "Choosen Task Planner: %s ", goal->planner.c_str());
 
-    result->execution_plan = getExecutionPlan(goal->planning_problem.planning_domain, goal->planning_problem.planning_problem,  goal->planner);
-    if(result->execution_plan.actions.empty()){
+    result->execution_plan = getExecutionPlan(
+      goal->planning_problem.planning_domain, goal->planning_problem.planning_problem,
+      goal->planner);
+    if (result->execution_plan.actions.empty()) {
       RCLCPP_ERROR(
-      get_logger(), "%s plugin failed to compute execution plan for the problem (%s, %s).",
-      goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
-    action_server_plan_->terminate_current();
+        get_logger(), "%s plugin failed to compute execution plan for the problem (%s, %s).",
+        goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(),
+        goal->planning_problem.planning_problem.c_str());
+      action_server_plan_->terminate_current();
     }
     auto message = athena_msgs::msg::Plan();
     message = result->execution_plan;
@@ -287,26 +307,27 @@ TaskPlannerServer::computeExecutionPlan()
   } catch (std::exception & ex) {
     RCLCPP_ERROR(
       get_logger(), "%s plugin failed to compute execution plan for the problem (%s, %s).",
-      goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(), goal->planning_problem.planning_problem.c_str());
+      goal->planner.c_str(), goal->planning_problem.planning_domain.c_str(),
+      goal->planning_problem.planning_problem.c_str());
     action_server_plan_->terminate_current();
   }
 }
 
 athena_msgs::msg::Plan TaskPlannerServer::getExecutionPlan(
-    const std::string & domain,
-    const std::string & problem,
-    const std::string & planner)
+  const std::string & domain,
+  const std::string & problem,
+  const std::string & planner)
 {
   athena_msgs::msg::Plan plan;
-   RCLCPP_WARN(
-      get_logger(), "Attempting to compute an execution plan for the planning problem (%s, %s), using planner %s\"",
-      domain.c_str(), problem.c_str(),  planner.c_str());
-
+  RCLCPP_WARN(
+    get_logger(),
+    "Attempting to compute an execution plan for the planning problem (%s, %s), using planner %s\"",
+    domain.c_str(), problem.c_str(), planner.c_str());
 
   if (planners_.find(planner) != planners_.end()) {
     planners_[planner]->property_filename_ = property_filename_;
     planners_[planner]->proto_filename_ = proto_filename_;
-    return planners_[planner]->computeExecutionPlan(domain,problem);
+    return planners_[planner]->computeExecutionPlan(domain, problem);
   } else {
     if (planners_.size() == 1 && planner.empty()) {
       RCLCPP_WARN_ONCE(
@@ -334,7 +355,6 @@ TaskPlannerServer::publishPlan(const athena_msgs::msg::Plan & msg)
   }
 }
 
-
 rcl_interfaces::msg::SetParametersResult
 TaskPlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
 {
@@ -353,42 +373,94 @@ TaskPlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> para
   return result;
 }
 
- void TaskPlannerServer::writePropertiesFile() {
-        std::ofstream props(property_filename_);
-        
-        if (!props.is_open()) {
-            RCLCPP_ERROR(get_logger(), "Failed to create properties file: %s", property_filename_.c_str());
-            throw std::runtime_error("Cannot create properties file");
-        }
-        
-        // Write header
-        props << "# Task Planner Configuration\n";
-        props << "# Auto-generated from ROS 2 parameters\n";
-        props << "# Node: " << get_name() << "\n";
-        props << "# PID: " << getpid() << "\n\n";
-        
-        // Write parameters in Java Properties format
-        props << "planner.frequency=" << planner_frequency_ << "\n";
-        props << "definitions.robot=" << robot_definition_ << "\n";
-        props << "definitions.location=" << location_definition_ << "\n";
-        props << "definitions.object=";
-        for (size_t i = 0; i < object_definitions_.size(); ++i) {
-            props << object_definitions_[i];
-            if (i < object_definitions_.size() - 1) {
-                props << ",";
-            }
-        }        props << "\n";
-        props << "definitions.plan_filename=" << plan_filename_ << "\n";
-        props << "definitions.proto_filename=" << proto_filename_ << "\n";
-        
-        props.close();
-        
-        if (props.fail()) {
-            RCLCPP_ERROR(get_logger(), "Error writing properties file: %s", property_filename_.c_str());
-            throw std::runtime_error("Failed to write properties file");
-        }
-    }
+bool TaskPlannerServer::loadDefinitionsFile(
+  const std::string & name,
+  const std::string & path,
+  std::vector<std::string> & definitions)
+{
+  definitions.clear();
 
+  if (path.empty()) {
+    RCLCPP_WARN(get_logger(), "No file given for %s definitions", name.c_str());
+    return true;
+  }
+
+  YAML::Node root;
+  try {
+    root = YAML::LoadFile(path);
+  } catch (const YAML::Exception & ex) {
+    RCLCPP_ERROR(
+      get_logger(), "Failed to load %s definitions file %s: %s",
+      name.c_str(), path.c_str(), ex.what());
+    return false;
+  }
+
+  const YAML::Node list = root.IsMap() ? root[name] : root;
+
+  if (!list || !list.IsSequence()) {
+    RCLCPP_ERROR(
+      get_logger(), "File %s must hold a list of %s definitions, or a map with a '%s' list",
+      path.c_str(), name.c_str(), name.c_str());
+    return false;
+  }
+
+  try {
+    for (const auto & item : list) {
+      const std::string definition = item.as<std::string>();
+      if (!definition.empty()) {
+        definitions.push_back(definition);
+      }
+    }
+  } catch (const YAML::Exception & ex) {
+    RCLCPP_ERROR(
+      get_logger(), "Invalid entry in %s definitions file %s: %s",
+      name.c_str(), path.c_str(), ex.what());
+    definitions.clear();
+    return false;
+  }
+
+  RCLCPP_INFO(
+    get_logger(), "Loaded %zu %s definitions from %s",
+    definitions.size(), name.c_str(), path.c_str());
+  for (const auto & definition : definitions) {
+    RCLCPP_INFO(get_logger(), "%s definition: %s", name.c_str(), definition.c_str());
+  }
+
+  return true;
+}
+
+void TaskPlannerServer::writePropertiesFile()
+{
+  std::ofstream props(property_filename_);
+
+  if (!props.is_open()) {
+    RCLCPP_ERROR(
+      get_logger(), "Failed to create properties file: %s",
+      property_filename_.c_str());
+    throw std::runtime_error("Cannot create properties file");
+  }
+
+  props << "# Task Planner Configuration\n";
+  props << "# Auto-generated from ROS 2 parameters\n";
+  props << "# Node: " << get_name() << "\n";
+  props << "# PID: " << getpid() << "\n\n";
+
+  props << "planner.frequency=" << planner_frequency_ << "\n";
+  props << "definitions.robot=" << joinDefinitions(robot_definitions_) << "\n";
+  props << "definitions.location=" << joinDefinitions(location_definitions_) << "\n";
+  props << "definitions.object=" << joinDefinitions(object_definitions_) << "\n";
+  props << "definitions.plan_filename=" << plan_filename_ << "\n";
+  props << "definitions.proto_filename=" << proto_filename_ << "\n";
+
+  props.close();
+
+  if (props.fail()) {
+    RCLCPP_ERROR(
+      get_logger(), "Error writing properties file: %s",
+      property_filename_.c_str());
+    throw std::runtime_error("Failed to write properties file");
+  }
+}
 
 }  // namespace athena_planner
 

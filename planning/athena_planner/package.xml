@@ -18,6 +18,7 @@
   <depend>athena_util</depend>
   <depend>rclcpp_components</depend>
   <depend>athena_protobuf</depend>
+  <depend>yaml_cpp_vendor</depend>
 
   <exec_depend>popf</exec_depend>
 
