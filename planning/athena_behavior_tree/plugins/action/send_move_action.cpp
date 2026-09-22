@@ -53,15 +53,17 @@ SendMoveAction::SendMoveAction(
     },
     sub_options);
 
+  RCLCPP_INFO(
+    node_->get_logger(),
+    "[%s] Subscribed to waypoints on '%s'",
+    robot_id_.c_str(), waypoints_sub_->get_topic_name());
 }
 
 BT::NodeStatus SendMoveAction::tick()
 {
   setStatus(BT::NodeStatus::RUNNING);
-  
-  if (waypoints_.empty()) {
-    callback_group_executor_.spin_some();
-  }
+
+  callback_group_executor_.spin_some();
 
   Actions actions = getMoveActions();
   if (actions.empty()) {
@@ -91,7 +93,7 @@ Actions SendMoveAction::getMoveActions()
 {
   Actions move_actions;
   config().blackboard->get<Actions>("concurrent_actions", actions_);
-  RCLCPP_INFO(node_->get_logger(), "Checking for move actions among %d concurrent actions", actions_.size());
+  RCLCPP_INFO(node_->get_logger(), "Checking for move actions among %zu concurrent actions", actions_.size());
 
   for (const athena_msgs::msg::Action & act : actions_) {
     if (act.name.find("move")  != std::string::npos ||
@@ -116,6 +118,17 @@ bool SendMoveAction::sendMove(Actions actions)
     RCLCPP_ERROR(node_->get_logger(), "'%s' action server is not available.", service_name_.c_str());
     return false;
   }
+
+  if (waypoints_.empty() && waypoints_sub_->get_publisher_count() > 0) {
+    RCLCPP_INFO(node_->get_logger(), "Waiting for waypoints...");
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+    while (waypoints_.empty() && rclcpp::ok() &&
+           std::chrono::steady_clock::now() < deadline)
+    {
+      callback_group_executor_.spin_once(std::chrono::milliseconds(50));
+    }
+  }
+
   std::string wp;
   for (const athena_msgs::msg::Action & move_action : actions) {
     if (move_action.waypoints.empty()) {
@@ -153,7 +166,7 @@ bool SendMoveAction::sendMove(Actions actions)
     RCLCPP_INFO(node_->get_logger(), "Waiting for result...");
     callback_group_executor_.spin_until_future_complete(future_result);
   }
-   config().blackboard->set<std::string>(robot_id_+"_current_position", wp);
+  config().blackboard->set<std::string>(robot_id_ + "_current_position", wp);
 
   return true;
 }
