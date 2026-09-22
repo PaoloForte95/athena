@@ -1,0 +1,10 @@
+<root BTCPP_format="4" main_tree_to_execute="MasterTree">
+
+<BehaviorTree ID="MasterTree">
+  <Sequence>
+  <GenerateDomainFile name="GenerateDomainFile" domain_file="{domain_file}"/>
+  <GenerateProblemFile name="GenerateProblemFile" domain_file="{domain_file}" problem_file="{problem_file}"/>
+  </Sequence> 
+</BehaviorTree>
+
+</root>
