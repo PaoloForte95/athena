@@ -64,6 +64,7 @@ public:
         IDs completed_;
         rclcpp::Node::SharedPtr node_;
         rclcpp::Publisher<athena_msgs::msg::Event>::SharedPtr event_pub_;
+        rclcpp::Publisher<athena_msgs::msg::Plan>::SharedPtr plan_pub_;
         std::map<int, rclcpp::Time> starts_;
         std::map<int, std::string> names_;
         std::map<int, uint8_t> kinds_;
@@ -98,4 +99,4 @@ public:
 
 } 
 
-#endif 
+#endif

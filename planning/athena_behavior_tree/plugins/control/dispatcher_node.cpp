@@ -17,6 +17,9 @@ DispatcherNode::DispatcherNode(
     event_pub_ = node_->create_publisher<athena_msgs::msg::Event>(
         "/plan_actions",
         rclcpp::QoS(rclcpp::KeepLast(100)).transient_local().reliable());
+    plan_pub_ = node_->create_publisher<athena_msgs::msg::Plan>(
+        "/dispatched_plan",
+        rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable());
 }
 
 BT::NodeStatus DispatcherNode::tick()
@@ -159,6 +162,7 @@ void DispatcherNode::readPlan(){
         }
     }
     config().blackboard->set< std::vector<std::string>>("robot_ids", robotIDs);
+    plan_pub_->publish(execution_plan_);
 
 }
 
@@ -195,6 +199,9 @@ void DispatcherNode::dispatch(){
                         starts_[curr_action.action_id] = node_->now();
                         names_[curr_action.action_id] = curr_action.name;
                         kinds_[curr_action.action_id] = athena_msgs::msg::Event::ACTION;
+                        publishEvent(curr_action.action_id, curr_action.name,
+                            athena_msgs::msg::Event::ACTION, starts_[curr_action.action_id],
+                            starts_[curr_action.action_id], athena_msgs::msg::Event::RUNNING);
                     }
                 }
             }
@@ -236,6 +243,9 @@ void DispatcherNode::dispatch(){
                         starts_[curr_method.id] = node_->now();
                         names_[curr_method.id] = curr_method.name;
                         kinds_[curr_method.id] = athena_msgs::msg::Event::METHOD;
+                        publishEvent(curr_method.id, curr_method.name,
+                            athena_msgs::msg::Event::METHOD, starts_[curr_method.id],
+                            starts_[curr_method.id], athena_msgs::msg::Event::RUNNING);
                     }
 
                     // Resolve method subtasks into actions for children to use

@@ -1,0 +1,14 @@
+<library path="athena_rviz_plugins">
+  <class
+    name="athena_rviz_plugins/PddlViewer"
+    type="athena_rviz_plugins::PddlViewerPanel"
+    base_class_type="rviz_common::Panel">
+    <description>Shows the generated PDDL domain and problem files.</description>
+  </class>
+  <class
+    name="athena_rviz_plugins/ExecutionPlan"
+    type="athena_rviz_plugins::ExecutionPlanPanel"
+    base_class_type="rviz_common::Panel">
+    <description>Shows the execution plan with running, completed and failed actions and methods.</description>
+  </class>
+</library>
