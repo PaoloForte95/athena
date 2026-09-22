@@ -21,9 +21,7 @@
   <exec_depend>athena_util</exec_depend>
   <exec_depend>athena_lm</exec_depend>
   <exec_depend>athena_bt_executor</exec_depend>
-  <exec_depend>athena_exe_behavior_tree</exec_depend>
-  <exec_depend>athena_exe_launch</exec_depend>
-  <exec_depend>athena_exe_msgs</exec_depend>
+  <exec_depend>athena_rviz_plugins</exec_depend>
   
 
   <export>
