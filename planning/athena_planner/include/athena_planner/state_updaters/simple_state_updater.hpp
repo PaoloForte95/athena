@@ -15,13 +15,13 @@
 #ifndef ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
 #define ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
 
-#include "athena_core/state_updater.hpp"
+#include "athena_planning_core/state_updater.hpp"
 #include "athena_msgs/msg/state.hpp"
 #include "athena_util/lifecycle_node.hpp"
 
 namespace athena_planner
 {
-class SimpleStateUpdater : public athena_core::StateUpdater
+class SimpleStateUpdater : public athena_planning_core::StateUpdater
 {
 
 public:

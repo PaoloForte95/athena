@@ -150,4 +150,4 @@ rcl_interfaces::msg::SetParametersResult VlmStateUpdater::dynamicParametersCallb
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::VlmStateUpdater, athena_core::StateUpdater)
+PLUGINLIB_EXPORT_CLASS(athena_planner::VlmStateUpdater, athena_planning_core::StateUpdater)

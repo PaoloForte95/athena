@@ -1,0 +1,19 @@
+capability_extractor_agent_node:
+  ros__parameters:
+    urdf_path: "/home/pofe/planning_ws/src/athena/bringup/urdf/unitree_h1.urdf"
+    out_yaml_path: "/home/pofe/planning_ws/src/athena/bringup/semantic/unitree_h1_semantic.yaml"
+
+
+domain_file_generator_node:
+  ros__parameters:
+    #backend: "ollama"
+    #ollama_model: "qwen3.5:latest"
+    backend: openai
+    output_file: "/home/pofe/planning_ws/domain.pddl"
+    capabilities: "/home/pofe/planning_ws/src/athena/bringup/semantic/unitree_h1_semantic.yaml"
+
+problem_file_generator_node:
+  ros__parameters:
+    output_file: "/home/pofe/planning_ws/problem.pddl"
+    model: "ChatGpt"
+

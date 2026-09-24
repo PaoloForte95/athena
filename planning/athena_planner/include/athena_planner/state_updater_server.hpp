@@ -31,7 +31,7 @@
 #include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
-#include "athena_core/state_updater.hpp"
+#include "athena_planning_core/state_updater.hpp"
 #include "athena_msgs/msg/state.hpp"
 #include "athena_util/simple_action_server.hpp"
 typedef std::vector<athena_msgs::msg::Action> Actions;
@@ -56,7 +56,7 @@ public:
    */
   ~StateUpdaterServer();
 
-  using StateUpdaterMap = std::unordered_map<std::string, athena_core::StateUpdater::Ptr>;
+  using StateUpdaterMap = std::unordered_map<std::string, athena_planning_core::StateUpdater::Ptr>;
 
   
   
@@ -157,7 +157,7 @@ protected:
 
   // Updaters
   StateUpdaterMap state_updaters_;
-  pluginlib::ClassLoader<athena_core::StateUpdater> gp_loader_;
+  pluginlib::ClassLoader<athena_planning_core::StateUpdater> gp_loader_;
   std::vector<std::string> default_ids_;
   std::vector<std::string> default_types_;
   std::vector<std::string> state_updater_ids_;

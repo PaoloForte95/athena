@@ -24,7 +24,7 @@ namespace athena_planner
 
 StateUpdaterServer::StateUpdaterServer(const rclcpp::NodeOptions & options)
 : athena_util::LifecycleNode("state_updater_server", "", options),
-  gp_loader_("athena_core", "athena_core::StateUpdater"),
+  gp_loader_("athena_planning_core", "athena_planning_core::StateUpdater"),
   default_ids_{"SimpleStateUpdater"},
   default_types_{"athena_planner::SimpleUpdater"}
 {
@@ -70,7 +70,7 @@ StateUpdaterServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
     try {
       state_updater_types_[i] = athena_util::get_plugin_type_param(
         node, state_updater_ids_[i]);
-      athena_core::StateUpdater::Ptr state_updater =
+      athena_planning_core::StateUpdater::Ptr state_updater =
         gp_loader_.createUniqueInstance(state_updater_types_[i]);
       RCLCPP_INFO(
         get_logger(), "Created state updater plugin %s of type %s",

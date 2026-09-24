@@ -15,13 +15,13 @@
 #ifndef ATHENA_PLANNER__PLANNERS__LILOTANE_HPP_
 #define ATHENA_PLANNER__PLANNERS__LILOTANE_HPP_
 
-#include "athena_core/planner.hpp"
+#include "athena_planning_core/planner.hpp"
 #include "athena_msgs/msg/plan.hpp"
 #include "athena_util/lifecycle_node.hpp"
 
 namespace athena_planner
 {
-class Lilotane : public athena_core::Planner
+class Lilotane : public athena_planning_core::Planner
 {
 
 public:

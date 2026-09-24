@@ -1,6 +1,6 @@
 <class_libraries>
 <library path="athena_updater_simple">
-	<class name="athena_planner::SimpleStateUpdater" type="athena_planner::SimpleStateUpdater" base_class_type="athena_core::StateUpdater">
+	<class name="athena_planner::SimpleStateUpdater" type="athena_planner::SimpleStateUpdater" base_class_type="athena_planning_core::StateUpdater">
 	  <description>
       A simple state udpater
       </description>
@@ -8,7 +8,7 @@
 </library>
 
 <library path="athena_updater_vlm">
-	 <class name="athena_planner::VlmStateUpdater" type="athena_planner::VlmStateUpdater" base_class_type="athena_core::StateUpdater">
+	 <class name="athena_planner::VlmStateUpdater" type="athena_planner::VlmStateUpdater" base_class_type="athena_planning_core::StateUpdater">
 		<description>
 			 A state updater based on vlm. Update state is retrived by camera
 		</description>

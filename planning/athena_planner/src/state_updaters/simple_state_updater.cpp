@@ -162,4 +162,4 @@ rcl_interfaces::msg::SetParametersResult SimpleStateUpdater::dynamicParametersCa
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::SimpleStateUpdater, athena_core::StateUpdater)
+PLUGINLIB_EXPORT_CLASS(athena_planner::SimpleStateUpdater, athena_planning_core::StateUpdater)

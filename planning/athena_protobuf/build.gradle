@@ -52,7 +52,7 @@ dependencies {
   
   // Add the following if you need to include jars that are not in Maven Central and that you have places in the directory "lib"
   implementation files('lib/pddl4j-4.0.0.jar')
-  implementation files('lib/athena_core-0.1.0.jar')
+  implementation files('lib/athena_planning_core-0.1.0.jar')
 
 }
 

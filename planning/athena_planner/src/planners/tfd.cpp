@@ -142,4 +142,4 @@ rcl_interfaces::msg::SetParametersResult TFD::dynamicParametersCallback(
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::TFD, athena_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::TFD, athena_planning_core::Planner)

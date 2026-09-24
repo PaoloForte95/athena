@@ -61,7 +61,7 @@ namespace athena_planner
 
 TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
 : athena_util::LifecycleNode("task_planner_server", "", options),
-  gp_loader_("athena_core", "athena_core::Planner"),
+  gp_loader_("athena_planning_core", "athena_planning_core::Planner"),
   default_ids_{"MetricFF", "LPG"},
   default_types_{"athena_planner::LPG", "athena_planner::MetricFF"}
 {
@@ -119,7 +119,7 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     try {
       planner_types_[i] = athena_util::get_plugin_type_param(
         node, planner_ids_[i]);
-      athena_core::Planner::Ptr task_planner =
+      athena_planning_core::Planner::Ptr task_planner =
         gp_loader_.createUniqueInstance(planner_types_[i]);
       RCLCPP_INFO(
         get_logger(), "Created task planner plugin %s of type %s",

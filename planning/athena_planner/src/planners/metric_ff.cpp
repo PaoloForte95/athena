@@ -143,4 +143,4 @@ rcl_interfaces::msg::SetParametersResult MetricFF::dynamicParametersCallback(
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::MetricFF, athena_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::MetricFF, athena_planning_core::Planner)

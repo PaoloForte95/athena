@@ -9,7 +9,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(athena_core REQUIRED)
+find_package(athena_planning_core REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -35,7 +35,7 @@ set(dependencies
   pluginlib
   ament_index_cpp
   rclcpp_components
-  athena_core
+  athena_planning_core
   athena_msgs
   sensor_msgs
   athena_util
@@ -174,7 +174,7 @@ ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_l
 ament_export_libraries(${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
 ament_export_dependencies(${dependencies})
 
-pluginlib_export_plugin_description_file(athena_core planners_plugin.xml)
-pluginlib_export_plugin_description_file(athena_core state_updaters_plugin.xml)
+pluginlib_export_plugin_description_file(athena_planning_core planners_plugin.xml)
+pluginlib_export_plugin_description_file(athena_planning_core state_updaters_plugin.xml)
 
 ament_package()

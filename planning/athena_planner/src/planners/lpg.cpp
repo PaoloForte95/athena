@@ -137,4 +137,4 @@ rcl_interfaces::msg::SetParametersResult LPG::dynamicParametersCallback(
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::LPG, athena_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::LPG, athena_planning_core::Planner)

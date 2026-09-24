@@ -1,34 +1,22 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>athena_planner</name>
+  <name>athena_planning_core</name>
   <version>0.0.1</version>
   <description>TODO: Package description</description>
-  <maintainer email="paolo.forte@oru.se">Paolo Forte</maintainer>
+  <maintainer email="paolo.forte1995@gmail.com">paolodell</maintainer>
   <license>GPL-3.0-only</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-
   <depend>rclcpp</depend>
-  <depend>athena_planning_core</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>pluginlib</depend>
-  <depend>ament_index_cpp</depend>
   <depend>athena_msgs</depend>
-  <depend>athena_util</depend>
-  <depend>rclcpp_components</depend>
-  <depend>athena_protobuf</depend>
-  <depend>yaml_cpp_vendor</depend>
-
-  <exec_depend>popf</exec_depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-  <test_depend>ros2run</test_depend>
-  
 
   <export>
     <build_type>ament_cmake</build_type>
-    <athena_planning_core plugin="${prefix}/athena_popf_plan_solver_plugin.xml" />
   </export>
 </package>

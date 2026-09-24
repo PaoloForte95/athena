@@ -12,7 +12,7 @@
   <exec_depend>athena_common</exec_depend>
   <exec_depend>athena_behavior_tree</exec_depend>
   <exec_depend>athena_bt_planner</exec_depend>
-  <exec_depend>athena_core</exec_depend>
+  <exec_depend>athena_planning_core</exec_depend>
   <exec_depend>athena_launch</exec_depend>
   <exec_depend>athena_lifecycle_manager</exec_depend>
   <exec_depend>athena_msgs</exec_depend>

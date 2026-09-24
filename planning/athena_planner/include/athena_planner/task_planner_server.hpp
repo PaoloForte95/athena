@@ -33,7 +33,7 @@
 #include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
-#include "athena_core/planner.hpp"
+#include "athena_planning_core/planner.hpp"
 #include "athena_msgs/msg/plan.hpp"
 
 namespace athena_planner
@@ -56,7 +56,7 @@ public:
    */
   ~TaskPlannerServer();
 
-  using PlannerMap = std::unordered_map<std::string, athena_core::Planner::Ptr>;
+  using PlannerMap = std::unordered_map<std::string, athena_planning_core::Planner::Ptr>;
 
   /**
    * @brief Get the Execution Plan object
@@ -165,7 +165,7 @@ protected:
 
   // Planner
   PlannerMap planners_;
-  pluginlib::ClassLoader<athena_core::Planner> gp_loader_;
+  pluginlib::ClassLoader<athena_planning_core::Planner> gp_loader_;
   std::vector<std::string> default_ids_;
   std::vector<std::string> default_types_;
   std::vector<std::string> planner_ids_;

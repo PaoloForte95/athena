@@ -1,0 +1,8 @@
+robot:
+  name: h1
+capabilities:
+  navigation: false
+  legged: true
+  perception: false
+  manipulation: true
+  grasping: false
