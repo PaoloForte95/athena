@@ -33,7 +33,7 @@ dependencies {
   implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
   implementation 'info.picocli:picocli:4.7.1'
 
-  implementation 'com.google.ortools:ortools-java:9.6.2534'
+  implementation 'com.google.ortools:ortools-java:9.15.6755'
   implementation 'com.google.protobuf:protobuf-java:4.31.1'
   
   //For interface with OMPL

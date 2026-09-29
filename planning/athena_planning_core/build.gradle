@@ -4,15 +4,10 @@ apply plugin: 'eclipse'
 // The Maven publish plugin is only required if your package is used as a library.
 apply plugin: 'maven-publish'
 
-
-apply plugin: 'application'
-// The main class that will be executed when you do 'gradle run'
-mainClassName = 'se.oru.coordination.coordination_oru.demo.DemoLauncher'
-
-
 allprojects {
 	repositories {
 	  mavenLocal()
+	  mavenCentral()
 	  jcenter()
 	  maven { url 'https://jitpack.io' }
 	}
@@ -52,6 +47,9 @@ dependencies {
 
   //For JSON file handling
   implementation 'com.google.code.gson:gson:2.8.5'
+
+  //For the plan optimization
+  implementation 'com.google.ortools:ortools-java:9.15.6755'
   
   // Add the following if you need to include jars that are not
   // in Maven Central and that you have places in the directory "lib"
@@ -60,10 +58,4 @@ dependencies {
 
   implementation files('lib/pddl4j-4.0.0.jar')
 
-}
-
-run {
-    if (project.hasProperty("demo")) {
-        args(demo)
-    }
 }

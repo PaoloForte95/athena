@@ -9,7 +9,7 @@ bt_planner:
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
     #behavior_tree: 'generation_and_planning.xml'
-    behavior_tree: 'planning_w_dispatching_pddl.xml'
+    behavior_tree: 'planning.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -37,11 +37,15 @@ task_planner_server:
       robot: "/home/pofe/planning_ws/src/athena/bringup/robot_definitions.yaml"
       location: "/home/pofe/planning_ws/src/athena/bringup/location_definitions.yaml"
       object: "/home/pofe/planning_ws/src/athena/bringup/object_definitions.yaml"
+      movement: "/home/pofe/planning_ws/src/athena/bringup/movement_definitions.yaml"
       plan_filename: "plan.pddl"
       proto_filename: "ExePlan.data"
-    planner_plugins: ["MetricFF", "LPG"]
+    planner_plugins: ["MetricFF", "LPG", "FD"]
     MetricFF:
       plugin: "athena_planner::MetricFF"
+    FD:
+      plugin: "athena_planner::FastDownward"
+      search: "astar(blind())"
     LPG:
       plugin: "athena_planner::LPG"
       plan_type: "PARTIAL_ORDERED"
