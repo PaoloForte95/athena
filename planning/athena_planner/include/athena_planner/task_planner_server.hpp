@@ -171,11 +171,12 @@ protected:
   std::vector<std::string> planner_ids_;
   std::vector<std::string> planner_types_;
   std::string planner_ids_concat_;
-  std::string robot_definitions_file_, location_definitions_file_, object_definitions_file_;
+  std::string robot_definitions_file_, location_definitions_file_, object_definitions_file_, movement_definitions_file_;
   std::string proto_filename_, plan_filename_, property_filename_;
   std::vector<std::string> robot_definitions_;
   std::vector<std::string> location_definitions_;
   std::vector<std::string> object_definitions_;
+  std::vector<std::string> movement_definitions_;
 
   // Clock
   rclcpp::Clock steady_clock_{RCL_STEADY_TIME};

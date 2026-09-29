@@ -71,6 +71,7 @@ TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
   declare_parameter("definitions.robot", "");
   declare_parameter("definitions.location", "");
   declare_parameter("definitions.object", "");
+  declare_parameter("definitions.movement", "");
   declare_parameter("definitions.proto_filename", "ExePlan.data");
   declare_parameter("definitions.plan_filename", "");
   declare_parameter("planner_plugins", default_ids_);
@@ -101,6 +102,7 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
   get_parameter("definitions.robot", robot_definitions_file_);
   get_parameter("definitions.location", location_definitions_file_);
   get_parameter("definitions.object", object_definitions_file_);
+  get_parameter("definitions.movement", movement_definitions_file_);
   get_parameter("definitions.proto_filename", proto_filename_);
   get_parameter("definitions.plan_filename", plan_filename_);
   RCLCPP_INFO(get_logger(), "Proto filename set to %s", proto_filename_.c_str());
@@ -108,7 +110,8 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
 
   if (!loadDefinitionsFile("robot", robot_definitions_file_, robot_definitions_) ||
     !loadDefinitionsFile("location", location_definitions_file_, location_definitions_) ||
-    !loadDefinitionsFile("object", object_definitions_file_, object_definitions_))
+    !loadDefinitionsFile("object", object_definitions_file_, object_definitions_) ||
+    !loadDefinitionsFile("movement", movement_definitions_file_, movement_definitions_))
   {
     return athena_util::CallbackReturn::FAILURE;
   }
@@ -449,6 +452,7 @@ void TaskPlannerServer::writePropertiesFile()
   props << "definitions.robot=" << joinDefinitions(robot_definitions_) << "\n";
   props << "definitions.location=" << joinDefinitions(location_definitions_) << "\n";
   props << "definitions.object=" << joinDefinitions(object_definitions_) << "\n";
+  props << "definitions.movement=" << joinDefinitions(movement_definitions_) << "\n";
   props << "definitions.plan_filename=" << plan_filename_ << "\n";
   props << "definitions.proto_filename=" << proto_filename_ << "\n";
 
