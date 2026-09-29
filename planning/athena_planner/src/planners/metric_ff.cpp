@@ -97,13 +97,14 @@ if (status != 0) {
 
 
 bool MetricFF::validateDomain(const std::string & domain){
-
-
+  (void)domain;
+  return true;
 }
 
 
 bool MetricFF::validateProblem(const std::string & problem){
-
+  (void)problem;
+  return true;
 }
 
 
