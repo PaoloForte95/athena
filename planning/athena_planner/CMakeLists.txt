@@ -97,6 +97,14 @@ ament_target_dependencies(${library_name}_tfd
   ${dependencies}
 )
 
+add_library(${library_name}_fastdownward SHARED
+  src/planners/fast_downward.cpp
+)
+
+ament_target_dependencies(${library_name}_fastdownward
+  ${dependencies}
+)
+
 add_library(${library_name}_lilotane SHARED
   src/planners/lilotane.cpp
 )
@@ -127,7 +135,7 @@ ament_target_dependencies(${updater_library_name}_vlm
 
 
 ament_target_dependencies(${executable_name} ${dependencies})
-target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane yaml-cpp)
+target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward yaml-cpp)
 
 ament_target_dependencies(${state_updater_executable_name} ${dependencies})
 target_link_libraries(${state_updater_executable_name} ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
@@ -141,7 +149,7 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane
+install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -170,7 +178,7 @@ endif()
 
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane)
+ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward)
 ament_export_libraries(${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
 ament_export_dependencies(${dependencies})
 

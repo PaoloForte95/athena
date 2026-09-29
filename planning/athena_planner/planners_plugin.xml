@@ -30,4 +30,12 @@
 	</class>
 </library>
 
+<library path="athena_planner_fastdownward">
+	 <class name="athena_planner::FastDownward" type="athena_planner::FastDownward" base_class_type="athena_planning_core::Planner">
+		<description>
+			An implementation of a Fast Downward planner
+		</description>
+	</class>
+</library>
+
 </class_libraries>
