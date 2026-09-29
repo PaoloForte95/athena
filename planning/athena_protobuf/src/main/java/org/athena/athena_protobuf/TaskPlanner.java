@@ -19,18 +19,21 @@ import org.pofe.athena.planners.Lilotane;
 import org.pofe.athena.planners.MetricFF;
 import org.pofe.athena.planners.TFD;
 import org.pofe.athena.planners.LPG;
+import org.pofe.athena.planners.FastDownward;
 import org.pofe.athena.planners.AbstractPlanner;
 import org.pofe.athena.parser.SymbolicSymbol;
 import org.pofe.athena.plan.AbstractPlan;
+import org.pofe.athena.optimizer.Optimizer;
 
 
 class TaskPlanner{
 
-	private static enum PLANNERS {METRICFF, LPG, TFD, LILOTANE};
+	private static enum PLANNERS {METRICFF, LPG, TFD, LILOTANE, FD};
 	private String output_name;
 	private List<String> robotDefinitions;
 	private List<String> locationDefinitions;
 	private List<String> objectDefinitions;
+	private List<String> movementDefinitions;
 	private String planFilename;
 	private String protoFilename;
 	private PlanningProblem planningProblem;
@@ -57,6 +60,10 @@ class TaskPlanner{
 		objectDefinitions = Arrays.stream(objectsStr.split(","))
 			.map(String::trim)
 			.collect(Collectors.toList());
+		String movementsStr = props.getProperty("definitions.movement", "");
+		movementDefinitions = Arrays.stream(movementsStr.split(","))
+			.map(String::trim)
+			.collect(Collectors.toList());
         this.planFilename = props.getProperty("definitions.plan_filename", "");
         this.protoFilename = props.getProperty("definitions.proto_filename", "");
         
@@ -65,6 +72,8 @@ class TaskPlanner{
         System.out.println("Loaded from: " + propertiesFilePath);
         System.out.println("Robot definition: " + robotDefinitions);
         System.out.println("Location definition: " + locationDefinitions);
+		System.out.println("Object definition: " + objectDefinitions);
+		System.out.println("Movement definition: " + movementDefinitions);
         System.out.println("Plan filename: " + planFilename);
         System.out.println("Proto filename: " + protoFilename);
         System.out.println("==================================\n");
@@ -78,7 +87,16 @@ class TaskPlanner{
 
 		File plan = new File(output_name);
 
-		planningProblem.readPlan(plan);
+		Optimizer optimizer = new Optimizer(robotDefinitions, movementDefinitions);
+
+		File optimalPlanFile = plan;
+		try {
+			optimalPlanFile = optimizer.optimize(planningProblem, plan);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+		planningProblem.readPlan(optimalPlanFile);
 		AbstractPlan executionPlan = planningProblem.getPlan();
 		DefaultDirectedGraph<org.pofe.athena.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
 		for (org.pofe.athena.parser.Action act: graphPlan.vertexSet()){
@@ -194,6 +212,12 @@ class TaskPlanner{
 			planner = new Lilotane("src/athena/planning/athena_planner/Planners/Lilotane/");
 			System.out.println("Using LILOTANE planner!");
 			plan.output_name = "plan.hddl";
+			break;
+		case FD:
+			String fdConfiguration = args.length > 3 ? args[3] : "astar(blind())";
+			planner = new FastDownward("src/athena/planning/athena_planner/Planners/FD/", fdConfiguration);
+			System.out.println("Using Fast Downward planner with " + fdConfiguration + "!");
+			plan.output_name = "plan.pddl";
 			break;
 		default:
 			System.out.println("Planner selected is not correct!. Available planners: " + PLANNERS.values());
