@@ -20,7 +20,9 @@
 #include <iostream>
 #include <limits>
 #include <iterator>
+#include <locale>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -54,6 +56,14 @@ std::string joinDefinitions(const std::vector<std::string> & definitions)
   return joined;
 }
 
+std::string formatNumber(double value)
+{
+  std::ostringstream stream;
+  stream.imbue(std::locale::classic());
+  stream << std::setprecision(15) << value;
+  return stream.str();
+}
+
 }  // namespace
 
 namespace athena_planner
@@ -75,6 +85,9 @@ TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
   declare_parameter("definitions.proto_filename", "ExePlan.data");
   declare_parameter("definitions.plan_filename", "");
   declare_parameter("planner_plugins", default_ids_);
+
+  declare_parameter("optimization.enabled", true);
+  declare_parameter("optimization.paths_filename", "");
 }
 
 TaskPlannerServer::~TaskPlannerServer()
@@ -113,6 +126,10 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     !loadDefinitionsFile("object", object_definitions_file_, object_definitions_) ||
     !loadDefinitionsFile("movement", movement_definitions_file_, movement_definitions_))
   {
+    return athena_util::CallbackReturn::FAILURE;
+  }
+
+  if (!loadOptimizationParameters()) {
     return athena_util::CallbackReturn::FAILURE;
   }
 
@@ -432,6 +449,31 @@ bool TaskPlannerServer::loadDefinitionsFile(
   return true;
 }
 
+bool TaskPlannerServer::loadOptimizationParameters()
+{
+  get_parameter("optimization.enabled", optimization_enabled_);
+  get_parameter("optimization.paths_filename", optimization_paths_filename_);
+
+  if (!optimization_paths_filename_.empty()) {
+    std::ifstream paths(optimization_paths_filename_);
+    if (!paths.good()) {
+      RCLCPP_ERROR(
+        get_logger(), "Cannot open the optimization paths file %s",
+        optimization_paths_filename_.c_str());
+      return false;
+    }
+  }
+
+  RCLCPP_INFO(
+    get_logger(), "Plan optimization %s", optimization_enabled_ ? "enabled" : "disabled");
+  RCLCPP_INFO(
+    get_logger(), "Optimization paths file: %s",
+    optimization_paths_filename_.empty() ? "none (default costs)" :
+    optimization_paths_filename_.c_str());
+
+  return true;
+}
+
 void TaskPlannerServer::writePropertiesFile()
 {
   std::ofstream props(property_filename_);
@@ -443,18 +485,24 @@ void TaskPlannerServer::writePropertiesFile()
     throw std::runtime_error("Cannot create properties file");
   }
 
+  props.imbue(std::locale::classic());
+
   props << "# Task Planner Configuration\n";
   props << "# Auto-generated from ROS 2 parameters\n";
   props << "# Node: " << get_name() << "\n";
   props << "# PID: " << getpid() << "\n\n";
 
-  props << "planner.frequency=" << planner_frequency_ << "\n";
+  props << "planner.frequency=" << formatNumber(planner_frequency_) << "\n";
   props << "definitions.robot=" << joinDefinitions(robot_definitions_) << "\n";
   props << "definitions.location=" << joinDefinitions(location_definitions_) << "\n";
   props << "definitions.object=" << joinDefinitions(object_definitions_) << "\n";
   props << "definitions.movement=" << joinDefinitions(movement_definitions_) << "\n";
   props << "definitions.plan_filename=" << plan_filename_ << "\n";
   props << "definitions.proto_filename=" << proto_filename_ << "\n";
+
+  props << "\n";
+  props << "optimization.enabled=" << (optimization_enabled_ ? "true" : "false") << "\n";
+  props << "optimization.paths_filename=" << optimization_paths_filename_ << "\n";
 
   props.close();
 

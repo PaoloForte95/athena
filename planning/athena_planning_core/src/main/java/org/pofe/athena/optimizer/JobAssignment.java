@@ -26,23 +26,11 @@ public class JobAssignment {
 
     public interface CostModel {
 
-        default long duration(String robot, Job job) {
-            return Math.max(1, job.getActions().size());
-        }
-
-        default long travelTime(String robot, String from, String to) {
+        default double pathLength(String from, String to) {
             if (from == null || to == null || from.isEmpty() || to.isEmpty() || from.equals(to)) {
-                return 0;
+                return 0.0;
             }
-            return 1;
-        }
-
-        default double travelCost(String robot, String from, String to) {
-            return travelTime(robot, from, to);
-        }
-
-        default double assignmentCost(String robot, Job job) {
-            return 0.0;
+            return 1.0;
         }
     }
 
@@ -150,6 +138,9 @@ public class JobAssignment {
     }
 
     private static final Logger logger = Logging.getLogger(JobAssignment.class);
+    private static final double TIME_LIMIT = 10.0;
+    private static final long JOB_DURATION = 1L;
+    private static final double CHANGE_COST = 0.001;
     private static boolean nativeLibrariesLoaded = false;
 
     private final Optimizer optimizer;
@@ -165,11 +156,6 @@ public class JobAssignment {
     private IntVar[] start;
     private IntVar[] end;
     private IntVar makespan;
-    private double makespanWeight = 1.0;
-    private double travelWeight = 0.0;
-    private double assignmentWeight = 0.0;
-    private double changeWeight = 0.001;
-    private double timeLimit = 10.0;
     private boolean built = false;
     private Result lastResult;
 
@@ -188,22 +174,6 @@ public class JobAssignment {
         }
     }
 
-    public void setWeights(double makespanWeight, double travelWeight, double assignmentWeight) {
-        checkNotBuilt();
-        this.makespanWeight = makespanWeight;
-        this.travelWeight = travelWeight;
-        this.assignmentWeight = assignmentWeight;
-    }
-
-    public void setChangeWeight(double changeWeight) {
-        checkNotBuilt();
-        this.changeWeight = changeWeight;
-    }
-
-    public void setTimeLimit(double seconds) {
-        this.timeLimit = seconds;
-    }
-
     public Result getLastResult() {
         return lastResult;
     }
@@ -213,7 +183,7 @@ public class JobAssignment {
             build();
         }
         CpSolver solver = new CpSolver();
-        solver.getParameters().setMaxTimeInSeconds(timeLimit);
+        solver.getParameters().setMaxTimeInSeconds(TIME_LIMIT);
         CpSolverStatus status = solver.solve(model);
         if (status != CpSolverStatus.OPTIMAL && status != CpSolverStatus.FEASIBLE) {
             lastResult = new Result(status, new LinkedHashMap<>(), new HashMap<>(), new HashMap<>(), -1, Double.NaN);
@@ -249,12 +219,6 @@ public class JobAssignment {
         model.clearHints();
     }
 
-    private void checkNotBuilt() {
-        if (built) {
-            throw new IllegalStateException("The model is already built; set the weights before solving");
-        }
-    }
-
     private void build() {
         int n = jobs.size();
         int m = robots.size();
@@ -263,7 +227,7 @@ public class JobAssignment {
         end = new IntVar[n];
         present = new BoolVar[m][n];
         makespan = model.newIntVar(0, horizon, "makespan");
-        addObjectiveTerm(makespan, makespanWeight);
+        addObjectiveTerm(makespan, 1.0);
 
         for (int j = 0; j < n; j++) {
             start[j] = model.newIntVar(0, horizon, "start_" + jobs.get(j).getId());
@@ -282,11 +246,10 @@ public class JobAssignment {
                 }
                 present[r][j] = model.newBoolVar("present_" + robot + "_" + job.getId());
                 candidates.add(present[r][j]);
-                model.addEquality(end[j], plus(start[j], costModel.duration(robot, job))).onlyEnforceIf(present[r][j]);
+                model.addEquality(end[j], plus(start[j], JOB_DURATION)).onlyEnforceIf(present[r][j]);
                 model.addHint(present[r][j], robot.equals(job.getRobot()));
-                addObjectiveTerm(present[r][j], assignmentWeight * costModel.assignmentCost(robot, job));
                 if (!robot.equals(job.getRobot())) {
-                    addObjectiveTerm(present[r][j], changeWeight);
+                    addObjectiveTerm(present[r][j], CHANGE_COST);
                 }
             }
             if (candidates.isEmpty()) {
@@ -353,9 +316,8 @@ public class JobAssignment {
                 BoolVar first = model.newBoolVar("first_" + robot + "_" + job.getId());
                 circuit.addArc(0, node, first);
                 arcs.add(new Arc(0, node, first));
-                model.addGreaterOrEqual(start[j], costModel.travelTime(robot, home, job.getStartLocation()))
+                model.addGreaterOrEqual(start[j], travel(home, job.getStartLocation()))
                         .onlyEnforceIf(first);
-                addObjectiveTerm(first, travelWeight * costModel.travelCost(robot, home, job.getStartLocation()));
             }
             for (int k2 = 0; k2 < allowed.size(); k2++) {
                 int i = allowed.get(k2);
@@ -366,10 +328,8 @@ public class JobAssignment {
                 BoolVar arc = model.newBoolVar("arc_" + robot + "_" + previous.getId() + "_" + job.getId());
                 circuit.addArc(k2 + 1, node, arc);
                 arcs.add(new Arc(k2 + 1, node, arc));
-                long travel = costModel.travelTime(robot, previous.getEndLocation(), job.getStartLocation());
+                long travel = travel(previous.getEndLocation(), job.getStartLocation());
                 model.addGreaterOrEqual(start[j], plus(end[i], travel)).onlyEnforceIf(arc);
-                addObjectiveTerm(arc, travelWeight
-                        * costModel.travelCost(robot, previous.getEndLocation(), job.getStartLocation()));
             }
         }
         robotArcs.put(robot, arcs);
@@ -400,25 +360,25 @@ public class JobAssignment {
     private long computeHorizon() {
         long horizon = 0;
         for (Job job : jobs) {
-            long maxDuration = 0;
             long maxTravel = 0;
             for (String robot : robots) {
                 if (!optimizer.canDo(robot, job)) {
                     continue;
                 }
-                maxDuration = Math.max(maxDuration, costModel.duration(robot, job));
-                maxTravel = Math.max(maxTravel,
-                        costModel.travelTime(robot, optimizer.getInitialLocationName(robot), job.getStartLocation()));
+                maxTravel = Math.max(maxTravel, travel(optimizer.getInitialLocationName(robot), job.getStartLocation()));
                 for (Job previous : jobs) {
                     if (previous != job) {
-                        maxTravel = Math.max(maxTravel,
-                                costModel.travelTime(robot, previous.getEndLocation(), job.getStartLocation()));
+                        maxTravel = Math.max(maxTravel, travel(previous.getEndLocation(), job.getStartLocation()));
                     }
                 }
             }
-            horizon += maxDuration + maxTravel;
+            horizon += JOB_DURATION + maxTravel;
         }
         return Math.max(horizon, 1);
+    }
+
+    private long travel(String from, String to) {
+        return Math.round(costModel.pathLength(from, to));
     }
 
     private void addObjectiveTerm(IntVar variable, double coefficient) {

@@ -4,7 +4,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import org.pofe.athena.planners.AbstractPlanner;
 import org.pofe.athena.parser.SymbolicSymbol;
 import org.pofe.athena.plan.AbstractPlan;
 import org.pofe.athena.optimizer.Optimizer;
+import org.pofe.athena.optimizer.OptimizerCost;
 
 
 class TaskPlanner{
@@ -38,6 +41,9 @@ class TaskPlanner{
 	private String protoFilename;
 	private PlanningProblem planningProblem;
 
+	private boolean optimizationEnabled;
+	private String pathsFilename;
+
 
 	private void readProperties() throws FileNotFoundException, IOException{
 		Properties props = new Properties();
@@ -48,25 +54,16 @@ class TaskPlanner{
         }
 
 		// Load configuration with defaults
-		String robotsStr = props.getProperty("definitions.robot", "");
-		robotDefinitions = Arrays.stream(robotsStr.split(","))
-			.map(String::trim)
-			.collect(Collectors.toList());
-		String locationsStr = props.getProperty("definitions.location", "");
-		locationDefinitions = Arrays.stream(locationsStr.split(","))
-			.map(String::trim)
-			.collect(Collectors.toList());
-		String objectsStr = props.getProperty("definitions.object", "");
-		objectDefinitions = Arrays.stream(objectsStr.split(","))
-			.map(String::trim)
-			.collect(Collectors.toList());
-		String movementsStr = props.getProperty("definitions.movement", "");
-		movementDefinitions = Arrays.stream(movementsStr.split(","))
-			.map(String::trim)
-			.collect(Collectors.toList());
+		robotDefinitions = readList(props, "definitions.robot");
+		locationDefinitions = readList(props, "definitions.location");
+		objectDefinitions = readList(props, "definitions.object");
+		movementDefinitions = readList(props, "definitions.movement");
         this.planFilename = props.getProperty("definitions.plan_filename", "");
         this.protoFilename = props.getProperty("definitions.proto_filename", "");
-        
+
+		optimizationEnabled = Boolean.parseBoolean(props.getProperty("optimization.enabled", "true").trim());
+		pathsFilename = props.getProperty("optimization.paths_filename", "").trim();
+
         // Log loaded configuration
         System.out.println("=== Task Planner Configuration ===");
         System.out.println("Loaded from: " + propertiesFilePath);
@@ -76,9 +73,56 @@ class TaskPlanner{
 		System.out.println("Movement definition: " + movementDefinitions);
         System.out.println("Plan filename: " + planFilename);
         System.out.println("Proto filename: " + protoFilename);
+		System.out.println("Optimization enabled: " + optimizationEnabled);
+		System.out.println("Optimization paths file: " + (pathsFilename.isEmpty() ? "none (default costs)" : pathsFilename));
         System.out.println("==================================\n");
 	}
-	
+
+	private static List<String> readList(Properties props, String key) {
+		return Arrays.stream(props.getProperty(key, "").split(","))
+			.map(String::trim)
+			.filter(value -> !value.isEmpty())
+			.collect(Collectors.toList());
+	}
+
+	private Optimizer createOptimizer() throws IOException {
+		Optimizer optimizer = new Optimizer(robotDefinitions, movementDefinitions);
+		if (pathsFilename.isEmpty()) {
+			return optimizer;
+		}
+		OptimizerCost cost = OptimizerCost.read(new File(pathsFilename));
+		Set<String> missing = new LinkedHashSet<>();
+		for (String locationType : locationDefinitions) {
+			missing.addAll(cost.getMissingLocations(planningProblem, locationType));
+		}
+		if (!missing.isEmpty()) {
+			throw new IllegalArgumentException("Locations missing in " + pathsFilename + ": " + missing);
+		}
+		optimizer.setCostModel(cost);
+		return optimizer;
+	}
+
+	private File optimizePlan(File plan) {
+		if (!optimizationEnabled) {
+			System.out.println("Optimization disabled. The original plan is used.");
+			return plan;
+		}
+		if (plan.getName().toLowerCase(Locale.ROOT).endsWith(".hddl")) {
+			System.out.println("Optimization is not available for HDDL plans. The original plan is used.");
+			return plan;
+		}
+		try {
+			Optimizer optimizer = createOptimizer();
+			File optimalPlanFile = optimizer.optimize(planningProblem, plan);
+			System.out.println("Optimization result: " + optimizer.getAssignmentResult());
+			return optimalPlanFile;
+		} catch (IOException | RuntimeException e) {
+			System.err.println("Optimization skipped: " + e.getMessage() + ". The original plan is used.");
+			e.printStackTrace();
+			return plan;
+		}
+	}
+
 
 	private void computePlan(File pddlDomain, File pddlProblem, AbstractPlanner planner, ProtoExecutionPlan.Builder planPr) throws FileNotFoundException{
 		planningProblem = new PlanningProblem();
@@ -87,15 +131,8 @@ class TaskPlanner{
 
 		File plan = new File(output_name);
 
-		Optimizer optimizer = new Optimizer(robotDefinitions, movementDefinitions);
+		File optimalPlanFile = optimizePlan(plan);
 
-		File optimalPlanFile = plan;
-		try {
-			optimalPlanFile = optimizer.optimize(planningProblem, plan);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	
 		planningProblem.readPlan(optimalPlanFile);
 		AbstractPlan executionPlan = planningProblem.getPlan();
 		DefaultDirectedGraph<org.pofe.athena.parser.Action, DefaultEdge> graphPlan = executionPlan.getGraph();
@@ -114,14 +151,14 @@ class TaskPlanner{
 			}
 
 			ArrayList<SymbolicSymbol> inputs = act.getInputs();
-			
+
 
 			for (SymbolicSymbol input : inputs){
 				if(!Collections.disjoint(input.getType(),robotDefinitions)){
-					action.setRobot(input.getVariable());			
+					action.setRobot(input.getVariable());
 				}
 				else if (!Collections.disjoint(input.getType(),locationDefinitions)){
-					action.addWaypoints(input.getVariable());			
+					action.addWaypoints(input.getVariable());
 				}
 				else if (!Collections.disjoint(input.getType(),objectDefinitions)){
 					action.setObject(input.getVariable());
@@ -129,9 +166,9 @@ class TaskPlanner{
 				else{
 					System.out.println("Input " + input.getVariable() + " of action " + name + " does not match any known type (robot, location, object).");
 				}
-				
+
 			}
-			
+
 			//Get the parents
 			for (DefaultEdge edge : edges){
 				org.pofe.athena.parser.Action parent = graphPlan.getEdgeSource(edge);
@@ -153,7 +190,7 @@ class TaskPlanner{
 						m.setRobot(robot);
 						break;
 					}
-					
+
 				}
 				for (org.pofe.athena.parser.Action act: graphPlan.vertexSet()){
 					if(act.getID() == ID){
@@ -165,7 +202,7 @@ class TaskPlanner{
 									if(parentMethod.getActions().contains(parent.getID())){
 										if(parentMethod.getID() >parentID){
 											parentID = parentMethod.getID();
-											
+
 										}
 									}
 								}
@@ -190,7 +227,7 @@ class TaskPlanner{
 		System.err.println("Inputs files are missing");
 		System.exit(-1);
 	}
-  
+
 	String ps = args[0].toUpperCase();
 	switch (PLANNERS.valueOf(ps)){
 		case LPG:

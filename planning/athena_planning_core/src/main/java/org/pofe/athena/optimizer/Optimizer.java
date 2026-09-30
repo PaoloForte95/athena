@@ -33,6 +33,7 @@ import fr.uga.pddl4j.parser.TypedSymbol;
 public class Optimizer {
 
     public static final String ROBOT_PLACEHOLDER = "?r";
+    private static final int MAX_ATTEMPTS = 10;
 
     private static final Logger logger = Logging.getLogger(Optimizer.class);
 
@@ -52,12 +53,6 @@ public class Optimizer {
     private final Map<String, Set<String>> capabilities = new LinkedHashMap<>();
     private PlanningProblem problem;
     private JobAssignment.CostModel costModel = new JobAssignment.CostModel() {};
-    private double makespanWeight = 1.0;
-    private double travelWeight = 0.0;
-    private double assignmentWeight = 0.0;
-    private double changeWeight = 0.001;
-    private double timeLimit = 10.0;
-    private int maxAttempts = 10;
     private JobAssignment assignment;
     private JobAssignment.Result assignmentResult;
 
@@ -108,24 +103,6 @@ public class Optimizer {
 
     public void setCostModel(JobAssignment.CostModel costModel) {
         this.costModel = costModel;
-    }
-
-    public void setWeights(double makespanWeight, double travelWeight, double assignmentWeight) {
-        this.makespanWeight = makespanWeight;
-        this.travelWeight = travelWeight;
-        this.assignmentWeight = assignmentWeight;
-    }
-
-    public void setChangeWeight(double changeWeight) {
-        this.changeWeight = changeWeight;
-    }
-
-    public void setTimeLimit(double seconds) {
-        this.timeLimit = seconds;
-    }
-
-    public void setMaxAttempts(int maxAttempts) {
-        this.maxAttempts = Math.max(1, maxAttempts);
     }
 
     public JobAssignment getAssignment() {
@@ -444,9 +421,6 @@ public class Optimizer {
             return;
         }
         assignment = new JobAssignment(this, costModel);
-        assignment.setWeights(makespanWeight, travelWeight, assignmentWeight);
-        assignment.setChangeWeight(changeWeight);
-        assignment.setTimeLimit(timeLimit);
         assignmentResult = assignment.solve();
         if (assignmentResult.hasSolution()) {
             logger.info("Job assignment: " + assignmentResult);
@@ -464,7 +438,7 @@ public class Optimizer {
             return plan;
         }
         JobAssignment.Result result = assignmentResult;
-        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
             if (!result.isChanged()) {
                 logger.info("The original assignment is already the best one. The original plan is kept.");
                 return plan;

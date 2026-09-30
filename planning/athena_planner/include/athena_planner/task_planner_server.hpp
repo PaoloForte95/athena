@@ -178,6 +178,10 @@ protected:
   std::vector<std::string> object_definitions_;
   std::vector<std::string> movement_definitions_;
 
+  // Plan optimization
+  bool optimization_enabled_;
+  std::string optimization_paths_filename_;
+
   // Clock
   rclcpp::Clock steady_clock_{RCL_STEADY_TIME};
 
@@ -201,6 +205,12 @@ private:
     const std::string & name,
     const std::string & path,
     std::vector<std::string> & definitions);
+
+  /**
+   * @brief Read and check the plan optimization parameters.
+   * @return true if all parameters are valid, false otherwise
+   */
+  bool loadOptimizationParameters();
 
   void writePropertiesFile();
 };
