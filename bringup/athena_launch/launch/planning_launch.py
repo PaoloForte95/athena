@@ -121,11 +121,11 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
                 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(domain_agent_dir, 'launch', 'athena_domain_agent_launch.py')
-            )
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(
+        #         os.path.join(domain_agent_dir, 'launch', 'athena_planning_model_generator_launch.py')
+        #     )
+        # ),
         
         Node(
                 condition=IfCondition(use_task_planner),

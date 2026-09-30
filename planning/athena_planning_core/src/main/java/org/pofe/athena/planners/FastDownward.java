@@ -38,7 +38,6 @@ import java.util.concurrent.Callable;
 
 public final class FastDownward extends AbstractPlanner implements Callable<Integer>  {
 
-	private static final String RAW_PLAN_FILE = "plan_fd_raw.txt";
 
 	private String configuration;
 
@@ -107,13 +106,10 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 	public Integer call() throws Exception {
 		logger.info("Computing the plan...");
 
-		deleteOldPlanFiles();
 
 		ArrayList<String> cmdArgs = new ArrayList<>();
 		cmdArgs.add("python3");
 		cmdArgs.add(new File(path_fd, "fast-downward.py").getPath());
-		cmdArgs.add("--plan-file");
-		cmdArgs.add(RAW_PLAN_FILE);
 		if (alias != null) {
 			cmdArgs.add("--alias");
 			cmdArgs.add(alias);
@@ -138,10 +134,11 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 			}
 			int fdExitCode = process.waitFor();
 
-			toFile("plan_fd.txt", builder.toString());
+			//toFile("plan_fd.txt", builder.toString());
 
-			File planFile = findPlanFile();
-			if (fdExitCode >= 10 || planFile == null) {
+
+			File planFile = new File("plan.pddl");
+			if (fdExitCode >= 10 || !planFile.exists()) {
 				logger.severe("Failed to compute the plan! Fast Downward exit code: " + fdExitCode
 						+ ". See plan_fd.txt for details.");
 				return -1;
@@ -176,26 +173,5 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 		return exePlan;
 	}
 
-	private File findPlanFile() {
-		File plan = new File(RAW_PLAN_FILE);
-		if (plan.exists()) {
-			return plan;
-		}
-		File lastPlan = null;
-		int i = 1;
-		while (new File(RAW_PLAN_FILE + "." + i).exists()) {
-			lastPlan = new File(RAW_PLAN_FILE + "." + i);
-			i++;
-		}
-		return lastPlan;
-	}
-
-	private void deleteOldPlanFiles() {
-		new File(RAW_PLAN_FILE).delete();
-		int i = 1;
-		while (new File(RAW_PLAN_FILE + "." + i).delete()) {
-			i++;
-		}
-	}
 
 }
