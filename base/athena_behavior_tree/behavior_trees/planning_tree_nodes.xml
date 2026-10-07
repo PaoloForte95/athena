@@ -14,10 +14,11 @@
 
     <Action ID="GenerateProblemFile">
             <output_port name="problem_file">The computed execution plan</output_port>
-            <input_port name="instruction">Instruction</input_port>
-            <input_port name="format">The format of the file to generate</input_port>
-            <input_port name="prompt">Prompt</input_port>
-            <input_port name="image_topic">The topic to get the image from</input_port>
+            <input_port name="output_name">The name of the output file</input_port>
+            <input_port name="domain_file">The planning domain file</input_port>
+    </Action>
+
+    <Action ID="GenerateDomainFile">
             <input_port name="output_name">The name of the output file</input_port>
     </Action>
 

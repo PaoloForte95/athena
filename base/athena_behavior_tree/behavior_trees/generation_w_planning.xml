@@ -4,7 +4,7 @@
   <Sequence>
   <GenerateDomainFile name="GenerateDomainFile" domain_file="{domain_file}"/>
   <GenerateProblemFile name="GenerateProblemFile" domain_file="{domain_file}" problem_file="{problem_file}"/>
-  <ComputePlan name="ComputePlanAction" planner="MetricFF" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
+  <ComputePlan name="ComputePlanAction" planner="FD" execution_plan="{execution_plan}" domain_file="{domain_file}" problem_file="{problem_file}" plan_length="{plan_length}" robots="{robots}"/>
   </Sequence> 
 </BehaviorTree>
 
