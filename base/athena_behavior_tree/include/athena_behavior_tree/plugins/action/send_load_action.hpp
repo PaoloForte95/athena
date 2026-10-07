@@ -5,7 +5,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "standard_msgs/action/load.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
-#include "athena_msgs/msg/action.hpp"
+#include "standard_msgs/msg/action.hpp"
 
 namespace athena_behavior_tree
 {
@@ -62,7 +62,7 @@ public:
   }
 
 protected:
-  typedef std::vector<athena_msgs::msg::Action> Actions;
+  typedef std::vector<standard_msgs::msg::Action> Actions;
   typedef rclcpp_action::Client<standard_msgs::action::Load>::SharedPtr Client;
   using GoalHandleSendLoad = rclcpp_action::ClientGoalHandle<standard_msgs::action::Load>;
   bool sendLoad(Actions actions);

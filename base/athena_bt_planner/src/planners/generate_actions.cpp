@@ -140,8 +140,8 @@ TaskPlanner::onLoop()
 
   // Populate current state if available
   try {
-    athena_msgs::msg::State current_state;
-    blackboard->get<athena_msgs::msg::State>("current_state", current_state);
+    standard_msgs::msg::PlanningState current_state;
+    blackboard->get<standard_msgs::msg::PlanningState>("current_state", current_state);
     feedback_msg->current_state = current_state;
   } catch (...) {
     // Ignore if not on blackboard yet
@@ -149,8 +149,8 @@ TaskPlanner::onLoop()
 
   // Populate current action if available
   try {
-    athena_msgs::msg::Action current_action;
-    blackboard->get<athena_msgs::msg::Action>("current_action", current_action);
+    standard_msgs::msg::Action current_action;
+    blackboard->get<standard_msgs::msg::Action>("current_action", current_action);
     feedback_msg->current_action = current_action;
   } catch (...) {
     // Ignore if not on blackboard yet
@@ -158,8 +158,8 @@ TaskPlanner::onLoop()
 
   // Populate current method if available
   try {
-    athena_msgs::msg::Method current_method;
-    blackboard->get<athena_msgs::msg::Method>("current_method", current_method);
+    standard_msgs::msg::Method current_method;
+    blackboard->get<standard_msgs::msg::Method>("current_method", current_method);
     feedback_msg->current_method = current_method;
   } catch (...) {
     // Ignore if not on blackboard yet

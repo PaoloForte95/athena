@@ -9,8 +9,8 @@
 #include "athena_protobuf/action.hpp"
 #include "athena_protobuf/method.hpp"
 
-#include "athena_msgs/msg/action.hpp"
-#include "athena_msgs/msg/method.hpp"
+#include "standard_msgs/msg/action.hpp"
+#include "standard_msgs/msg/method.hpp"
 
 
 namespace athena_protobuf{
@@ -24,7 +24,7 @@ public:
      * 
      * @param execution_plan the data file that contains the execution plan.
      */
-    std::vector<athena_msgs::msg::Action> GetActions(const athena::ProtoExecutionPlan& execution_plan);
+    std::vector<standard_msgs::msg::Action> GetActions(const athena::ProtoExecutionPlan& execution_plan);
 
 
     /**
@@ -32,7 +32,7 @@ public:
      * 
      * @param execution_plan the data file that contains the execution plan.
      */
-    std::vector<athena_msgs::msg::Method> getMethods(const athena::ProtoExecutionPlan& execution_plan);
+    std::vector<standard_msgs::msg::Method> getMethods(const athena::ProtoExecutionPlan& execution_plan);
 
     /**
      * @brief Parse  the dataFile computed by java

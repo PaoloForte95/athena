@@ -21,8 +21,8 @@
 
 #include "behaviortree_cpp/loggers/abstract_logger.h"
 #include "rclcpp/rclcpp.hpp"
-#include "athena_msgs/msg/behavior_tree_log.hpp"
-#include "athena_msgs/msg/behavior_tree_status_change.h"
+#include "standard_msgs/msg/behavior_tree_log.hpp"
+#include "standard_msgs/msg/behavior_tree_status_change.h"
 #include "tf2_ros/buffer_interface.h"
 
 namespace athena_behavior_tree
@@ -45,7 +45,7 @@ public:
     auto node = ros_node.lock();
     clock_ = node->get_clock();
     logger_ = node->get_logger();
-    log_pub_ = node->create_publisher<athena_msgs::msg::BehaviorTreeLog>(
+    log_pub_ = node->create_publisher<standard_msgs::msg::BehaviorTreeLog>(
       "behavior_tree_log",
       rclcpp::QoS(10));
   }
@@ -63,7 +63,7 @@ public:
     BT::NodeStatus prev_status,
     BT::NodeStatus status) override
   {
-    athena_msgs::msg::BehaviorTreeStatusChange event;
+    standard_msgs::msg::BehaviorTreeStatusChange event;
 
     // BT timestamps are a duration since the epoch. Need to convert to a time_point
     // before converting to a msg.
@@ -87,7 +87,7 @@ public:
   void flush() override
   {
     if (!event_log_.empty()) {
-      auto log_msg = std::make_unique<athena_msgs::msg::BehaviorTreeLog>();
+      auto log_msg = std::make_unique<standard_msgs::msg::BehaviorTreeLog>();
       log_msg->timestamp = clock_->now();
       log_msg->event_log = event_log_;
       log_pub_->publish(std::move(log_msg));
@@ -98,8 +98,8 @@ public:
 protected:
   rclcpp::Clock::SharedPtr clock_;
   rclcpp::Logger logger_{rclcpp::get_logger("bt_planner")};
-  rclcpp::Publisher<athena_msgs::msg::BehaviorTreeLog>::SharedPtr log_pub_;
-  std::vector<athena_msgs::msg::BehaviorTreeStatusChange> event_log_;
+  rclcpp::Publisher<standard_msgs::msg::BehaviorTreeLog>::SharedPtr log_pub_;
+  std::vector<standard_msgs::msg::BehaviorTreeStatusChange> event_log_;
 };
 
 }   

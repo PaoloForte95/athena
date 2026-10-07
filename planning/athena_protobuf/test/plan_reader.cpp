@@ -38,7 +38,7 @@ TEST(PlanReaderTest, plan_reader)
 
   auto methods = plan.getMethods(execution_plan);
 
-  for (athena_msgs::msg::Action action: actions){
+  for (standard_msgs::msg::Action action: actions){
     cout << "action name:" << action.name << endl;
     cout << "id " << action.action_id << endl;
     cout << "robot: " << action.robot << endl;
@@ -50,7 +50,7 @@ TEST(PlanReaderTest, plan_reader)
     cout << "waypoints: " << wps << endl;
   }
 
-  for (athena_msgs::msg::Method method: methods){
+  for (standard_msgs::msg::Method method: methods){
     cout << "method name:" << method.name << endl;
     cout << "id " << method.id << endl;
     cout << "robot: " << method.robot << endl;

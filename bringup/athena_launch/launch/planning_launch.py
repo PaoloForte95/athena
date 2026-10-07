@@ -140,7 +140,7 @@ def generate_launch_description():
 
         Node(
                 condition=IfCondition(use_task_planner),
-                package='athena_planner',
+                package='athena_state_updater',
                 executable='state_updater_server',
                 name='state_updater_server',
                 output='screen',

@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include <athena_msgs/msg/event.hpp>
-#include <athena_msgs/msg/plan.hpp>
+#include <standard_msgs/msg/event.hpp>
+#include <standard_msgs/msg/plan.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rviz_common/config.hpp>
 #include <rviz_common/panel.hpp>
@@ -55,8 +55,8 @@ private:
 
   QTableWidget * createTable(const QStringList & headers);
   void subscribe();
-  void onPlan(const athena_msgs::msg::Plan & plan);
-  void onEvent(const athena_msgs::msg::Event & event);
+  void onPlan(const standard_msgs::msg::Plan & plan);
+  void onEvent(const standard_msgs::msg::Event & event);
   void rebuildTables();
   void fillRow(QTableWidget * table, int row, const QStringList & values);
   void paintRow(const Row & row, State state);
@@ -65,8 +65,8 @@ private:
   QString joinIds(const std::vector<int32_t> & ids) const;
 
   rclcpp::Node::SharedPtr node_;
-  rclcpp::Subscription<athena_msgs::msg::Plan>::SharedPtr plan_sub_;
-  rclcpp::Subscription<athena_msgs::msg::Event>::SharedPtr event_sub_;
+  rclcpp::Subscription<standard_msgs::msg::Plan>::SharedPtr plan_sub_;
+  rclcpp::Subscription<standard_msgs::msg::Event>::SharedPtr event_sub_;
   std::string plan_topic_;
   std::string event_topic_;
 
@@ -77,7 +77,7 @@ private:
   QTableWidget * actions_table_ = nullptr;
   QTableWidget * methods_table_ = nullptr;
 
-  athena_msgs::msg::Plan plan_;
+  standard_msgs::msg::Plan plan_;
   bool has_plan_ = false;
   std::map<Key, State> states_;
   std::map<Key, Row> rows_;

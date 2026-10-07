@@ -20,9 +20,9 @@
 
 #include "athena_behavior_tree/bt_action_node.hpp"
 #include "athena_msgs/action/update_state.hpp"
-#include "athena_msgs/msg/action.hpp"
-#include "athena_msgs/msg/state.hpp"
-typedef std::vector<athena_msgs::msg::Action> Actions;
+#include "standard_msgs/msg/action.hpp"
+#include "standard_msgs/msg/planning_state.hpp"
+typedef std::vector<standard_msgs::msg::Action> Actions;
 
 namespace athena_behavior_tree
 {
@@ -68,7 +68,7 @@ public:
    */
   void halt() override;
 
-  void getInit(athena_msgs::msg::State &state);
+  void getInit(standard_msgs::msg::PlanningState &state);
 
 
  /**
@@ -79,9 +79,9 @@ static BT::PortsList providedPorts()
   {
     return providedBasicPorts(
       {
-            BT::InputPort<athena_msgs::msg::State>("previous_state", "The previous state"), 
+            BT::InputPort<standard_msgs::msg::PlanningState>("previous_state", "The previous state"), 
             BT::InputPort<std::string>("state_updater", "The state updater to use"),
-            BT::OutputPort<athena_msgs::msg::State>("current_state","The updated state"), 
+            BT::OutputPort<standard_msgs::msg::PlanningState>("current_state","The updated state"), 
       });
   }
 }; 

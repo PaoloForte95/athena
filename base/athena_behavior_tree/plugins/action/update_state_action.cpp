@@ -37,9 +37,9 @@ void UpdateStateAction::on_tick()
 {   
     config().blackboard->get<Actions>("concurrent_actions", goal_.actions);
     std::string problem_file;
-    athena_msgs::msg::State inital_state;
+    standard_msgs::msg::PlanningState inital_state;
 
-    if(!config().blackboard->get<athena_msgs::msg::State>("previous_state", inital_state)){
+    if(!config().blackboard->get<standard_msgs::msg::PlanningState>("previous_state", inital_state)){
       //if not present, get the initial state from the planning problem file
       getInit(inital_state);
       goal_.previous_state = inital_state;
@@ -79,7 +79,7 @@ void UpdateStateAction::halt()
 
 
 
-void UpdateStateAction::getInit(athena_msgs::msg::State &state){
+void UpdateStateAction::getInit(standard_msgs::msg::PlanningState &state){
   // Get the problem file from the blackboard and opent it
   RCLCPP_INFO( node_->get_logger(), "Getting the initial state from the plannign problem file."); 
   std::string problem_file;

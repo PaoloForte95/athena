@@ -1,6 +1,6 @@
 #include "athena_behavior_tree/plugins/action/send_dump_action.hpp"
 
-typedef std::vector<athena_msgs::msg::Action> Actions;
+typedef std::vector<standard_msgs::msg::Action> Actions;
 typedef std::vector<int> IDs;
 
 namespace athena_behavior_tree
@@ -36,7 +36,7 @@ BT::NodeStatus SendDumpAction::tick()
   if (action_status_ == ActionStatus::SUCCEEDED) {
     IDs completed_actions;
     config().blackboard->get<IDs>("completed_actions", completed_actions);
-    for (const athena_msgs::msg::Action & act : actions) {
+    for (const standard_msgs::msg::Action & act : actions) {
       completed_actions.push_back(act.action_id);
     }
     config().blackboard->set<IDs>("completed_actions", completed_actions);
@@ -53,7 +53,7 @@ Actions SendDumpAction::getDumpActions()
   Actions dump_actions;
   config().blackboard->get<Actions>("concurrent_actions", actions_);
 
-  for (const athena_msgs::msg::Action & act : actions_) {
+  for (const standard_msgs::msg::Action & act : actions_) {
     if (act.name.find("dump")  != std::string::npos ||
         act.name.find("stack") != std::string::npos ||
         act.name.find("place") != std::string::npos ||
@@ -77,7 +77,7 @@ bool SendDumpAction::sendDump(Actions actions)
     return false;
   }
 
-  for (const athena_msgs::msg::Action & dump_action : actions) {
+  for (const standard_msgs::msg::Action & dump_action : actions) {
     std::string mat;
     config().blackboard->get<std::string>(robot_id_ + "_object_loaded", mat);
 

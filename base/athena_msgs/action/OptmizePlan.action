@@ -1,8 +1,0 @@
-#goal definition
-athena_msgs/Plan execution_plan
----
-#result definition
-athena_msgs/Plan execution_plan
----
-#feedback definition
-builtin_interfaces/Duration optimization_time

@@ -2,4 +2,4 @@
 #Inputs -> None, only used to the the execution plan
 ---
 #Results
-athena_msgs/Plan plan
+standard_msgs/Plan plan

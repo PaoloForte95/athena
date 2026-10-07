@@ -4,14 +4,14 @@
 #include <string>
 #include <vector>
 #include "behaviortree_cpp/control_node.h"
-#include "athena_msgs/msg/method.hpp"
-#include "athena_msgs/msg/action.hpp"
-#include "athena_msgs/msg/plan.hpp"
+#include "standard_msgs/msg/method.hpp"
+#include "standard_msgs/msg/action.hpp"
+#include "standard_msgs/msg/plan.hpp"
 namespace athena_behavior_tree
 {
 
-using Methods = std::vector<athena_msgs::msg::Method>;
-using Actions = std::vector<athena_msgs::msg::Action>;
+using Methods = std::vector<standard_msgs::msg::Method>;
+using Actions = std::vector<standard_msgs::msg::Action>;
 using IDs = std::vector<int>;
 
 class MovePileMethodNode : public BT::ControlNode

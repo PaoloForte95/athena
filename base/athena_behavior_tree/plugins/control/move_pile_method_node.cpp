@@ -39,7 +39,7 @@ BT::NodeStatus MovePileMethodNode::tick()
         // Resolve subtasks into ordered actions
         subtask_actions_.clear();
         for (int subtask_id : method.substasks) {
-          auto execution_plan = config().blackboard->get<athena_msgs::msg::Plan>("execution_plan");
+          auto execution_plan = config().blackboard->get<standard_msgs::msg::Plan>("execution_plan");
           for (const auto& action : execution_plan.actions) {
             if (action.action_id == subtask_id) {
               subtask_actions_.push_back(action);

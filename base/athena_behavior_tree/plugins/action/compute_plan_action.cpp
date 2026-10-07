@@ -40,7 +40,7 @@ BT::NodeStatus ComputePlanAction::on_success()
 
 BT::NodeStatus ComputePlanAction::on_aborted()
 {
-  athena_msgs::msg::Plan empty_plan;
+  standard_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
   setOutput("robots", std::vector<std::string>{});
@@ -49,7 +49,7 @@ BT::NodeStatus ComputePlanAction::on_aborted()
 
 BT::NodeStatus ComputePlanAction::on_cancelled()
 {
-  athena_msgs::msg::Plan empty_plan;
+  standard_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
   setOutput("robots", std::vector<std::string>{});
@@ -59,7 +59,7 @@ BT::NodeStatus ComputePlanAction::on_cancelled()
 
 void ComputePlanAction::halt()
 {
-  athena_msgs::msg::Plan empty_plan;
+  standard_msgs::msg::Plan empty_plan;
   setOutput("execution_plan", empty_plan);
   setOutput("plan_length", 0);
   setOutput("robots", std::vector<std::string>{});

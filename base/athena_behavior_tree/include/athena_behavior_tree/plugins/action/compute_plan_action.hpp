@@ -18,7 +18,7 @@
 #include <string>
 #include <memory>
 
-#include "athena_msgs/msg/plan.hpp"
+#include "standard_msgs/msg/plan.hpp"
 #include "athena_msgs/action/compute_plan.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
 
@@ -76,7 +76,7 @@ public:
   {
     return providedBasicPorts(
       {
-        BT::OutputPort<athena_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
+        BT::OutputPort<standard_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
         BT::OutputPort<int>("plan_length", "The length of the computed execution plan"),
         BT::OutputPort<std::vector<std::string>>("robots", "The robots involved in the plan"),
         BT::InputPort<std::string>("domain_file", "The planning domain file location"),

@@ -23,7 +23,7 @@ namespace athena_rviz_plugins
 
 namespace
 {
-using Event = athena_msgs::msg::Event;
+using Event = standard_msgs::msg::Event;
 
 const QColor kRunningColor(255, 183, 77);
 const QColor kDoneColor(129, 199, 132);
@@ -100,9 +100,9 @@ void ExecutionPlanPanel::subscribe()
       plan_sub_.reset();
       plan_topic_ = plan_topic;
       if (!plan_topic.empty()) {
-        plan_sub_ = node_->create_subscription<athena_msgs::msg::Plan>(
+        plan_sub_ = node_->create_subscription<standard_msgs::msg::Plan>(
           plan_topic, rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable(),
-          [this](athena_msgs::msg::Plan::ConstSharedPtr msg) {
+          [this](standard_msgs::msg::Plan::ConstSharedPtr msg) {
             QMetaObject::invokeMethod(
               this, [this, msg]() {onPlan(*msg);}, Qt::QueuedConnection);
           });
@@ -127,7 +127,7 @@ void ExecutionPlanPanel::subscribe()
   }
 }
 
-void ExecutionPlanPanel::onPlan(const athena_msgs::msg::Plan & plan)
+void ExecutionPlanPanel::onPlan(const standard_msgs::msg::Plan & plan)
 {
   if (has_plan_ && plan == plan_) {
     return;

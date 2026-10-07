@@ -7,7 +7,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "standard_msgs/action/move_to_pose.hpp"
 #include "athena_behavior_tree/bt_action_node.hpp"
-#include "athena_msgs/msg/action.hpp"
+#include "standard_msgs/msg/action.hpp"
 #include <location_msgs/msg/waypoint_array.hpp>
 
 namespace athena_behavior_tree
@@ -71,7 +71,7 @@ public:
   }
 
 protected:
-  typedef std::vector<athena_msgs::msg::Action> Actions;
+  typedef std::vector<standard_msgs::msg::Action> Actions;
 
   bool sendMove(Actions actions);
   Actions getMoveActions();

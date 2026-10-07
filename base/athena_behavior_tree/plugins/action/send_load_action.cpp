@@ -1,6 +1,6 @@
 #include "athena_behavior_tree/plugins/action/send_load_action.hpp"
 
-typedef std::vector<athena_msgs::msg::Action> Actions;
+typedef std::vector<standard_msgs::msg::Action> Actions;
 typedef std::vector<int> IDs;
 
 namespace athena_behavior_tree
@@ -36,7 +36,7 @@ BT::NodeStatus SendLoadAction::tick()
   if (action_status_ == ActionStatus::SUCCEEDED) {
     IDs completed_actions;
     config().blackboard->get<IDs>("completed_actions", completed_actions);
-    for (const athena_msgs::msg::Action & act : actions) {
+    for (const standard_msgs::msg::Action & act : actions) {
       completed_actions.push_back(act.action_id);
     }
     config().blackboard->set<IDs>("completed_actions", completed_actions);
@@ -53,7 +53,7 @@ Actions SendLoadAction::getLoadActions()
   Actions load_actions;
   config().blackboard->get<Actions>("concurrent_actions", actions_);
 
-  for (const athena_msgs::msg::Action & act : actions_) {
+  for (const standard_msgs::msg::Action & act : actions_) {
     if (act.name.find("load")    != std::string::npos ||
         act.name.find("pick")    != std::string::npos ||
         act.name.find("unstack") != std::string::npos)
@@ -76,7 +76,7 @@ bool SendLoadAction::sendLoad(Actions actions)
     return false;
   }
 
-  for (const athena_msgs::msg::Action & load_action : actions) {
+  for (const standard_msgs::msg::Action & load_action : actions) {
     std::string location = load_action.waypoints[0];
     auto goal_msg = standard_msgs::action::Load::Goal();
     goal_msg.location = location;

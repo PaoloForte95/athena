@@ -1,6 +1,6 @@
 #include "athena_behavior_tree/plugins/action/send_move_action.hpp"
 
-typedef std::vector<athena_msgs::msg::Action> Actions;
+typedef std::vector<standard_msgs::msg::Action> Actions;
 typedef std::vector<int> IDs;
 
 namespace athena_behavior_tree
@@ -77,7 +77,7 @@ BT::NodeStatus SendMoveAction::tick()
   if (action_status_ == ActionStatus::SUCCEEDED) {
     IDs completed_actions;
     config().blackboard->get<IDs>("completed_actions", completed_actions);
-    for (const athena_msgs::msg::Action & act : actions) {
+    for (const standard_msgs::msg::Action & act : actions) {
       completed_actions.push_back(act.action_id);
     }
     config().blackboard->set<IDs>("completed_actions", completed_actions);
@@ -95,7 +95,7 @@ Actions SendMoveAction::getMoveActions()
   config().blackboard->get<Actions>("concurrent_actions", actions_);
   RCLCPP_INFO(node_->get_logger(), "Checking for move actions among %zu concurrent actions", actions_.size());
 
-  for (const athena_msgs::msg::Action & act : actions_) {
+  for (const standard_msgs::msg::Action & act : actions_) {
     if (act.name.find("move")  != std::string::npos ||
         act.name.find("go")    != std::string::npos ||
         act.name.find("transport") != std::string::npos ||
@@ -130,7 +130,7 @@ bool SendMoveAction::sendMove(Actions actions)
   }
 
   std::string wp;
-  for (const athena_msgs::msg::Action & move_action : actions) {
+  for (const standard_msgs::msg::Action & move_action : actions) {
     if (move_action.waypoints.empty()) {
       RCLCPP_ERROR(node_->get_logger(), "Action '%s' has no waypoints, skipping.", move_action.name.c_str());
       return false;

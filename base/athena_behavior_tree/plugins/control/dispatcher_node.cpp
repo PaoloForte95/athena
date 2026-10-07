@@ -14,10 +14,10 @@ DispatcherNode::DispatcherNode(
   logger_(rclcpp::get_logger("DispatcherNode"))
 {
     node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
-    event_pub_ = node_->create_publisher<athena_msgs::msg::Event>(
+    event_pub_ = node_->create_publisher<standard_msgs::msg::Event>(
         "/plan_actions",
         rclcpp::QoS(rclcpp::KeepLast(100)).transient_local().reliable());
-    plan_pub_ = node_->create_publisher<athena_msgs::msg::Plan>(
+    plan_pub_ = node_->create_publisher<standard_msgs::msg::Plan>(
         "/dispatched_plan",
         rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable());
 }
@@ -43,7 +43,7 @@ BT::NodeStatus DispatcherNode::tick()
         if (published_.find(id) == published_.end() &&
             starts_.find(id) != starts_.end()) {
             publishEvent(id, names_[id], kinds_[id], starts_[id], node_->now(),
-                athena_msgs::msg::Event::SUCCESS);
+                standard_msgs::msg::Event::SUCCESS);
             published_.insert(id);
         }
     }
@@ -65,7 +65,7 @@ BT::NodeStatus DispatcherNode::tick()
             for (const auto & entry : starts_) {
                 if (published_.find(entry.first) == published_.end()) {
                     publishEvent(entry.first, names_[entry.first], kinds_[entry.first],
-                        entry.second, node_->now(), athena_msgs::msg::Event::FAILURE);
+                        entry.second, node_->now(), standard_msgs::msg::Event::FAILURE);
                     published_.insert(entry.first);
                 }
             }
@@ -118,7 +118,7 @@ void DispatcherNode::readPlan(){
     std::vector<std::string> robotIDs;
 
     if(type_ == "action"){
-        for(athena_msgs::msg::Action action : execution_plan_.actions){
+        for(standard_msgs::msg::Action action : execution_plan_.actions){
             std::string robot = action.robot;
             plan_length_ += 1;
             auto itr = std::find(robotIDs.begin(), robotIDs.end(), robot);
@@ -128,7 +128,7 @@ void DispatcherNode::readPlan(){
                 config().blackboard->set<std::string>(robot_state, "free");
             }
             if(plan_actions_.find(robot) == plan_actions_.end()){
-                auto actions = std::vector<athena_msgs::msg::Action>();
+                auto actions = std::vector<standard_msgs::msg::Action>();
                 actions.push_back(action);
                 plan_actions_[robot] = actions;
             }
@@ -140,7 +140,7 @@ void DispatcherNode::readPlan(){
         }
     } 
     else if (type_ == "method"){
-        for(athena_msgs::msg::Method method : execution_plan_.methods){
+        for(standard_msgs::msg::Method method : execution_plan_.methods){
             std::string robot = method.robot;
             plan_length_ += 1;
             auto itr = std::find(robotIDs.begin(), robotIDs.end(), robot);
@@ -150,7 +150,7 @@ void DispatcherNode::readPlan(){
                 config().blackboard->set<std::string>(robot_state, "free");
             }
             if(plan_methods_.find(robot) == plan_methods_.end()){
-                auto methods = std::vector<athena_msgs::msg::Method>();
+                auto methods = std::vector<standard_msgs::msg::Method>();
                 methods.push_back(method);
                 plan_methods_[robot] = methods;
             }
@@ -198,10 +198,10 @@ void DispatcherNode::dispatch(){
                     if (starts_.find(curr_action.action_id) == starts_.end()) {
                         starts_[curr_action.action_id] = node_->now();
                         names_[curr_action.action_id] = curr_action.name;
-                        kinds_[curr_action.action_id] = athena_msgs::msg::Event::ACTION;
+                        kinds_[curr_action.action_id] = standard_msgs::msg::Event::ACTION;
                         publishEvent(curr_action.action_id, curr_action.name,
-                            athena_msgs::msg::Event::ACTION, starts_[curr_action.action_id],
-                            starts_[curr_action.action_id], athena_msgs::msg::Event::RUNNING);
+                            standard_msgs::msg::Event::ACTION, starts_[curr_action.action_id],
+                            starts_[curr_action.action_id], standard_msgs::msg::Event::RUNNING);
                     }
                 }
             }
@@ -242,10 +242,10 @@ void DispatcherNode::dispatch(){
                     if (starts_.find(curr_method.id) == starts_.end()) {
                         starts_[curr_method.id] = node_->now();
                         names_[curr_method.id] = curr_method.name;
-                        kinds_[curr_method.id] = athena_msgs::msg::Event::METHOD;
+                        kinds_[curr_method.id] = standard_msgs::msg::Event::METHOD;
                         publishEvent(curr_method.id, curr_method.name,
-                            athena_msgs::msg::Event::METHOD, starts_[curr_method.id],
-                            starts_[curr_method.id], athena_msgs::msg::Event::RUNNING);
+                            standard_msgs::msg::Event::METHOD, starts_[curr_method.id],
+                            starts_[curr_method.id], standard_msgs::msg::Event::RUNNING);
                     }
 
                     // Resolve method subtasks into actions for children to use
@@ -274,7 +274,7 @@ void DispatcherNode::publishEvent(
     int id, const std::string & name, uint8_t kind,
     const rclcpp::Time & start, const rclcpp::Time & end, uint8_t status)
 {
-    athena_msgs::msg::Event event;
+    standard_msgs::msg::Event event;
     event.id = id;
     event.name = name;
     event.kind = kind;

@@ -13,19 +13,13 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(standard_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME} 
     #Msgs
-    "msg/Action.msg"
-    "msg/BehaviorTreeLog.msg"
-    "msg/BehaviorTreeStatusChange.msg"
     "msg/DomainAction.msg"
-    "msg/Event.msg"
-    "msg/Method.msg"
-    "msg/Plan.msg"
     "msg/PlanningProblem.msg"
-    "msg/State.msg"
     #Services
     "srv/GetPlan.srv"
     "srv/RecomputePlan.srv"
@@ -39,10 +33,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     "srv/GetObjects.srv"
     #Actions
     "action/ComputePlan.action"
-    "action/OptmizePlan.action"
     "action/UpdateState.action"
     "action/GenerateTasks.action"
-  DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs
+  DEPENDENCIES std_msgs action_msgs builtin_interfaces geometry_msgs standard_msgs
 )
 
 ament_export_dependencies(rosidl_default_runtime)

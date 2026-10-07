@@ -19,7 +19,7 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(athena_util REQUIRED)
-find_package(athena_planning_core REQUIRED)
+find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(athena_behavior_tree REQUIRED)
 
@@ -46,7 +46,7 @@ set(dependencies
   nav_msgs
   athena_msgs
   athena_util
-  athena_planning_core
+  athena_core
   athena_behavior_tree
   behaviortree_cpp
   std_srvs

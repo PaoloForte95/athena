@@ -5,7 +5,7 @@ string domain_file
 string problem_file
 ---
 #result definition
-athena_msgs/Plan execution_plan
+standard_msgs/Plan execution_plan
 ---
 #feedback definition
 builtin_interfaces/Duration planning_time

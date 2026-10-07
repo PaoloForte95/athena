@@ -9,7 +9,7 @@ bt_planner:
     default_server_timeout: 20
     bt_package_dir: 'athena_behavior_tree'
     #behavior_tree: 'generation_and_planning.xml'
-    behavior_tree: 'planning_w_dispatching_pddl.xml'
+    behavior_tree: 'problem_generation_w_planning_w_dispatching.xml'
     plugin_lib_names:
     - athena_recovery_node_bt_node
     - athena_rate_controller_bt_node
@@ -41,7 +41,7 @@ task_planner_server:
       plan_filename: "plan.pddl"
       proto_filename: "ExePlan.data"
     optimization:
-      enabled: true
+      enabled: True
       paths_filename: "/home/pofe/planning_ws/src/athena/bringup/path_costs.csv"
       time_limit: 10.0
       max_attempts: 10
@@ -60,11 +60,3 @@ task_planner_server:
     FD:
       plugin: "athena_planner::FastDownward"
       search: "astar(blind())"
-
-state_updater_server:
-  ros__parameters:
-      use_sim_time: True
-      planner_frequency: 3.0
-      planner_plugins: ["SimpleStateUpdater"]
-      SimpleStateUpdater:
-        plugin: "athena_planner::SimpleStateUpdater"

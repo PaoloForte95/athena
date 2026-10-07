@@ -4,9 +4,9 @@
 #include <string>
 #include <map>
 #include <set>
-#include "athena_msgs/msg/event.hpp"
+#include "standard_msgs/msg/event.hpp"
 #include "behaviortree_cpp/control_node.h"
-#include "athena_msgs/msg/plan.hpp"
+#include "standard_msgs/msg/plan.hpp"
 #include "rclcpp/rclcpp.hpp"
 namespace athena_behavior_tree
 {
@@ -17,8 +17,8 @@ class DispatcherNode : public BT::ControlNode
 {
 public:
 
-    typedef std::vector<athena_msgs::msg::Action> Actions;
-    typedef std::vector<athena_msgs::msg::Method> Methods;
+    typedef std::vector<standard_msgs::msg::Action> Actions;
+    typedef std::vector<standard_msgs::msg::Method> Methods;
     typedef std::vector<int> IDs;
 
     /**
@@ -43,7 +43,7 @@ public:
     static BT::PortsList providedPorts()
     {
         return {
-            BT::InputPort<athena_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
+            BT::InputPort<standard_msgs::msg::Plan>("execution_plan", "The computed execution plan"),
             BT::InputPort<std::string>("type","actions", "If the plan is for actions or methods, should be either 'action' or 'method'"),
             BT::InputPort<IDs>("completed_methods","The set of completed methods"),
             BT::InputPort<IDs>("completed_actions","The set of completed actions"),
@@ -58,13 +58,13 @@ public:
         int count_;
         std::map<std::string, Actions> plan_actions_;
         std::map<std::string, Methods> plan_methods_;
-        athena_msgs::msg::Plan execution_plan_;
+        standard_msgs::msg::Plan execution_plan_;
         std::string type_;
         rclcpp::Logger logger_ ;
         IDs completed_;
         rclcpp::Node::SharedPtr node_;
-        rclcpp::Publisher<athena_msgs::msg::Event>::SharedPtr event_pub_;
-        rclcpp::Publisher<athena_msgs::msg::Plan>::SharedPtr plan_pub_;
+        rclcpp::Publisher<standard_msgs::msg::Event>::SharedPtr event_pub_;
+        rclcpp::Publisher<standard_msgs::msg::Plan>::SharedPtr plan_pub_;
         std::map<int, rclcpp::Time> starts_;
         std::map<int, std::string> names_;
         std::map<int, uint8_t> kinds_;
