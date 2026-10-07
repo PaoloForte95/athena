@@ -20,6 +20,7 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>athena_util</depend>
+  <depend>athena_core</depend>
   <depend>athena_planning_core</depend>
   <depend>athena_msgs</depend>
   <depend>athena_behavior_tree</depend>
