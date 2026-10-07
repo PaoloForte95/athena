@@ -14,13 +14,13 @@
 
 #include <memory>
 
-#include "athena_planner/state_updater_server.hpp"
+#include "athena_state_updater/state_updater_server.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<athena_planner::StateUpdaterServer>();
+  auto node = std::make_shared<athena_state_updater::StateUpdaterServer>();
   rclcpp::spin(node->get_node_base_interface());
   rclcpp::shutdown();
 

@@ -13,26 +13,26 @@
 #include "athena_util/node_utils.hpp"
 #include "athena_util/geometry_utils.hpp"
 
-#include "athena_planner/state_updater_server.hpp"
+#include "athena_state_updater/state_updater_server.hpp"
 
 using namespace std::chrono_literals;
 using rcl_interfaces::msg::ParameterType;
 using std::placeholders::_1;
 
-namespace athena_planner
+namespace athena_state_updater
 {
 
 StateUpdaterServer::StateUpdaterServer(const rclcpp::NodeOptions & options)
 : athena_util::LifecycleNode("state_updater_server", "", options),
-  gp_loader_("athena_planning_core", "athena_planning_core::StateUpdater"),
+  gp_loader_("athena_core", "athena_core::StateUpdater"),
   default_ids_{"SimpleStateUpdater"},
-  default_types_{"athena_planner::SimpleUpdater"}
+  default_types_{"athena_state_updater::SimpleStateUpdater"}
 {
-  RCLCPP_INFO(get_logger(), "Creating task planner server");
+  RCLCPP_INFO(get_logger(), "Creating state updater server");
 
-  declare_parameter("planner_frequency", 20.0);
+  declare_parameter("frequency", 20.0);
   // Declare this node's parameters
-  declare_parameter("planner_plugins", default_ids_);
+  declare_parameter("plugins", default_ids_);
 
 }
 
@@ -49,7 +49,7 @@ StateUpdaterServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
   RCLCPP_INFO(get_logger(), "Configuring task planner interface");
 
 
-  get_parameter("planner_plugins", state_updater_ids_);
+  get_parameter("plugins", state_updater_ids_);
   if (state_updater_ids_ == default_ids_) {
     for (size_t i = 0; i < default_ids_.size(); ++i) {
       athena_util::declare_parameter_if_not_declared(
@@ -70,7 +70,7 @@ StateUpdaterServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
     try {
       state_updater_types_[i] = athena_util::get_plugin_type_param(
         node, state_updater_ids_[i]);
-      athena_planning_core::StateUpdater::Ptr state_updater =
+      athena_core::StateUpdater::Ptr state_updater =
         gp_loader_.createUniqueInstance(state_updater_types_[i]);
       RCLCPP_INFO(
         get_logger(), "Created state updater plugin %s of type %s",
@@ -95,7 +95,7 @@ StateUpdaterServer::on_configure(const rclcpp_lifecycle::State & /*state*/)
 
  
   // Initialize pubs & subs
-  state_publisher_ = create_publisher<athena_msgs::msg::State>("planning_problem_state", 1);
+  state_publisher_ = create_publisher<standard_msgs::msg::PlanningState>("planning_problem_state", 1);
 
   // Create the action servers for path planning to a pose and through poses
   action_server_update_ = std::make_unique<ActionServerUpdate>(
@@ -241,7 +241,7 @@ StateUpdaterServer::updateState()
     RCLCPP_INFO( get_logger(), "Updating the state with: %s ", goal->state_updater.c_str());
 
     result->updated_state = getUpdatedState(goal->previous_state, goal->actions,  goal->state_updater);
-    auto message = athena_msgs::msg::State();
+    auto message = standard_msgs::msg::PlanningState();
     message = result->updated_state;
     // Publish the plan for visualization purposes
     publishState(message);
@@ -253,8 +253,8 @@ StateUpdaterServer::updateState()
   }
 }
 
-athena_msgs::msg::State StateUpdaterServer::getUpdatedState(
-    const athena_msgs::msg::State & previous_state,
+standard_msgs::msg::PlanningState StateUpdaterServer::getUpdatedState(
+    const standard_msgs::msg::PlanningState & previous_state,
     const Actions & actions,
     const std::string & state_updater)
 {
@@ -262,7 +262,7 @@ athena_msgs::msg::State StateUpdaterServer::getUpdatedState(
     //for (auto s : previous_state.state){
       //RCLCPP_INFO(get_logger(), "Prev state %s",s.c_str());
     //}
-    athena_msgs::msg::State state;
+    standard_msgs::msg::PlanningState state;
       if (state_updaters_.find(state_updater) != state_updaters_.end()) {
 
       return state_updaters_[state_updater]->updateState(actions,previous_state);
@@ -281,13 +281,13 @@ athena_msgs::msg::State StateUpdaterServer::getUpdatedState(
     }
   }
 
-  return athena_msgs::msg::State();
+  return standard_msgs::msg::PlanningState();
 }
 
 void
-StateUpdaterServer::publishState(const athena_msgs::msg::State & msg)
+StateUpdaterServer::publishState(const standard_msgs::msg::PlanningState & msg)
 {
-  auto message = std::make_unique<athena_msgs::msg::State>(msg);
+  auto message = std::make_unique<standard_msgs::msg::PlanningState>(msg);
   if (state_publisher_->is_activated() && state_publisher_->get_subscription_count() > 0) {
     state_publisher_->publish(std::move(message));
   }
@@ -312,11 +312,11 @@ StateUpdaterServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> par
   return result;
 }
 
-}  // namespace athena_planner
+}  // namespace athena_state_updater
 
 #include "rclcpp_components/register_node_macro.hpp"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
-RCLCPP_COMPONENTS_REGISTER_NODE(athena_planner::StateUpdaterServer)
+RCLCPP_COMPONENTS_REGISTER_NODE(athena_state_updater::StateUpdaterServer)

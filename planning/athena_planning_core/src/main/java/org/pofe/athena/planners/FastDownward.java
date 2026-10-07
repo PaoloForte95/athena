@@ -106,6 +106,7 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 	public Integer call() throws Exception {
 		logger.info("Computing the plan...");
 
+		File rawPlanFile = new File("sas_plan");
 
 		ArrayList<String> cmdArgs = new ArrayList<>();
 		cmdArgs.add("python3");
@@ -114,6 +115,8 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 			cmdArgs.add("--alias");
 			cmdArgs.add(alias);
 		}
+		cmdArgs.add("--plan-file");
+		cmdArgs.add(rawPlanFile.getPath());
 		cmdArgs.add(domain_file);
 		cmdArgs.add(problem_file);
 		if (alias == null) {
@@ -124,6 +127,8 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 		ProcessBuilder pb = new ProcessBuilder(cmdArgs);
 		pb.redirectErrorStream(true);
 		try {
+			Files.deleteIfExists(rawPlanFile.toPath());
+
 			Process process = pb.start();
 			StringBuilder builder = new StringBuilder();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -134,17 +139,15 @@ public final class FastDownward extends AbstractPlanner implements Callable<Inte
 			}
 			int fdExitCode = process.waitFor();
 
-			//toFile("plan_fd.txt", builder.toString());
+			Files.write(new File("plan_fd.txt").toPath(), builder.toString().getBytes(StandardCharsets.UTF_8));
 
-
-			File planFile = new File("plan.pddl");
-			if (fdExitCode >= 10 || !planFile.exists()) {
+			if (fdExitCode >= 10 || !rawPlanFile.exists()) {
 				logger.severe("Failed to compute the plan! Fast Downward exit code: " + fdExitCode
 						+ ". See plan_fd.txt for details.");
 				return -1;
 			}
 
-			String rawPlan = new String(Files.readAllBytes(planFile.toPath()), StandardCharsets.UTF_8);
+			String rawPlan = new String(Files.readAllBytes(rawPlanFile.toPath()), StandardCharsets.UTF_8);
 			ArrayList<String> plan = extractPlan(rawPlan);
 			logger.info("Plan " + output_name + " computed!");
 			toFile(plan, output_name);

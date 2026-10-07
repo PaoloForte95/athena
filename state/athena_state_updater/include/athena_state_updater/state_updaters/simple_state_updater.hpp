@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
-#define ATHENA_PLANNER__PLANNERS__SIMPLE_STATE_UPDATER_HPP_
+#ifndef ATHENA_STATE_UPDATER__STATE_UPDATERS__SIMPLE_STATE_UPDATER_HPP_
+#define ATHENA_STATE_UPDATER__STATE_UPDATERS__SIMPLE_STATE_UPDATER_HPP_
 
-#include "athena_planning_core/state_updater.hpp"
-#include "athena_msgs/msg/state.hpp"
+#include "athena_core/state_updater.hpp"
+#include "standard_msgs/msg/planning_state.hpp"
 #include "athena_util/lifecycle_node.hpp"
 
-namespace athena_planner
+namespace athena_state_updater
 {
-class SimpleStateUpdater : public athena_planning_core::StateUpdater
+class SimpleStateUpdater : public athena_core::StateUpdater
 {
 
 public:
@@ -68,9 +68,9 @@ public:
    * 
    * @param domain the planning domain file.
    * @param problem the planning problem file.
-   * @return athena_msgs::msg::Plan An execution plan of the provided planning problem.
+   * @return standard_msgs::msg::Plan An execution plan of the provided planning problem.
    */
-  athena_msgs::msg::State updateState(const std::vector<athena_msgs::msg::Action> & actions, const athena_msgs::msg::State& previous_state) override;
+  standard_msgs::msg::PlanningState updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state) override;
   
   /**
    * @brief Callback executed when a parameter change is detected

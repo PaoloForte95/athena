@@ -80,9 +80,9 @@ void FastDownward::cleanup()
 
 }
 
-athena_msgs::msg::Plan FastDownward::computeExecutionPlan(const std::string & domain, const std::string & problem){
+standard_msgs::msg::Plan FastDownward::computeExecutionPlan(const std::string & domain, const std::string & problem){
 
-  athena_msgs::msg::Plan execution_plan;
+  standard_msgs::msg::Plan execution_plan;
 
   std::string search;
   {
@@ -148,4 +148,4 @@ rcl_interfaces::msg::SetParametersResult FastDownward::dynamicParametersCallback
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::FastDownward, athena_planning_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::FastDownward, athena_core::Planner)

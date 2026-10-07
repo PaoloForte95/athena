@@ -71,7 +71,7 @@ namespace athena_planner
 
 TaskPlannerServer::TaskPlannerServer(const rclcpp::NodeOptions & options)
 : athena_util::LifecycleNode("task_planner_server", "", options),
-  gp_loader_("athena_planning_core", "athena_planning_core::Planner"),
+  gp_loader_("athena_core", "athena_core::Planner"),
   default_ids_{"MetricFF", "LPG"},
   default_types_{"athena_planner::LPG", "athena_planner::MetricFF"}
 {
@@ -139,7 +139,7 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     try {
       planner_types_[i] = athena_util::get_plugin_type_param(
         node, planner_ids_[i]);
-      athena_planning_core::Planner::Ptr task_planner =
+      athena_core::Planner::Ptr task_planner =
         gp_loader_.createUniqueInstance(planner_types_[i]);
       RCLCPP_INFO(
         get_logger(), "Created task planner plugin %s of type %s",
@@ -163,7 +163,7 @@ athena_util::CallbackReturn TaskPlannerServer::on_configure(const rclcpp_lifecyc
     "Task Planner Server has %s planners available.", planner_ids_concat_.c_str());
 
   // Initialize pubs & subs
-  plan_publisher_ = create_publisher<athena_msgs::msg::Plan>("execution_plan", 1);
+  plan_publisher_ = create_publisher<standard_msgs::msg::Plan>("execution_plan", 1);
 
   action_server_plan_ = std::make_unique<ActionServerPlan>(
     shared_from_this(),
@@ -318,7 +318,7 @@ TaskPlannerServer::computeExecutionPlan()
         goal->planning_problem.planning_problem.c_str());
       action_server_plan_->terminate_current();
     }
-    auto message = athena_msgs::msg::Plan();
+    auto message = standard_msgs::msg::Plan();
     message = result->execution_plan;
     // Publish the plan for visualization purposes
     publishPlan(message);
@@ -333,12 +333,12 @@ TaskPlannerServer::computeExecutionPlan()
   }
 }
 
-athena_msgs::msg::Plan TaskPlannerServer::getExecutionPlan(
+standard_msgs::msg::Plan TaskPlannerServer::getExecutionPlan(
   const std::string & domain,
   const std::string & problem,
   const std::string & planner)
 {
-  athena_msgs::msg::Plan plan;
+  standard_msgs::msg::Plan plan;
   RCLCPP_WARN(
     get_logger(),
     "Attempting to compute an execution plan for the planning problem (%s, %s), using planner %s\"",
@@ -363,13 +363,13 @@ athena_msgs::msg::Plan TaskPlannerServer::getExecutionPlan(
     }
   }
 
-  return athena_msgs::msg::Plan();
+  return standard_msgs::msg::Plan();
 }
 
 void
-TaskPlannerServer::publishPlan(const athena_msgs::msg::Plan & msg)
+TaskPlannerServer::publishPlan(const standard_msgs::msg::Plan & msg)
 {
-  auto message = std::make_unique<athena_msgs::msg::Plan>(msg);
+  auto message = std::make_unique<standard_msgs::msg::Plan>(msg);
   if (plan_publisher_->is_activated() && plan_publisher_->get_subscription_count() > 0) {
     plan_publisher_->publish(std::move(message));
   }

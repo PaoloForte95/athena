@@ -19,14 +19,14 @@
 #include <string>
 #include <vector>
 
-#include "athena_planning_core/planner.hpp"
-#include "athena_msgs/msg/plan.hpp"
+#include "athena_core/planner.hpp"
+#include "standard_msgs/msg/plan.hpp"
 #include "athena_util/lifecycle_node.hpp"
 
 namespace athena_planner
 {
 
-class FastDownward : public athena_planning_core::Planner{
+class FastDownward : public athena_core::Planner{
 
 public:
     /**
@@ -70,9 +70,9 @@ public:
    *
    * @param domain the planning domain file.
    * @param problem the planning problem file.
-   * @return athena_msgs::msg::Plan An execution plan of the provided planning problem.
+   * @return standard_msgs::msg::Plan An execution plan of the provided planning problem.
    */
-  athena_msgs::msg::Plan computeExecutionPlan(const std::string & domain, const std::string & problem) override;
+  standard_msgs::msg::Plan computeExecutionPlan(const std::string & domain, const std::string & problem) override;
 
 
   /**

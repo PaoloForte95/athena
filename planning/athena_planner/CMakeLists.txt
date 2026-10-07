@@ -9,7 +9,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(athena_planning_core REQUIRED)
+find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -35,7 +35,7 @@ set(dependencies
   pluginlib
   ament_index_cpp
   rclcpp_components
-  athena_planning_core
+  athena_core
   athena_msgs
   sensor_msgs
   athena_util
@@ -50,14 +50,7 @@ add_executable(${executable_name}
   src/main.cpp
 )
 
-set(state_updater_executable_name state_updater_server)
-
-add_executable(${state_updater_executable_name}
-  src/main_state_updater.cpp
-)
-
 set(library_name athena_planner)
-set(updater_library_name athena_updater)
 
 add_library(${library_name} SHARED
   src/task_planner_server.cpp
@@ -65,12 +58,6 @@ add_library(${library_name} SHARED
 ament_target_dependencies(${library_name} ${dependencies})
 rclcpp_components_register_nodes(${library_name} "athena_planner::TaskPlannerServer")
 
-
-add_library(${updater_library_name} SHARED
-  src/state_updater_server.cpp
-)
-ament_target_dependencies(${updater_library_name} ${dependencies})
-rclcpp_components_register_nodes(${updater_library_name} "athena_planner::StateUpdaterServer")
 
 #Planners
 add_library(${library_name}_metricff SHARED
@@ -113,35 +100,11 @@ ament_target_dependencies(${library_name}_lilotane
   ${dependencies}
 )
 
-#State Updaters
-
-add_library(${updater_library_name}_simple SHARED
-  src/state_updaters/simple_state_updater.cpp
-)
-
-ament_target_dependencies(${updater_library_name}_simple
-  ${dependencies}
-)
-
-add_library(${updater_library_name}_vlm SHARED
-  src/state_updaters/vlm_state_updater.cpp
-)
-
-ament_target_dependencies(${updater_library_name}_vlm
-  ${dependencies}
-  OpenCV
-  cv_bridge
-)
-
 
 ament_target_dependencies(${executable_name} ${dependencies})
 target_link_libraries(${executable_name} ${library_name}  ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward yaml-cpp)
 
-ament_target_dependencies(${state_updater_executable_name} ${dependencies})
-target_link_libraries(${state_updater_executable_name} ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
-
-
-install(TARGETS ${executable_name} ${state_updater_executable_name}
+install(TARGETS ${executable_name} 
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -150,11 +113,6 @@ install(DIRECTORY include/
 )
 
 install(TARGETS ${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-install(TARGETS ${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -179,10 +137,8 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward)
-ament_export_libraries(${updater_library_name} ${updater_library_name}_simple ${updater_library_name}_vlm)
 ament_export_dependencies(${dependencies})
 
-pluginlib_export_plugin_description_file(athena_planning_core planners_plugin.xml)
-pluginlib_export_plugin_description_file(athena_planning_core state_updaters_plugin.xml)
+pluginlib_export_plugin_description_file(athena_core planners_plugin.xml)
 
 ament_package()

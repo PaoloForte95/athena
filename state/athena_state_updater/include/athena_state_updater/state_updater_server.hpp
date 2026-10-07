@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_PLANNER__STATE_UPDATER_SERVER_HPP_
-#define ATHENA_PLANNER__STATE_UPDATER_SERVER_HPP_
+#ifndef ATHENA_STATE_UPDATER__STATE_UPDATER_SERVER_HPP_
+#define ATHENA_STATE_UPDATER__STATE_UPDATER_SERVER_HPP_
 
 #include <chrono>
 #include <string>
@@ -31,15 +31,15 @@
 #include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
-#include "athena_planning_core/state_updater.hpp"
-#include "athena_msgs/msg/state.hpp"
+#include "athena_core/state_updater.hpp"
+#include "standard_msgs/msg/planning_state.hpp"
 #include "athena_util/simple_action_server.hpp"
-typedef std::vector<athena_msgs::msg::Action> Actions;
+typedef std::vector<standard_msgs::msg::Action> Actions;
 
-namespace athena_planner
+namespace athena_state_updater
 {
 /**
- * @class athena_planner::StateUpdaterServer
+ * @class athena_state_updater::StateUpdaterServer
  * @brief An action server implements the behavior tree's ComputePathToPose
  * interface and hosts various plugins of different algorithms to compute plans.
  */
@@ -47,24 +47,24 @@ class StateUpdaterServer : public athena_util::LifecycleNode
 {
 public:
   /**
-   * @brief A constructor for athena_planner::StateUpdaterServer
+   * @brief A constructor for athena_state_updater::StateUpdaterServer
    * @param options Additional options to control creation of the node.
    */
   explicit StateUpdaterServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   /**
-   * @brief A destructor for athena_planner::StateUpdaterServer
+   * @brief A destructor for athena_state_updater::StateUpdaterServer
    */
   ~StateUpdaterServer();
 
-  using StateUpdaterMap = std::unordered_map<std::string, athena_planning_core::StateUpdater::Ptr>;
+  using StateUpdaterMap = std::unordered_map<std::string, athena_core::StateUpdater::Ptr>;
 
   
   
   void updateState();
 
 
-  athena_msgs::msg::State getUpdatedState(
-    const athena_msgs::msg::State & previous_state,
+  standard_msgs::msg::PlanningState getUpdatedState(
+    const standard_msgs::msg::PlanningState & previous_state,
     const Actions & actions,
     const std::string & state_updater);
 
@@ -142,7 +142,7 @@ protected:
    * 
    * @param state the current state to publish
    */
-  void publishState(const athena_msgs::msg::State & state);
+  void publishState(const standard_msgs::msg::PlanningState & state);
 
   /**
    * @brief Callback executed when a parameter change is detected
@@ -157,7 +157,7 @@ protected:
 
   // Updaters
   StateUpdaterMap state_updaters_;
-  pluginlib::ClassLoader<athena_planning_core::StateUpdater> gp_loader_;
+  pluginlib::ClassLoader<athena_core::StateUpdater> gp_loader_;
   std::vector<std::string> default_ids_;
   std::vector<std::string> default_types_;
   std::vector<std::string> state_updater_ids_;
@@ -169,7 +169,7 @@ protected:
 
 
   // Publishers for the path
-  rclcpp_lifecycle::LifecyclePublisher<athena_msgs::msg::State>::SharedPtr state_publisher_;
+  rclcpp_lifecycle::LifecyclePublisher<standard_msgs::msg::PlanningState>::SharedPtr state_publisher_;
 
 
   double state_updater_frequency_;

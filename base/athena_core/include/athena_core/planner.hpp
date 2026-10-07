@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ATHENA_PLANNING_CORE__PLANNER_HPP_
-#define ATHENA_PLANNING_CORE__PLANNER_HPP_
+#ifndef ATHENA_CORE__PLANNER_HPP_
+#define ATHENA_CORE__PLANNER_HPP_
 
 #include <optional>
 #include <string>
@@ -22,9 +22,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-#include "athena_msgs/msg/plan.hpp"
+#include "standard_msgs/msg/plan.hpp"
 
-namespace athena_planning_core
+namespace athena_core
 {
 
 class Planner
@@ -65,9 +65,9 @@ public:
    * 
    * @param domain the planning domain file.
    * @param problem the planning problem file.
-   * @return athena_msgs::msg::Plan An execution plan of the provided planning problem.
+   * @return standard_msgs::msg::Plan An execution plan of the provided planning problem.
    */
-  virtual athena_msgs::msg::Plan computeExecutionPlan(const std::string & domain, const std::string & problem) = 0;
+  virtual standard_msgs::msg::Plan computeExecutionPlan(const std::string & domain, const std::string & problem) = 0;
 
   /**
    * @brief Check if the provided planning domain is valid.

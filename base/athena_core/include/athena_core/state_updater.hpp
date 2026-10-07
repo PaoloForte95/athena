@@ -22,10 +22,10 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-#include "athena_msgs/msg/state.hpp"
-#include "athena_msgs/msg/action.hpp"
+#include "standard_msgs/msg/planning_state.hpp"
+#include "standard_msgs/msg/action.hpp"
 
-namespace athena_planning_core
+namespace athena_core
 {
 
 class StateUpdater
@@ -61,9 +61,10 @@ public:
    * 
    * @param domain 
    * @param problem 
-   * @return athena_msgs::msg::State 
+   * @param previous_state The current planning state
+   * @return standard_msgs::msg::PlanningState 
    */
-  virtual athena_msgs::msg::State updateState(const std::vector<athena_msgs::msg::Action> & actions, const athena_msgs::msg::State& previous_state) = 0;
+  virtual standard_msgs::msg::PlanningState updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state) = 0;
 
 };
 

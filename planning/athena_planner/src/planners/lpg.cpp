@@ -71,9 +71,9 @@ void LPG::cleanup()
 
 }
 
-athena_msgs::msg::Plan LPG::computeExecutionPlan(const std::string & domain, const std::string & problem){
+standard_msgs::msg::Plan LPG::computeExecutionPlan(const std::string & domain, const std::string & problem){
 
-athena_msgs::msg::Plan execution_plan;
+standard_msgs::msg::Plan execution_plan;
 int status = system(("java -jar src/athena/planning/athena_planner/Planners/task_planner.jar lpg " + 
 domain + " " + 
 problem + " " 
@@ -137,4 +137,4 @@ rcl_interfaces::msg::SetParametersResult LPG::dynamicParametersCallback(
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::LPG, athena_planning_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::LPG, athena_core::Planner)

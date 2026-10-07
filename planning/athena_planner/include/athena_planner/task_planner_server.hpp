@@ -33,8 +33,8 @@
 #include "tf2_ros/create_timer_ros.h"
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
-#include "athena_planning_core/planner.hpp"
-#include "athena_msgs/msg/plan.hpp"
+#include "athena_core/planner.hpp"
+#include "standard_msgs/msg/plan.hpp"
 
 namespace athena_planner
 {
@@ -56,7 +56,7 @@ public:
    */
   ~TaskPlannerServer();
 
-  using PlannerMap = std::unordered_map<std::string, athena_planning_core::Planner::Ptr>;
+  using PlannerMap = std::unordered_map<std::string, athena_core::Planner::Ptr>;
 
   /**
    * @brief Get the Execution Plan object
@@ -66,7 +66,7 @@ public:
    * @param planner_id
    * @return std::string
    */
-  athena_msgs::msg::Plan getExecutionPlan(
+  standard_msgs::msg::Plan getExecutionPlan(
     const std::string & domain,
     const std::string & problem,
     const std::string & planner_id);
@@ -150,7 +150,7 @@ protected:
    * @brief Publish the planner for debug purposes
    * @param plann Reference to the execution plan
    */
-  void publishPlan(const athena_msgs::msg::Plan & plan);
+  void publishPlan(const standard_msgs::msg::Plan & plan);
 
   /**
    * @brief Callback executed when a parameter change is detected
@@ -165,7 +165,7 @@ protected:
 
   // Planner
   PlannerMap planners_;
-  pluginlib::ClassLoader<athena_planning_core::Planner> gp_loader_;
+  pluginlib::ClassLoader<athena_core::Planner> gp_loader_;
   std::vector<std::string> default_ids_;
   std::vector<std::string> default_types_;
   std::vector<std::string> planner_ids_;
@@ -187,7 +187,7 @@ protected:
 
 
   // Publishers for the path
-  rclcpp_lifecycle::LifecyclePublisher<athena_msgs::msg::Plan>::SharedPtr plan_publisher_;
+  rclcpp_lifecycle::LifecyclePublisher<standard_msgs::msg::Plan>::SharedPtr plan_publisher_;
 
 
   double planner_frequency_;
@@ -217,4 +217,4 @@ private:
 
 }  // namespace athena_planner
 
-#endif  // ATHENA_PLANNER__TASK_PLANNER_SERVER_HPP_
+#endif  // ATHENA_STATE_UPDATER__TASK_PLANNER_SERVER_HPP_

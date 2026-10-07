@@ -13,12 +13,12 @@
 // limitations under the License.
 #include <regex>
 #include "athena_util/node_utils.hpp"
-#include "athena_planner/state_updaters/simple_state_updater.hpp"
+#include "athena_state_updater/state_updaters/simple_state_updater.hpp"
 
 using std::placeholders::_1;
 using rcl_interfaces::msg::ParameterType;
 
-namespace athena_planner
+namespace athena_state_updater
 {
 
 std::string transformState(const std::string& state) {
@@ -108,8 +108,8 @@ void SimpleStateUpdater::cleanup()
 
 }
 
-athena_msgs::msg::State SimpleStateUpdater::updateState(const std::vector<athena_msgs::msg::Action> & actions, const athena_msgs::msg::State& previous_state){
-    auto new_state = athena_msgs::msg::State();
+standard_msgs::msg::PlanningState SimpleStateUpdater::updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state){
+    auto new_state = standard_msgs::msg::PlanningState();
     auto state = previous_state.state;
     for(auto action : actions){ 
       for(auto effect : action.effects){
@@ -159,7 +159,7 @@ rcl_interfaces::msg::SetParametersResult SimpleStateUpdater::dynamicParametersCa
 }
 
 
-} //namespace athena_planner
+} //namespace athena_state_updater
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::SimpleStateUpdater, athena_planning_core::StateUpdater)
+PLUGINLIB_EXPORT_CLASS(athena_state_updater::SimpleStateUpdater, athena_core::StateUpdater)

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "athena_util/node_utils.hpp"
-#include "athena_msgs/msg/method.hpp"
+#include "standard_msgs/msg/method.hpp"
 
 #include "athena_planner/planners/tfd.hpp"
 #include "athena_protobuf/execution_plan.hpp"
@@ -71,9 +71,9 @@ void TFD::cleanup()
 
 }
 
-athena_msgs::msg::Plan TFD::computeExecutionPlan(const std::string & domain, const std::string & problem){
+standard_msgs::msg::Plan TFD::computeExecutionPlan(const std::string & domain, const std::string & problem){
 
-athena_msgs::msg::Plan execution_plan;
+standard_msgs::msg::Plan execution_plan;
 int status = system(("java -jar src/athena/planning/athena_planner/Planners/task_planner.jar tfd " + 
 domain + " " + 
 problem + " " 
@@ -142,4 +142,4 @@ rcl_interfaces::msg::SetParametersResult TFD::dynamicParametersCallback(
 } //namespace athena_planner
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(athena_planner::TFD, athena_planning_core::Planner)
+PLUGINLIB_EXPORT_CLASS(athena_planner::TFD, athena_core::Planner)
