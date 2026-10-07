@@ -1,16 +1,4 @@
-// Copyright (c) 2024 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 #include <regex>
 #include "athena_util/node_utils.hpp"
 #include "athena_state_updater/state_updaters/simple_state_updater.hpp"
@@ -103,9 +91,7 @@ void SimpleStateUpdater::deactivate()
 
 void SimpleStateUpdater::cleanup()
 {
-  RCLCPP_INFO(
-    logger_, "Cleaning up plugin %s of type SimpleStateUpdater",name_.c_str());
-
+  RCLCPP_INFO(logger_, "Cleaning up plugin %s of type SimpleStateUpdater",name_.c_str());
 }
 
 standard_msgs::msg::PlanningState SimpleStateUpdater::updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state){
