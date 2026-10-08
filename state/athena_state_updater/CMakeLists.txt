@@ -22,6 +22,7 @@ find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(scene_graph_msgs REQUIRED)
 
 
 include_directories(
@@ -42,6 +43,7 @@ set(dependencies
   athena_protobuf
   Protobuf
   cv_bridge
+  scene_graph_msgs
 )
 
 set(executable_name state_updater_server)
@@ -71,8 +73,17 @@ ament_target_dependencies(${library_name}_simple
 )
 
 
+
+add_library(${library_name}_scene_graph SHARED
+  src/state_updaters/scene_graph_state_updater.cpp
+)
+
+ament_target_dependencies(${library_name}_scene_graph
+  ${dependencies}
+)
+
 ament_target_dependencies(${executable_name} ${dependencies})
-target_link_libraries(${executable_name} ${library_name}  ${library_name}_simple)
+target_link_libraries(${executable_name} ${library_name}  ${library_name}_simple ${library_name}_scene_graph)
 
 
 
@@ -84,17 +95,12 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-install(TARGETS ${library_name} ${library_name}_simple
+install(TARGETS ${library_name} ${library_name}_simple ${library_name}_scene_graph
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-
-install(DIRECTORY
-  params
-  DESTINATION share/${PROJECT_NAME}/
-)
 
 # if(BUILD_TESTING)
 #   find_package(ament_lint_auto REQUIRED)
@@ -107,7 +113,7 @@ install(DIRECTORY
 
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name} ${library_name}_simple)
+ament_export_libraries(${library_name} ${library_name}_simple ${library_name}_scene_graph)
 ament_export_dependencies(${dependencies})
 
 pluginlib_export_plugin_description_file(athena_core state_updaters_plugin.xml)

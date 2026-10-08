@@ -7,6 +7,13 @@
 	</class>
 </library>
 
+<library path="athena_state_updater_scene_graph">
+	<class type="athena_state_updater::SceneGraphStateUpdater" base_class_type="athena_core::StateUpdater">
+    <description>Gives the edges of the scene graph as PDDL facts.</description>
+  </class>
+</library>
+
+
 
 
 </class_libraries>

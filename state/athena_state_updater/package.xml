@@ -27,5 +27,9 @@
   <test_depend>ros2run</test_depend>
   
 
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
 
 </package>
