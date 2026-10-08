@@ -24,8 +24,8 @@ PddlViewerPanel::PddlViewerPanel(QWidget * parent)
 : rviz_common::Panel(parent)
 {
   auto * tabs = new QTabWidget(this);
-  tabs->addTab(createTab(domain_, "/generated_domain"), "Domain");
-  tabs->addTab(createTab(problem_, "/generated_problem"), "Problem");
+  tabs->addTab(createTab(domain_, "/planning_domain"), "Domain");
+  tabs->addTab(createTab(problem_, "/planning_problem"), "Problem");
 
   auto * layout = new QVBoxLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);

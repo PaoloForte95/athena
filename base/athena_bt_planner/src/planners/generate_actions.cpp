@@ -3,12 +3,31 @@
 #include <set>
 #include <memory>
 #include <limits>
+#include <fstream>
+#include <sstream>
 #include "athena_bt_planner/planners/generate_actions.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "athena_msgs/msg/planning_problem.hpp"
 
 namespace athena_bt_planner
 {
+
+namespace
+{
+
+bool readFile(const std::string & path, std::string & content)
+{
+  std::ifstream file(path);
+  if (!file.is_open()) {
+    return false;
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  content = buffer.str();
+  return true;
+}
+
+}
 
 bool TaskPlanner::configure(
   rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node)
@@ -56,6 +75,16 @@ bool TaskPlanner::configure(
     rclcpp::SystemDefaultsQoS(),
     std::bind(&TaskPlanner::onStartBtReceived, this, std::placeholders::_1));
 
+  planning_domain_pub_ = node->create_publisher<std_msgs::msg::String>(
+    "planning_domain",
+    rclcpp::QoS(1).transient_local().reliable());
+  
+  planning_problem_pub_ = node->create_publisher<std_msgs::msg::String>(
+    "planning_problem",
+    rclcpp::QoS(1).transient_local().reliable());
+  
+  planning_domain_pub_->on_activate();
+  planning_problem_pub_->on_activate();
   RCLCPP_INFO(logger_, "TaskPlanner configured, listening on 'instruction' and 'start_bt' topics");
 
   return true;
@@ -83,6 +112,8 @@ TaskPlanner::getBTFilepath(
 bool
 TaskPlanner::cleanup()
 {
+  planning_domain_pub_.reset();
+  planning_problem_pub_.reset();
   instruction_sub_.reset();
   start_bt_sub_.reset();
   self_client_.reset();
@@ -140,8 +171,8 @@ TaskPlanner::onLoop()
 
   // Populate current state if available
   try {
-    standard_msgs::msg::PlanningState current_state;
-    blackboard->get<standard_msgs::msg::PlanningState>("current_state", current_state);
+    standard_msgs::msg::StringMultiArray current_state;
+    blackboard->get<standard_msgs::msg::StringMultiArray>("current_state", current_state);
     feedback_msg->current_state = current_state;
   } catch (...) {
     // Ignore if not on blackboard yet
@@ -214,6 +245,20 @@ TaskPlanner::initializeFromGoal(ActionT::Goal::ConstSharedPtr goal)
     RCLCPP_INFO(
       logger_, "Domain file: %s, problem file: %s",
       problem->planning_domain.c_str(), problem->planning_problem.c_str());
+
+    auto publish_file = [this](auto & publisher, const std::string & path) {
+        std::string content;
+        if (!readFile(path, content)) {
+          RCLCPP_ERROR(logger_, "Cannot read file %s, it is not published", path.c_str());
+          return;
+        }
+        std_msgs::msg::String msg;
+        msg.data = content;
+        publisher->publish(msg);
+      };
+
+    publish_file(planning_domain_pub_, problem->planning_domain);
+    publish_file(planning_problem_pub_, problem->planning_problem);
   }
 
   RCLCPP_INFO(

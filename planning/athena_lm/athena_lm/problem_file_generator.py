@@ -315,7 +315,7 @@ class VlmApiNode(Node):
         self.declare_parameter("check_init", False)
         self.declare_parameter("max_retries", 3)
 
-        self.problem_pub = self.create_publisher(String, 'generated_problem', 10)
+        self.problem_pub = self.create_publisher(String, 'planning_problem', 10)
         self.srv = self.create_service(GenerateProblemFile, 'generate_problem_file', self.compute_problem_file_callback)
 
     def compute_problem_file_callback(self, request, response):
@@ -348,7 +348,7 @@ class VlmApiNode(Node):
             problem_msg = String()
             problem_msg.data = problem
             self.problem_pub.publish(problem_msg)
-            self.get_logger().info('Problem %s file created and published on generated_problem' % filename)
+            self.get_logger().info('Problem %s file created and published on planning_problem' % filename)
         else:
             self.get_logger().error('No problem file created: goal rejected')
         return response

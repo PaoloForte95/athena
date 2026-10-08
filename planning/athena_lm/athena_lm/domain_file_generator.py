@@ -29,7 +29,7 @@ class PddlDomainServer(Node):
         self.declare_parameter("capabilities", "")
         self.declare_parameter("max_retries", 3)
 
-        self.pub = self.create_publisher(String, "/generated_domain", 10)
+        self.pub = self.create_publisher(String, "/planning_domain", 10)
         self.create_service(GenerateDomain, "generate_domain", self.handle_generate)
 
         self.get_logger().info("Domain generator ready")
@@ -391,7 +391,7 @@ Constraints:
         msg = String()
         msg.data = out_text
         self.pub.publish(msg)
-        self.get_logger().info(f"Published /generated_domain (backend={backend})")
+        self.get_logger().info(f"Published /planning_domain (backend={backend})")
 
         response.success = True
         response.path = str(out_path)
