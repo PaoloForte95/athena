@@ -19,10 +19,11 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable, IncludeLaunchDescription
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import PushRosNamespace,Node
 from athena_common.launch import RewrittenYaml
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Get the launch directory
 
@@ -102,6 +103,13 @@ def generate_launch_description():
     declare_generate_planning_problem_cmd = DeclareLaunchArgument(
         'generate_planning_problem', default_value='False',
         description='Whether to generated the planning problem using VLM.')
+
+    bridge_launch_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([FindPackageShare('athena_action_bridge'), 'launch', 'action_bridge_launch.py'])
+        ),
+        launch_arguments={'namespace': 'robot1'}.items(),
+    )
 
     load_nodes = GroupAction(
         actions=[
@@ -183,6 +191,7 @@ def generate_launch_description():
     ld.add_action(declare_generate_planning_problem_cmd)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)
+    ld.add_action(bridge_launch_cmd)
 
 
     return ld
