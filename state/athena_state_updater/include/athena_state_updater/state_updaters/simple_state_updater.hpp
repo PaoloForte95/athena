@@ -16,7 +16,7 @@
 #define ATHENA_STATE_UPDATER__STATE_UPDATERS__SIMPLE_STATE_UPDATER_HPP_
 
 #include "athena_core/state_updater.hpp"
-#include "standard_msgs/msg/planning_state.hpp"
+#include "standard_msgs/msg/string_multi_array.hpp"
 #include "athena_util/lifecycle_node.hpp"
 
 namespace athena_state_updater
@@ -68,9 +68,9 @@ public:
    * 
    * @param domain the planning domain file.
    * @param problem the planning problem file.
-   * @return standard_msgs::msg::Plan An execution plan of the provided planning problem.
+   * @return standard_msgs::msg::StringMultiArray The updated planning state.
    */
-  standard_msgs::msg::PlanningState updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state) override;
+  standard_msgs::msg::StringMultiArray updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::StringMultiArray& previous_state) override;
   
   /**
    * @brief Callback executed when a parameter change is detected

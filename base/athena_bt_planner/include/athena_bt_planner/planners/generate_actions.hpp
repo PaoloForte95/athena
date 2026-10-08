@@ -8,11 +8,12 @@
 #include <optional>
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "athena_bt_planner/behavior_tree_planner.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "athena_msgs/action/generate_tasks.hpp"
 #include "athena_msgs/msg/planning_problem.hpp"
-#include "standard_msgs/msg/planning_state.hpp"
+#include "standard_msgs/msg/string_multi_array.hpp"
 #include "standard_msgs/msg/plan.hpp"
 #include "standard_msgs/msg/action.hpp"
 #include "standard_msgs/msg/method.hpp"
@@ -122,6 +123,8 @@ protected:
   rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr instruction_sub_;
   rclcpp::Subscription<athena_msgs::msg::PlanningProblem>::SharedPtr start_bt_sub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr planning_domain_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr planning_problem_pub_;
   rclcpp_action::Client<ActionT>::SharedPtr self_client_;
 
   std::string behavior_tree_blackboard_id_;

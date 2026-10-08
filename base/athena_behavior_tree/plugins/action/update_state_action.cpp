@@ -37,9 +37,9 @@ void UpdateStateAction::on_tick()
 {   
     config().blackboard->get<Actions>("concurrent_actions", goal_.actions);
     std::string problem_file;
-    standard_msgs::msg::PlanningState inital_state;
+    standard_msgs::msg::StringMultiArray inital_state;
 
-    if(!config().blackboard->get<standard_msgs::msg::PlanningState>("previous_state", inital_state)){
+    if(!config().blackboard->get<standard_msgs::msg::StringMultiArray>("previous_state", inital_state)){
       //if not present, get the initial state from the planning problem file
       getInit(inital_state);
       goal_.previous_state = inital_state;
@@ -79,7 +79,7 @@ void UpdateStateAction::halt()
 
 
 
-void UpdateStateAction::getInit(standard_msgs::msg::PlanningState &state){
+void UpdateStateAction::getInit(standard_msgs::msg::StringMultiArray &state){
   // Get the problem file from the blackboard and opent it
   RCLCPP_INFO( node_->get_logger(), "Getting the initial state from the plannign problem file."); 
   std::string problem_file;
@@ -120,7 +120,7 @@ void UpdateStateAction::getInit(standard_msgs::msg::PlanningState &state){
  
   // Output the extracted text without adding extra newline at the end
   for (size_t i = 0; i < extracted_lines.size(); ++i) {
-      state.state.push_back(extracted_lines[i]);
+      state.data.push_back(extracted_lines[i]);
   } 
 }
 

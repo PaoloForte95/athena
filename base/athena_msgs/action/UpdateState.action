@@ -1,10 +1,10 @@
 #goal definition
-standard_msgs/PlanningState previous_state
+standard_msgs/StringMultiArray previous_state
 standard_msgs/Action[] actions
 string state_updater
 ---
 #result definition
-standard_msgs/PlanningState updated_state
+standard_msgs/StringMultiArray updated_state
 ---
 #feedback definition
 string[] changed_predicates

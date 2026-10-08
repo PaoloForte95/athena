@@ -1,28 +1,17 @@
-// Copyright 2023 Paolo Forte
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #ifndef ATHENA_PLANNING_CORE__STATE_UPDATER_HPP_
 #define ATHENA_PLANNING_CORE__STATE_UPDATER_HPP_
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <memory>
+#include <utility>
+#include <vector>
 
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
-#include "standard_msgs/msg/planning_state.hpp"
+#include "standard_msgs/msg/string_multi_array.hpp"
 #include "standard_msgs/msg/action.hpp"
 
 namespace athena_core
@@ -32,6 +21,7 @@ class StateUpdater
 {
 public:
   using Ptr = std::shared_ptr<StateUpdater>;
+  using StateCallback = std::function<void (const standard_msgs::msg::StringMultiArray &)>;
 
    /**
    * @brief Virtual destructor
@@ -62,12 +52,33 @@ public:
    * @param domain 
    * @param problem 
    * @param previous_state The current planning state
-   * @return standard_msgs::msg::PlanningState 
+   * @return standard_msgs::msg::StringMultiArray 
    */
-  virtual standard_msgs::msg::PlanningState updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state) = 0;
+  virtual standard_msgs::msg::StringMultiArray updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::StringMultiArray& previous_state) = 0;
 
+  /**
+   * @brief Set the function the plugin calls to report a new state
+   * 
+   * @param callback Function that receives the new state
+   */
+  void setStateCallback(StateCallback callback) {state_callback_ = std::move(callback);}
+
+protected:
+  /**
+   * @brief Report a new state, if a function was set
+   * 
+   * @param state The new planning state
+   */
+  void reportState(const standard_msgs::msg::StringMultiArray & state)
+  {
+    if (state_callback_) {
+      state_callback_(state);
+    }
+  }
+
+  StateCallback state_callback_;
 };
 
 }  
 
-#endif  
+#endif

@@ -94,9 +94,9 @@ void SimpleStateUpdater::cleanup()
   RCLCPP_INFO(logger_, "Cleaning up plugin %s of type SimpleStateUpdater",name_.c_str());
 }
 
-standard_msgs::msg::PlanningState SimpleStateUpdater::updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::PlanningState& previous_state){
-    auto new_state = standard_msgs::msg::PlanningState();
-    auto state = previous_state.state;
+standard_msgs::msg::StringMultiArray SimpleStateUpdater::updateState(const std::vector<standard_msgs::msg::Action> & actions, const standard_msgs::msg::StringMultiArray& previous_state){
+    auto new_state = standard_msgs::msg::StringMultiArray();
+    auto state = previous_state.data;
     for(auto action : actions){ 
       for(auto effect : action.effects){
         addState(state, effect);
@@ -106,7 +106,7 @@ standard_msgs::msg::PlanningState SimpleStateUpdater::updateState(const std::vec
     // for (auto s : state){
     //   RCLCPP_INFO(logger_, "Final state: %s", s.c_str());
     // }
-    new_state.state = state;
+    new_state.data = state;
     return new_state;
 
 }

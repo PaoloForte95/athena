@@ -9,6 +9,6 @@ uint16 error_code
 string error_msg
 ---
 #feedback definition
-standard_msgs/PlanningState current_state
+standard_msgs/StringMultiArray current_state
 standard_msgs/Action current_action
 standard_msgs/Method current_method

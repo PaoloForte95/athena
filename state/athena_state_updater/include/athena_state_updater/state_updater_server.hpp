@@ -21,6 +21,7 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <set>
 
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/point.hpp"
@@ -32,7 +33,9 @@
 #include "pluginlib/class_loader.hpp"
 #include "pluginlib/class_list_macros.hpp"
 #include "athena_core/state_updater.hpp"
-#include "standard_msgs/msg/planning_state.hpp"
+#include "standard_msgs/msg/string_multi_array.hpp"
+#include "standard_msgs/msg/plan.hpp"
+#include "standard_msgs/msg/event.hpp"
 #include "athena_util/simple_action_server.hpp"
 typedef std::vector<standard_msgs::msg::Action> Actions;
 
@@ -63,8 +66,8 @@ public:
   void updateState();
 
 
-  standard_msgs::msg::PlanningState getUpdatedState(
-    const standard_msgs::msg::PlanningState & previous_state,
+  standard_msgs::msg::StringMultiArray getUpdatedState(
+    const standard_msgs::msg::StringMultiArray & previous_state,
     const Actions & actions,
     const std::string & state_updater);
 
@@ -142,7 +145,35 @@ protected:
    * 
    * @param state the current state to publish
    */
-  void publishState(const standard_msgs::msg::PlanningState & state);
+  void publishState(const standard_msgs::msg::StringMultiArray & state);
+
+  /**
+   * @brief Store the dispatched plan
+   * 
+   * @param msg the dispatched plan
+   */
+  void planCallback(const standard_msgs::msg::Plan & msg);
+
+  /**
+   * @brief Apply the effects of an action when its event reports success
+   * 
+   * @param msg the action event
+   */
+  void eventCallback(const standard_msgs::msg::Event & msg);
+
+  /**
+   * @brief Set the initial state from the :init section of the planning problem
+   * 
+   * @param msg the content of the planning problem file
+   */
+  void problemCallback(const std_msgs::msg::String & msg);
+
+  /**
+   * @brief Store and publish a state reported by the event state updater plugin
+   * 
+   * @param state the state reported by the plugin
+   */
+  void onPluginState(const standard_msgs::msg::StringMultiArray & state);
 
   /**
    * @brief Callback executed when a parameter change is detected
@@ -169,12 +200,23 @@ protected:
 
 
   // Publishers for the path
-  rclcpp_lifecycle::LifecyclePublisher<standard_msgs::msg::PlanningState>::SharedPtr state_publisher_;
+  rclcpp_lifecycle::LifecyclePublisher<standard_msgs::msg::StringMultiArray>::SharedPtr state_publisher_;
 
+  rclcpp::Subscription<standard_msgs::msg::Plan>::SharedPtr plan_sub_;
+  rclcpp::Subscription<standard_msgs::msg::Event>::SharedPtr event_sub_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr problem_sub_;
+
+  std::mutex state_mutex_;
+  standard_msgs::msg::Plan plan_;
+  std::set<int32_t> applied_actions_;
+  standard_msgs::msg::StringMultiArray current_state_;
+  std::string event_state_updater_;
+  bool state_received_{false};
+  bool state_from_plugin_{false};
 
   double state_updater_frequency_;
 };
 
 }  
 
-#endif  
+#endif
