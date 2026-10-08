@@ -19,13 +19,19 @@
   <depend>rclcpp_components</depend>
   <depend>athena_protobuf</depend>
   <depend>yaml_cpp_vendor</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>protobuf-dev</depend>
 
   <exec_depend>popf</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ros2run</test_depend>
-  
 
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 
 </package>

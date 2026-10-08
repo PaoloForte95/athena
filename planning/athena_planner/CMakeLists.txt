@@ -12,6 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(athena_core REQUIRED)
 find_package(athena_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(athena_util REQUIRED)
@@ -136,7 +137,7 @@ endif()
 
 
 ament_export_include_directories(include)
-ament_export_libraries(${library_name}${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward)
+ament_export_libraries(${library_name} ${library_name}_metricff ${library_name}_lpg ${library_name}_tfd ${library_name}_lilotane ${library_name}_fastdownward)
 ament_export_dependencies(${dependencies})
 
 pluginlib_export_plugin_description_file(athena_core planners_plugin.xml)
